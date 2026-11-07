@@ -1,0 +1,49 @@
+// Renders seed content. Shared by seed.mjs and test/seed.test.ts (so the Confluence
+// parser is tested against exactly what we put on the demo site).
+
+const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+const STATUS_COLOUR = { ACCEPTED: 'Green', PROPOSED: 'Yellow', SUPERSEDED: 'Grey', DEPRECATED: 'Grey', REJECTED: 'Red' };
+const STATUS_TITLE = { ACCEPTED: 'Accepted', PROPOSED: 'Proposed', SUPERSEDED: 'Superseded', DEPRECATED: 'Deprecated', REJECTED: 'Rejected' };
+
+export function decisionTitle(d) {
+  return `${d.decisionId}: ${d.title}`;
+}
+
+/** Confluence storage format: Page Properties table + human-readable sections. */
+export function decisionStorage(d) {
+  const row = (k, v) => `<tr><th><p>${esc(k)}</p></th><td>${v}</td></tr>`;
+  const p = (v) => `<p>${esc(v)}</p>`;
+  const status = `<p><ac:structured-macro ac:name="status"><ac:parameter ac:name="colour">${STATUS_COLOUR[d.status] ?? 'Grey'}</ac:parameter><ac:parameter ac:name="title">${STATUS_TITLE[d.status] ?? d.status}</ac:parameter></ac:structured-macro></p>`;
+  return [
+    '<ac:structured-macro ac:name="details"><ac:rich-text-body><table><tbody>',
+    row('Decision ID', p(d.decisionId)),
+    row('Status', status),
+    row('Service', p(d.service)),
+    row('Environments', p(d.environments.join(', '))),
+    row('Conditions', p(d.conditions.join(', '))),
+    row('Owner', p(d.owner)),
+    row('Decision', p(d.statement)),
+    row('Rationale', p(d.rationale)),
+    row('Supersedes', p(d.supersedes.join(', '))),
+    row('Superseded by', p(d.supersededBy.join(', '))),
+    row('Effective date', p(d.effectiveDate)),
+    '</tbody></table></ac:rich-text-body></ac:structured-macro>',
+    '<h2>Context</h2>',
+    p(d.rationale),
+    '<h2>Consequences</h2>',
+    p('Tickets that contradict this decision should be clarified with the decision owner before implementation.'),
+  ].join('');
+}
+
+/** Jira ADF description with an "Acceptance criteria" heading. */
+export function ticketAdf(t) {
+  const para = (text) => ({ type: 'paragraph', content: text ? [{ type: 'text', text }] : [] });
+  const content = [para(t.description)];
+  const ac = (t.acceptanceCriteria ?? '').split('\n').filter(Boolean);
+  if (ac.length) {
+    content.push({ type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: 'Acceptance criteria' }] });
+    content.push({ type: 'bulletList', content: ac.map((line) => ({ type: 'listItem', content: [para(line)] })) });
+  }
+  return { type: 'doc', version: 1, content };
+}

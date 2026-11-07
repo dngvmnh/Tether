@@ -1,0 +1,206 @@
+{
+  "$comment": "Golden scenarios. Each becomes one Jira issue on the demo site (npm run seed), one UI fixture (npm run fixtures) and one eval case. 'claims' are the gold claims the LLM extractor should produce; quotes must be verbatim substrings of the ticket text. 'expected' is the agreed outcome: change it only with team agreement.",
+  "scenarios": [
+    {
+      "id": "S01",
+      "title": "Exact retry count contradicts current ADR",
+      "ticket": {
+        "summary": "Retry failed card payments to improve conversion",
+        "description": "Product wants fewer failed checkouts caused by transient gateway errors.",
+        "acceptanceCriteria": "The payment service must retry failed transactions exactly 5 times before giving up.\nEach retry is logged with the gateway error code."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "EQ", "value": 5, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "The payment service must retry failed transactions exactly 5 times", "location": "acceptance criteria", "material": true },
+        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.logging", "label": "retry logging", "op": "REQUIRED", "modality": "MUST", "quote": "Each retry is logged with the gateway error code.", "location": "acceptance criteria", "material": false }
+      ],
+      "expected": { "overall": "CONFLICT", "claims": { "C1": ["CONFLICT", "VALUE_CONTRADICTION"] } }
+    },
+    {
+      "id": "S02",
+      "title": "Upper bound looser than ADR is not a conflict",
+      "ticket": {
+        "summary": "Make payment retries configurable",
+        "description": "Ops want to tune retries without a deploy.",
+        "acceptanceCriteria": "Retry failed transactions up to 5 times, configurable per merchant."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "LTE", "value": 5, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "Retry failed transactions up to 5 times", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": { "overall": "NO_CONFLICT_FOUND", "claims": { "C1": ["NO_CONFLICT_FOUND", "CONSISTENT_IF_TIGHTER"] } }
+    },
+    {
+      "id": "S03",
+      "title": "Attempts vs retries is ambiguous",
+      "ticket": {
+        "summary": "Harden payment retry loop",
+        "description": "The retry loop currently stops too early on network blips.",
+        "acceptanceCriteria": "The payment service must make exactly 4 attempts for each failed transaction."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "EQ", "value": 4, "unit": "attempts", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "The payment service must make exactly 4 attempts for each failed transaction.", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": { "overall": "NEEDS_REVIEW", "claims": { "C1": ["NEEDS_REVIEW", "AMBIGUOUS_COUNTING"] } }
+    },
+    {
+      "id": "S04",
+      "title": "Ticket cites a superseded ADR",
+      "ticket": {
+        "summary": "Restore legacy retry behaviour",
+        "description": "Merchant X asked for the old behaviour back. Restore the original retry behaviour from ADR-PAY-000.",
+        "acceptanceCriteria": "Retry failed transactions exactly 5 times."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "EQ", "value": 5, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "Retry failed transactions exactly 5 times.", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": { "overall": "CONFLICT", "claims": { "C1": ["CONFLICT", "VALUE_CONTRADICTION"] } }
+    },
+    {
+      "id": "S05",
+      "title": "Payment ADR retrieved but ticket is about notifications",
+      "ticket": {
+        "summary": "Retry push notifications on failure",
+        "description": "Users miss receipts when the push provider is down.",
+        "acceptanceCriteria": "The notification service must retry failed push deliveries exactly 5 times."
+      },
+      "claims": [
+        { "subject": "Notification Service", "service": "notification-service", "attr": "retry.count", "label": "retry limit", "op": "EQ", "value": 5, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed push deliveries"], "quote": "The notification service must retry failed push deliveries exactly 5 times.", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": { "overall": "INSUFFICIENT_EVIDENCE", "claims": { "C1": ["INSUFFICIENT_EVIDENCE", "DECISION_NOT_APPLICABLE"] } }
+    },
+    {
+      "id": "S06",
+      "title": "Fully covered and consistent",
+      "ticket": {
+        "summary": "Add idempotent payment creation endpoint",
+        "description": "New v2 endpoint for creating payments from the mobile app.",
+        "acceptanceCriteria": "Payment creation requests must include an idempotency key.\nRetry failed transactions at most 2 times."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "idempotency_key", "label": "idempotency key", "op": "REQUIRED", "modality": "MUST", "quote": "Payment creation requests must include an idempotency key.", "location": "acceptance criteria", "material": true },
+        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "LTE", "value": 2, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "Retry failed transactions at most 2 times.", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": { "overall": "NO_CONFLICT_FOUND", "claims": { "C1": ["NO_CONFLICT_FOUND", "CONSISTENT"], "C2": ["NO_CONFLICT_FOUND", "CONSISTENT"] } }
+    },
+    {
+      "id": "S07",
+      "title": "No decision exists for the requirement",
+      "ticket": {
+        "summary": "Emit payment latency metrics",
+        "description": "SRE needs better dashboards for the payment path.",
+        "acceptanceCriteria": "The payment service must emit latency metrics every 10 seconds."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "metrics.emit_interval", "label": "metrics emit interval", "op": "EQ", "value": 10, "unit": "s", "modality": "MUST", "quote": "The payment service must emit latency metrics every 10 seconds.", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": { "overall": "INSUFFICIENT_EVIDENCE", "claims": { "C1": ["INSUFFICIENT_EVIDENCE", "NO_DECISION_FOUND"] } }
+    },
+    {
+      "id": "S08",
+      "title": "Two current decisions contradict each other",
+      "ticket": {
+        "summary": "Configure payment log retention",
+        "description": "Logging platform migration needs explicit retention settings.",
+        "acceptanceCriteria": "Payment service logs must be retained for 60 days."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "logs.retention", "label": "log retention", "op": "EQ", "value": 60, "unit": "days", "modality": "MUST", "quote": "Payment service logs must be retained for 60 days.", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": { "overall": "NEEDS_REVIEW", "claims": { "C1": ["NEEDS_REVIEW", "COMPETING_DECISIONS"] } }
+    },
+    {
+      "id": "S09",
+      "title": "Conflict shown despite partial coverage",
+      "ticket": {
+        "summary": "Payment retry and audit trail",
+        "description": "Compliance wants every retry auditable.",
+        "acceptanceCriteria": "Retry failed transactions exactly 5 times.\nEvery payment creation request must include an idempotency key.\nWrite an audit event to the new audit service for each retry."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "EQ", "value": 5, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "Retry failed transactions exactly 5 times.", "location": "acceptance criteria", "material": true },
+        { "subject": "Payment Service", "service": "payment-service", "attr": "idempotency_key", "label": "idempotency key", "op": "REQUIRED", "modality": "MUST", "quote": "Every payment creation request must include an idempotency key.", "location": "acceptance criteria", "material": true },
+        { "subject": "Payment Service", "service": "payment-service", "attr": "audit.retry_event", "label": "retry audit event", "op": "REQUIRED", "modality": "MUST", "quote": "Write an audit event to the new audit service for each retry.", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": {
+        "overall": "CONFLICT",
+        "coverage": "2/3",
+        "claims": { "C1": ["CONFLICT", "VALUE_CONTRADICTION"], "C2": ["NO_CONFLICT_FOUND", "CONSISTENT"], "C3": ["INSUFFICIENT_EVIDENCE", "NO_DECISION_FOUND"] }
+      }
+    },
+    {
+      "id": "S10",
+      "title": "Ticket requires what a decision prohibits",
+      "ticket": {
+        "summary": "Faster refunds for repeat customers",
+        "description": "To speed up refunds, store the full card number with each payment record.",
+        "acceptanceCriteria": "Refund screen pre-fills the original card."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "card.pan_storage", "label": "full card number storage", "op": "REQUIRED", "modality": "MUST", "quote": "store the full card number with each payment record", "location": "description", "material": true }
+      ],
+      "expected": { "overall": "CONFLICT", "claims": { "C1": ["CONFLICT", "PROHIBITION_VIOLATED"] } }
+    },
+    {
+      "id": "S11",
+      "title": "Only a proposed decision disagrees",
+      "ticket": {
+        "summary": "Retry merchant webhooks",
+        "description": "Merchants complain about missed webhooks.",
+        "acceptanceCriteria": "Retry webhook deliveries with a fixed 1 second backoff."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "webhook.retry.initial_backoff", "label": "webhook retry backoff", "op": "EQ", "value": 1, "unit": "s", "modality": "MUST", "quote": "Retry webhook deliveries with a fixed 1 second backoff.", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": { "overall": "NEEDS_REVIEW", "claims": { "C1": ["NEEDS_REVIEW", "NON_AUTHORITATIVE_DECISION_DISAGREES"] } }
+    },
+    {
+      "id": "S12",
+      "title": "Decision scoped to another environment",
+      "ticket": {
+        "summary": "Auto-approve refunds in staging",
+        "description": "QA is blocked waiting for manual refund approvals.",
+        "acceptanceCriteria": "In staging, refunds up to 50,000 USD must be auto-approved."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "environments": ["staging"], "attr": "refund.auto_approval.max_amount", "label": "refund auto-approval limit", "op": "EQ", "value": 50000, "unit": "USD", "modality": "MUST", "quote": "In staging, refunds up to 50,000 USD must be auto-approved.", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": { "overall": "INSUFFICIENT_EVIDENCE", "claims": { "C1": ["INSUFFICIENT_EVIDENCE", "DECISION_NOT_APPLICABLE"] } }
+    },
+    {
+      "id": "S13",
+      "title": "Equivalent limits with explicit counting",
+      "ticket": {
+        "summary": "Document payment retry budget",
+        "description": "Clarify the retry budget for the new gateway adapter.",
+        "acceptanceCriteria": "Payment requests may be attempted at most 4 times in total, including the initial request."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "LTE", "value": 4, "unit": "attempts", "counting": "INCLUDES_INITIAL", "modality": "MUST", "quote": "Payment requests may be attempted at most 4 times in total, including the initial request.", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": { "overall": "NO_CONFLICT_FOUND", "claims": { "C1": ["NO_CONFLICT_FOUND", "CONSISTENT"] } }
+    },
+    {
+      "id": "S14",
+      "title": "Unit conversion reveals a conflict",
+      "ticket": {
+        "summary": "Increase gateway timeout for 3DS",
+        "description": "3-D Secure challenges sometimes take longer than the current timeout.",
+        "acceptanceCriteria": "Set the payment gateway timeout to 15000 ms."
+      },
+      "claims": [
+        { "subject": "Payment Service", "service": "payment-service", "attr": "gateway.timeout", "label": "gateway timeout", "op": "EQ", "value": 15000, "unit": "ms", "modality": "MUST", "quote": "Set the payment gateway timeout to 15000 ms.", "location": "acceptance criteria", "material": true }
+      ],
+      "expected": { "overall": "CONFLICT", "claims": { "C1": ["CONFLICT", "VALUE_CONTRADICTION"] } }
+    },
+    {
+      "id": "S15",
+      "title": "Non-technical ticket",
+      "ticket": {
+        "summary": "Update on-call rotation page",
+        "description": "Add the December on-call rotation to the team README.",
+        "acceptanceCriteria": ""
+      },
+      "claims": [],
+      "expected": { "overall": "INSUFFICIENT_EVIDENCE", "claims": {} }
+    }
+  ]
+}

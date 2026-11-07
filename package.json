@@ -1,0 +1,43 @@
+{
+  "name": "tether",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tether keeps Jira tickets tethered to the engineering decisions recorded in Confluence.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json && npm --prefix static/report run typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "eval:offline": "tsx scripts/eval-offline.ts",
+    "fixtures": "tsx scripts/gen-fixtures.ts",
+    "manifest:check": "node scripts/check-manifest.mjs",
+    "ui:install": "cd static/report && npm ci --no-audit --no-fund",
+    "ui:dev": "npm --prefix static/report run dev:mock",
+    "ui:tunnel": "npm --prefix static/report run dev",
+    "ui:build": "npm --prefix static/report run build",
+    "seed": "node scripts/seed/seed.mjs",
+    "check": "npm run typecheck && npm test && npm run eval:offline && npm run manifest:check && npm run ui:build",
+    "deploy:dev": "npm run ui:build && forge deploy",
+    "postinstall": "npm run ui:install"
+  },
+  "dependencies": {
+    "@forge/api": "^8.4.0",
+    "@forge/events": "^3.0.9",
+    "@forge/kvs": "^2.1.1",
+    "@forge/llm": "^1.0.9",
+    "@forge/resolver": "^2.0.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@forge/manifest": "^13.8.0",
+    "@types/node": "^22.20.5",
+    "ajv": "^8.20.0",
+    "js-yaml": "^4.1.0",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

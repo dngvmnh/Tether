@@ -1,0 +1,62 @@
+/** Queue consumer (900 s limit): runs analyses and eval suites. */
+import type { AsyncEvent } from '@forge/events';
+import type { JobProgressStage } from '../contracts';
+import { ConfluenceDecisionAdapter } from '../adapters/confluence';
+import { ForgeLlmAdapter } from '../adapters/forgeLlm';
+import { JiraTicketAdapter } from '../adapters/jira';
+import { kvsConstraintCache, store } from '../adapters/storage';
+import { analyzeIssue } from '../engine';
+import type { AnalysisJobBody, EvalJobBody } from './jobs';
+import { runEvalSuite } from './evalSuite';
+
+const STAGES_RUNNING = new Set<JobProgressStage>(['FETCHING_TICKET', 'EXTRACTING_CLAIMS', 'RETRIEVING_DECISIONS', 'VALIDATING_DECISIONS', 'COMPARING', 'WRITING_REPORT']);
+
+async function runAnalysis(body: AnalysisJobBody) {
+  const config = await store.getConfig();
+  await store.patchJob(body.jobId, { status: 'RUNNING' });
+  const report = await analyzeIssue(body.issueKey, {
+    // The worker has no user context: read as the app, then filter pages by the requester's permissions.
+    tickets: new JiraTicketAdapter(body.siteUrl, 'app'),
+    decisions: new ConfluenceDecisionAdapter(body.siteUrl, config.spaceKeys, config.decisionLabel, 'app', body.accountId),
+    graph: body.graph
+      ? {
+          async contextFor() {
+            if (body.graph!.error) throw new Error(body.graph!.error);
+            return body.graph!;
+          },
+        }
+      : undefined,
+    llm: new ForgeLlmAdapter(config.models),
+    cache: kvsConstraintCache,
+    onProgress: async (stage) => {
+      if (STAGES_RUNNING.has(stage)) await store.patchJob(body.jobId, { stage });
+    },
+  });
+  await store.putReport(report);
+  await store.clearStale(body.issueKey);
+  const pages = report.decisions.map((d) => ({ pageId: d.source.id, decisionId: d.decisionId }));
+  await store.indexDecisions(body.issueKey, pages);
+  await store.patchJob(body.jobId, {
+    status: report.status === 'FAILED' ? 'FAILED' : 'DONE',
+    stage: 'DONE',
+    reportId: report.reportId,
+    error: report.status === 'FAILED' ? report.errors[0] : undefined,
+  });
+}
+
+export async function handler(event: AsyncEvent) {
+  const body = event.body as unknown as AnalysisJobBody | EvalJobBody;
+  if (body.kind === 'eval') {
+    await store.putEval(await runEvalSuite());
+    return;
+  }
+  try {
+    await runAnalysis(body);
+  } catch (e) {
+    console.error('[tether] analysis worker crashed', e);
+    await store.patchJob(body.jobId, {
+      status: 'FAILED',
+      error: { stage: 'INTERNAL', code: 'WORKER_CRASH', message: (e as Error).message, retryable: true, claimIds: [] },
+    });
+  }
+}

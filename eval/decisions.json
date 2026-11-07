@@ -1,0 +1,159 @@
+{
+  "$comment": "Decision library for demo seeding, fixtures and evaluation. One Confluence page per entry (label tether-decision). 'constraints' are the gold constraints the LLM extractor should produce. Names are fictional.",
+  "space": { "key": "ENG", "name": "Engineering Decisions" },
+  "decisions": [
+    {
+      "decisionId": "ADR-PAY-000",
+      "title": "Payment retry policy (2024)",
+      "status": "SUPERSEDED",
+      "service": "payment-service",
+      "environments": [],
+      "conditions": ["failed transactions"],
+      "owner": "Marco Silva",
+      "effectiveDate": "2024-05-14",
+      "supersedes": [],
+      "supersededBy": ["ADR-PAY-001"],
+      "statement": "The payment service retries failed transactions up to 5 times before marking them as failed.",
+      "rationale": "Early gateway integration was flaky; generous retries kept the success rate acceptable.",
+      "constraints": [
+        { "attr": "retry.count", "label": "retry limit", "op": "LTE", "value": 5, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "The payment service retries failed transactions up to 5 times" }
+      ]
+    },
+    {
+      "decisionId": "ADR-PAY-001",
+      "title": "Payment retry policy",
+      "status": "ACCEPTED",
+      "service": "payment-service",
+      "environments": ["production", "staging"],
+      "conditions": ["failed transactions"],
+      "owner": "Priya Raman",
+      "effectiveDate": "2026-03-02",
+      "supersedes": ["ADR-PAY-000"],
+      "supersededBy": [],
+      "statement": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff.",
+      "rationale": "Retry storms during the March 2026 gateway incident doubled upstream load. Three retries recover almost all transient failures.",
+      "constraints": [
+        { "attr": "retry.count", "label": "retry limit", "op": "LTE", "value": 3, "unit": "retries", "counting": "EXCLUDES_INITIAL", "modality": "MUST", "conditions": ["failed transactions"], "quote": "The payment service must retry failed transactions no more than 3 times." }
+      ]
+    },
+    {
+      "decisionId": "ADR-PAY-002",
+      "title": "Idempotency keys for payment creation",
+      "status": "ACCEPTED",
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [],
+      "owner": "Priya Raman",
+      "effectiveDate": "2025-11-20",
+      "supersedes": [],
+      "supersededBy": [],
+      "statement": "Every payment creation request must include an idempotency key so that retries never create duplicate charges.",
+      "rationale": "Duplicate charges are the most expensive support issue we have.",
+      "constraints": [
+        { "attr": "idempotency_key", "label": "idempotency key", "op": "REQUIRED", "modality": "MUST", "quote": "Every payment creation request must include an idempotency key" }
+      ]
+    },
+    {
+      "decisionId": "ADR-PAY-003",
+      "title": "Card data storage",
+      "status": "ACCEPTED",
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [],
+      "owner": "Aiko Tanaka",
+      "effectiveDate": "2025-08-01",
+      "supersedes": [],
+      "supersededBy": [],
+      "statement": "The payment service must not persist full card numbers (PAN). Only the gateway token and the last four digits may be stored.",
+      "rationale": "Keeps the service out of PCI DSS storage scope.",
+      "constraints": [
+        { "attr": "card.pan_storage", "label": "full card number storage", "op": "PROHIBITED", "modality": "MUST", "quote": "The payment service must not persist full card numbers (PAN)." }
+      ]
+    },
+    {
+      "decisionId": "ADR-PAY-004",
+      "title": "Payment gateway timeout",
+      "status": "ACCEPTED",
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [],
+      "owner": "Marco Silva",
+      "effectiveDate": "2026-01-12",
+      "supersedes": [],
+      "supersededBy": [],
+      "statement": "Calls from the payment service to the payment gateway must time out after at most 10 seconds.",
+      "rationale": "Checkout UX budget is 15 seconds end to end.",
+      "constraints": [
+        { "attr": "gateway.timeout", "label": "gateway timeout", "op": "LTE", "value": 10, "unit": "s", "modality": "MUST", "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds." }
+      ]
+    },
+    {
+      "decisionId": "ADR-PAY-005",
+      "title": "Webhook retry backoff",
+      "status": "PROPOSED",
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [],
+      "owner": "Sam Okafor",
+      "effectiveDate": "",
+      "supersedes": [],
+      "supersededBy": [],
+      "statement": "Webhook deliveries should use exponential backoff starting at 2 seconds.",
+      "rationale": "Merchants' endpoints rate-limit aggressive retries.",
+      "constraints": [
+        { "attr": "webhook.retry.initial_backoff", "label": "webhook retry backoff", "op": "EQ", "value": 2, "unit": "s", "modality": "SHOULD", "quote": "Webhook deliveries should use exponential backoff starting at 2 seconds." }
+      ]
+    },
+    {
+      "decisionId": "ADR-PAY-006",
+      "title": "Refund approval threshold",
+      "status": "ACCEPTED",
+      "service": "payment-service",
+      "environments": ["production"],
+      "conditions": [],
+      "owner": "Aiko Tanaka",
+      "effectiveDate": "2026-02-03",
+      "supersedes": [],
+      "supersededBy": [],
+      "statement": "In production, refunds above 10,000 USD must be approved manually; only refunds up to 10,000 USD may be auto-approved.",
+      "rationale": "Fraud controls required by the finance team.",
+      "constraints": [
+        { "attr": "refund.auto_approval.max_amount", "label": "refund auto-approval limit", "op": "LTE", "value": 10000, "unit": "USD", "modality": "MUST", "quote": "only refunds up to 10,000 USD may be auto-approved" }
+      ]
+    },
+    {
+      "decisionId": "ADR-PAY-008",
+      "title": "Payment log retention",
+      "status": "ACCEPTED",
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [],
+      "owner": "Marco Silva",
+      "effectiveDate": "2025-06-30",
+      "supersedes": [],
+      "supersededBy": [],
+      "statement": "Payment service logs must be retained for 90 days.",
+      "rationale": "Chargeback disputes can arrive up to 90 days after a payment.",
+      "constraints": [
+        { "attr": "logs.retention", "label": "log retention", "op": "EQ", "value": 90, "unit": "days", "modality": "MUST", "quote": "Payment service logs must be retained for 90 days." }
+      ]
+    },
+    {
+      "decisionId": "ADR-SEC-003",
+      "title": "Customer data log retention",
+      "status": "ACCEPTED",
+      "service": "*",
+      "environments": [],
+      "conditions": [],
+      "owner": "Aiko Tanaka",
+      "effectiveDate": "2026-04-18",
+      "supersedes": [],
+      "supersededBy": [],
+      "statement": "Logs that contain customer data must be retained for no more than 30 days, in every service.",
+      "rationale": "Data minimisation requirement from the privacy review.",
+      "constraints": [
+        { "attr": "logs.retention", "label": "log retention", "op": "LTE", "value": 30, "unit": "days", "modality": "MUST", "quote": "Logs that contain customer data must be retained for no more than 30 days" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# Ownership = who reviews, not who may edit. Replace the TODO handles with real GitHub usernames.
+# Contract changes need all three owners.
+
+*                      @dngvmnh
+/src/contracts/        @dngvmnh
+# /src/contracts/      @TODO-dat @TODO-bao
+# /src/engine/         @TODO-dat
+# /eval/               @TODO-dat
+/src/adapters/         @dngvmnh
+/src/handlers/         @dngvmnh
+/manifest.yml          @dngvmnh
+# /static/report/      @TODO-bao

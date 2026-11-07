@@ -1,0 +1,14 @@
+node_modules/
+static/*/build/
+static/*/node_modules/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+# Forge CLI local state
+.forge/
+!static/report/.env.mock
