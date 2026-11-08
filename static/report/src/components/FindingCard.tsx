@@ -1,10 +1,20 @@
 import { useState } from 'react';
 import type { Finding, ScopeCheckValue } from '../../../../src/contracts';
 import { openUrl } from '../api/client';
-import { REASON_COPY } from '../copy';
+import { DECISION_STATUS_COPY, HISTORY_HEADING, REASON_COPY } from '../copy';
 import { OutcomeLozenge } from './Verdict';
 
 const MARK: Record<ScopeCheckValue, string> = { MATCH: '✓', MISMATCH: '✕', UNKNOWN: '?' };
+const MARK_TEXT: Record<ScopeCheckValue, string> = { MATCH: 'matches', MISMATCH: 'does not match', UNKNOWN: 'could not be determined' };
+
+function ScopeChip({ name, value }: { name: string; value: ScopeCheckValue }) {
+  return (
+    <li className={`chip chip--${value}`}>
+      <span aria-hidden>{MARK[value]}</span> {name}
+      <span className="sr-only">: {MARK_TEXT[value]}</span>
+    </li>
+  );
+}
 
 function Quote({ who, quote, url, title }: { who: string; quote: string; url?: string; title?: string }) {
   return (
@@ -13,10 +23,73 @@ function Quote({ who, quote, url, title }: { who: string; quote: string; url?: s
       <blockquote>“{quote}”</blockquote>
       {url && (
         <button type="button" className="link" onClick={() => openUrl(url)}>
-          {title ?? 'Open source'} ↗
+          {title ?? 'Open source'} <span aria-hidden>↗</span>
         </button>
       )}
     </figure>
+  );
+}
+
+/** Decision lineage for one finding. Only shows relationships present in the data. */
+function DecisionHistory({ finding }: { finding: Finding }) {
+  const { history } = finding;
+  if (history.length === 0) return null;
+  const byId = new Map(history.map((h) => [h.decisionId, h]));
+  const headingId = `history-${finding.id}`;
+  return (
+    <section className="history" aria-labelledby={headingId}>
+      <h4 id={headingId} className="history__heading">
+        {history.length > 1 ? HISTORY_HEADING : 'Decision'}
+      </h4>
+      <ol className="history__list">
+        {history.map((h) => {
+          const title = h.title.trim();
+          const showTitle = title !== '' && title !== h.decisionId;
+          const copy = DECISION_STATUS_COPY[h.status];
+          const note = h.supersededBy.length > 0 ? null : h.current && h.status === 'ACCEPTED' ? null : copy.hint;
+          return (
+            <li key={h.decisionId} className={`history__item ${h.current ? 'history__item--current' : 'history__item--old'}`}>
+              <div className="history__row">
+                <span className={h.current ? 'history__name' : 'history__name history__name--old'}>
+                  {h.url ? (
+                    <button type="button" className="link" onClick={() => openUrl(h.url)}>
+                      {h.decisionId}
+                    </button>
+                  ) : (
+                    <span>{h.decisionId}</span>
+                  )}
+                  {showTitle && <span className="history__title"> {title}</span>}
+                </span>
+                <span className={`history__status history__status--${h.current ? 'CURRENT' : h.status}`}>
+                  {h.current ? 'Current' : copy.label}
+                </span>
+              </div>
+              {h.supersededBy.length > 0 && (
+                <div className="history__note">
+                  Replaced by{' '}
+                  {h.supersededBy.map((id, i) => {
+                    const target = byId.get(id);
+                    return (
+                      <span key={id}>
+                        {i > 0 && ', '}
+                        {target?.url ? (
+                          <button type="button" className="link" onClick={() => openUrl(target.url)}>
+                            {id}
+                          </button>
+                        ) : (
+                          id
+                        )}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+              {note && <div className="history__note">{note[0]!.toUpperCase() + note.slice(1)}.</div>}
+            </li>
+          );
+        })}
+      </ol>
+    </section>
   );
 }
 
@@ -44,29 +117,15 @@ export function FindingCard({ finding, onFollowUp }: { finding: Finding; onFollo
           </p>
           {finding.method !== 'NONE' && (
             <ul className="chips" aria-label="Scope check">
-              <li className={`chip chip--${sc.service}`}>{MARK[sc.service]} service</li>
-              <li className={`chip chip--${sc.environment}`}>{MARK[sc.environment]} environment</li>
-              <li className={`chip chip--${sc.conditions}`}>{MARK[sc.conditions]} conditions</li>
-              <li className={`chip chip--${sc.counting}`}>{MARK[sc.counting]} counting</li>
+              <ScopeChip name="service" value={sc.service} />
+              <ScopeChip name="environment" value={sc.environment} />
+              <ScopeChip name="conditions" value={sc.conditions} />
+              <ScopeChip name="counting" value={sc.counting} />
               <li className="chip chip--method">{finding.method.toLowerCase()}</li>
             </ul>
           )}
-          {finding.history.length > 0 && (
-            <ol className="history" aria-label="Decision history">
-              {finding.history.map((h) => (
-                <li key={h.decisionId} className={h.current ? 'history--current' : 'history--old'}>
-                  <button type="button" className="link" onClick={() => openUrl(h.url)}>
-                    {h.decisionId}
-                  </button>{' '}
-                  {h.current
-                    ? `${h.status.toLowerCase()}, current`
-                    : h.supersededBy.length
-                      ? `superseded by ${h.supersededBy.join(', ')}`
-                      : h.status.toLowerCase()}
-                </li>
-              ))}
-            </ol>
-          )}
+          <DecisionHistory finding={finding} />
+
           <div className="actions">
             {finding.suggestedActions
               .filter((a) => a.kind !== 'CREATE_FOLLOW_UP')
