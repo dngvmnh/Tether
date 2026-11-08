@@ -153,7 +153,9 @@ export function Settings() {
   }
 
   const errors = validate(form);
-  const dirty = JSON.stringify(toConfig(form)) !== JSON.stringify(saved);
+  // Compare both sides in the form's canonical shape: the backend may return the saved config with extra
+  // fields or a different key order, which must not read as an unsaved change.
+  const dirty = JSON.stringify(toConfig(form)) !== JSON.stringify(toConfig(toForm(saved)));
   const show = (k: keyof Errors) => (submitted ? errors[k] : undefined);
   const edit = (patch: Partial<Form>) => {
     setForm({ ...form, ...patch });

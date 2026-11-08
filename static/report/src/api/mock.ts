@@ -135,7 +135,17 @@ export async function mockInvoke<N extends ResolverName>(name: N, input: Resolve
         failedOnce.save = true;
         return { ok: false, error: { code: 'HTTP_500', message: 'Forge storage write failed.', retryable: true } } as Out;
       }
-      config = (i as { config: TetherConfig }).config;
+      // The real backend returns the config in the contract schema's key order, which differs from the
+      // order the settings form builds it in. Mimic that so a "saved but still dirty" regression shows here.
+      const c = (i as { config: TetherConfig }).config;
+      config = {
+        spaceKeys: c.spaceKeys,
+        decisionLabel: c.decisionLabel,
+        models: c.models,
+        useTeamworkGraph: c.useTeamworkGraph,
+        twgLinkedPagesQueryKey: c.twgLinkedPagesQueryKey,
+        autoRecheckOnDecisionChange: c.autoRecheckOnDecisionChange,
+      };
       return ok({ config }) as Out;
     }
     case 'runEval':
