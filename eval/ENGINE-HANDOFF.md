@@ -167,5 +167,55 @@ Persisting full reports/progress remains optional follow-up: the current web tri
 returns the completed summary. The helper's `onResult` callback is available for this,
 but no additional handler/storage files or endpoints were changed.
 
+## Completed live baseline — 8 November 2026
+
+Deployed version **2.1.0**, code commit `80c986e`, only to `dev-dat` on Đạt's personal
+site. Runtime logs confirmed cancellation of the original job at
+`2026-11-08T04:47:07.515Z`. A new explicit batch was then queued at
+`04:47:58.398Z` and completed at `04:49:58.399Z`.
+
+Raw summary: `eval/live-cached-baseline-2026-11-08.json`.
+
+| Metric | Result |
+|---|---|
+| Completed scenarios | 30/30 |
+| Overall verdict matches (`verdictPassed`) | 27/30 |
+| Strict per-claim/evidence/coverage passes (`passed`) | 19/30 |
+| Missed conflicts / false conflicts / false clean passes | 0 / 0 / 0 |
+| Missing labelled material claims / invalid evidence errors | 0 / 0 |
+| Operational errors in scenario reports | 0 |
+| Pipeline-reported models | `claude-sonnet-5` |
+| Pipeline-reported LLM calls | 45 |
+| Suite processing duration | 118,779 ms |
+
+The three overall mismatches are S02 (Needs Review instead of No Conflict Found),
+S05 (Needs Review instead of Insufficient Evidence), and S11 (Insufficient Evidence
+instead of Needs Review). These are not missed confirmed conflicts or false clean
+passes, but remain incorrect against the labelled outcomes.
+
+The other eight strict failures are S01, S06, S09, S10, S12, S13, S27 and S28.
+Across all strict failures, field mismatches include conditions (8 claim comparisons),
+attribute (4), operator (3), service (3), and modality/material/value/unit (1 each).
+S02 and S10 contain an additional material claim relative to gold; S09 reports 3/3
+coverage instead of 2/3. Conditions and qualitative-label differences require review:
+these are strict annotation mismatches, not automatically established model mistakes.
+The summary does not preserve full extracted reports, so inspect actual claims before
+changing prompts or gold labels. Start with S02/S05/S11; do not tune only to raise a
+single overall pass count.
+
+**Local observation correction:** PowerShell decoded `requestedAt` to a UTC
+`System.DateTime`. Passing that object to `DateTimeOffset.Parse` lost its UTC kind
+and interpreted it in local UTC+8, making the batch filter reject an already complete
+report. Direct casting (`[DateTimeOffset]$result.requestedAt`) preserves the instant
+and milliseconds. The comparison was reproduced (Parse: false; direct cast: true)
+and the gitignored `.forge/read-eval.ps1` helper uses the corrected cast. The long
+local wait must not be presented as LLM processing latency; the measured suite
+duration is about two minutes. No additional live batch was requested after this run.
+
+These are one-run results on 30 curated fixtures, not production accuracy estimates.
+The call/model fields come from pipeline instrumentation and are not billing or
+complete provider-request accounting. Live Jira/Confluence retrieval remains a
+separate integration check.
+
 Golden expectations for S16–S30 should be reviewed by the team before merge. Engine
 changes are pushed only to `feat/engine-extraction-evaluation`; `main` was not changed.
