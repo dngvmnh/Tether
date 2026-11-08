@@ -95,3 +95,20 @@ Rules that keep everyone unblocked:
 - **Contracts first.** Anything in `src/contracts/` is a team decision: PR labelled `contract`, all three review, then `npm run fixtures`.
 - **Branches:** `feat/<area>-<thing>`, small PRs, CI must be green. `main` is always deployable.
 - **Manifest changes** (scopes, modules) change everyone's install: announce in chat, then everyone runs `forge deploy -e dev-<you>` and `forge install --upgrade`.
+
+## Teamwork Graph: register the persisted query (once per app)
+
+Raw `cypherQuery` is closed to new apps (error: "The cypherQuery field is restricted and not
+available to this client. Use a persisted query via customQuery instead."). Tether runs a
+persisted query instead. Until one is registered, Tether falls back to Jira remote links and
+says so in the report footer.
+
+1. Open https://teamwork-graph.atlassian.com/query-builder (signed in as an app contributor), **Saved queries**.
+2. Register for app `ari:cloud:ecosystem::app/07520459-db83-4ab5-b000-09c3c8095691` the Cypher in
+   `LINKED_PAGES_CYPHER` (`src/adapters/teamworkGraph.ts`), param `workItemId` of type `ARI`, required.
+   First try the query in the builder against PAY-1: the relationship direction is inferred from the docs.
+3. Copy the returned `queryKey` into Jira settings, Apps, **Tether settings**, "Teamwork Graph linked-pages query key", and save.
+4. Enable the graph scopes in `manifest.yml` (`read:graph:issue:jira`, `read:graph:page:confluence`), deploy, `forge install --upgrade`.
+   Missing scopes return empty results, not errors.
+
+Registered queries are immutable: to change the Cypher, register a new one and paste the new key.

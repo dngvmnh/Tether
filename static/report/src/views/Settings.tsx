@@ -95,6 +95,14 @@ export function Settings() {
         <input type="checkbox" checked={config.useTeamworkGraph} onChange={(e) => setConfig({ ...config, useTeamworkGraph: e.target.checked })} />
         Use Teamwork Graph to find decisions linked to an issue
       </label>
+      <label>
+        Teamwork Graph linked-pages query key (persisted query from TWG Labs)
+        <input
+          value={config.twgLinkedPagesQueryKey ?? ''}
+          placeholder="Not registered: Jira remote links are used"
+          onChange={(e) => setConfig({ ...config, twgLinkedPagesQueryKey: e.target.value.trim() || undefined })}
+        />
+      </label>
       <label className="check">
         <input
           type="checkbox"

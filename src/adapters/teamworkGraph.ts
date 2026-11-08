@@ -3,32 +3,37 @@
  * runs in the resolver / Rovo action (which have a user) and its result is passed to
  * the async worker inside the job payload.
  *
- * VERIFY FIRST (week 1): open https://<site>/gateway/api/graphql/twg (GraphiQL) on your
- * dev site and confirm the query shape and relationship names below. The docs list
- * "Content entity links entity" between JiraWorkItem and ConfluencePage but do not show
- * its Cypher name, so the query matches any relationship and filters by label.
+ * Raw `cypherQuery` is closed to new apps ("restricted and not available to this client").
+ * Apps run PERSISTED queries via `customQuery(queryKey, queryParams)`. Register the Cypher
+ * below once in TWG Labs (https://teamwork-graph.atlassian.com/query-builder, Saved queries;
+ * you must be a contributor on the app), then paste the returned queryKey into Tether
+ * settings (config.twgLinkedPagesQueryKey). Docs:
+ * https://developer.atlassian.com/platform/teamwork-graph/persisted-cypher-queries/
+ *
+ * Relationship: `content_entity_links_entity` (Confluence content -> entity it references).
+ * Direction is inferred from the docs, not confirmed; check in TWG Labs before registering.
  */
 import api, { route } from '@forge/api';
 import type { TicketSnapshot } from '../contracts';
 import type { GraphContext, GraphPort } from '../engine/ports';
 
-const LINKED_PAGES = `
-MATCH (issue:JiraWorkItem {ari: $issueAri})-[]-(page:ConfluencePage)
-RETURN page`;
+/** Register this text in TWG Labs. paramsSchema: [{ name: "workItemId", type: "ARI", required: true }] */
+export const LINKED_PAGES_CYPHER = `MATCH (item:JiraWorkItem {ari: $workItemId})<-[:content_entity_links_entity]-(page:ConfluencePage)
+RETURN collect(distinct page) AS pages`;
 
 const OWNER_TEAMS = `
 MATCH (user:AtlassianUser {ari: $userAri})-[:atlassian_user_is_in_atlassian_team]->(team:AtlassianTeam)
 RETURN team`;
 
-// TODO(integration): confirm field names in GraphiQL; the parsers below are shape-agnostic.
-const GQL = `query TetherCypher($cypherQuery: String!, $params: CypherRequestParams) {
-  cypherQuery(query: $cypherQuery, params: $params) {
-    edges { node { columns { key value { ... on CypherQueryResultListNode { nodes { id } } } } } }
+// TWG requires operation names shaped `[company]_[operation]` (company >= 3 chars, operation >= 4).
+const GQL = `query tether_linkedPages($queryKey: String!, $queryParams: CypherRequestParams) {
+  customQuery(queryKey: $queryKey, queryParams: $queryParams, first: 25) {
+    edges { node { columns { key value { __typename ... on CypherQueryResultListNode { nodes { id } } ... on CypherQueryResultNode { id } } } } }
   }
 }`;
 
-async function cypher(query: string, params: Record<string, unknown>): Promise<unknown> {
-  const res = await api.asUser().requestTeamworkGraph(GQL, { cypherQuery: query, params });
+async function persisted(queryKey: string, queryParams: Record<string, unknown>): Promise<unknown> {
+  const res = await api.asUser().requestTeamworkGraph(GQL, { queryKey, queryParams });
   const body = (await res.json()) as { data?: unknown; errors?: Array<{ message: string }> };
   // Missing scopes return EMPTY results, not errors: an empty answer is "unknown", not "none".
   if (body.errors?.length) throw new Error(`Teamwork Graph: ${body.errors.map((e) => e.message).join('; ')}`);
@@ -43,11 +48,14 @@ export function pageIdsFromGraph(data: unknown): string[] {
 }
 
 export class TeamworkGraphAdapter implements GraphPort {
-  constructor(private readonly cloudId: string) {}
+  constructor(
+    private readonly cloudId: string,
+    private readonly linkedPagesQueryKey: string,
+  ) {}
 
   async contextFor(ticket: TicketSnapshot): Promise<GraphContext> {
-    const issueAri = `ari:cloud:jira:${this.cloudId}:issue/${ticket.issueId}`;
-    const data = await cypher(LINKED_PAGES, { issueAri });
+    const workItemId = `ari:cloud:jira:${this.cloudId}:issue/${ticket.issueId}`;
+    const data = await persisted(this.linkedPagesQueryKey, { workItemId });
     const linkedPageIds = pageIdsFromGraph(data);
     return {
       linkedPageIds,

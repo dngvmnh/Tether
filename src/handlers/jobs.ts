@@ -26,11 +26,14 @@ export interface EvalJobBody {
   [k: string]: unknown;
 }
 
-export async function graphContextAsUser(cloudId: string, issueKey: string, siteUrl: string, useGraph: boolean) {
+export async function graphContextAsUser(cloudId: string, issueKey: string, siteUrl: string, useGraph: boolean, queryKey?: string) {
   const ticket = await new JiraTicketAdapter(siteUrl, 'user').getTicket(issueKey);
-  if (useGraph) {
+  if (useGraph && !queryKey) {
+    return { linkedPageIds: await linkedPagesFromRemoteLinks(issueKey), ownerTeams: {}, note: 'Teamwork Graph query not registered yet; used Jira remote links.' };
+  }
+  if (useGraph && queryKey) {
     try {
-      return await new TeamworkGraphAdapter(cloudId).contextFor(ticket);
+      return await new TeamworkGraphAdapter(cloudId, queryKey).contextFor(ticket);
     } catch (e) {
       const ids = await linkedPagesFromRemoteLinks(issueKey);
       return { linkedPageIds: ids, ownerTeams: {}, note: 'Teamwork Graph unavailable; used Jira remote links.', error: (e as Error).message };
@@ -45,7 +48,7 @@ export async function graphContextAsUser(cloudId: string, issueKey: string, site
  */
 export async function startAnalysisJob(args: { issueKey: string; accountId: string; cloudId: string; siteUrl: string }): Promise<Job> {
   const config = await store.getConfig();
-  const graph = await graphContextAsUser(args.cloudId, args.issueKey, args.siteUrl, config.useTeamworkGraph);
+  const graph = await graphContextAsUser(args.cloudId, args.issueKey, args.siteUrl, config.useTeamworkGraph, config.twgLinkedPagesQueryKey);
   const now = new Date().toISOString();
   const job: Job = { jobId: globalThis.crypto.randomUUID(), issueKey: args.issueKey, status: 'QUEUED', stage: 'QUEUED', createdAt: now, updatedAt: now };
   await store.putJob(job);
