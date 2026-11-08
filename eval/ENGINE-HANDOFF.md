@@ -44,7 +44,8 @@ node --import tsx eval/report-offline.ts
 npm run fixtures
 ```
 
-Verified locally on Windows / Node v24.18.0:
+Verified locally on Windows / Node v24.18.0; the full check also passed on Node
+v22.23.4 after incorporating the owner's Forge build fix `a1391dc`:
 
 | Check | Result |
 |---|---|
@@ -76,16 +77,33 @@ to exercise validation/repair and failure handling; they do **not** measure live
 accuracy or demonstrate resistance to prompt injection. Quotes present in the source
 also do not prove the model extracted their meaning correctly.
 
-The owner's registration commit `0668237` has now been merged into this branch. The
-existing app ID is `07520459-db83-4ab5-b000-09c3c8095691`, matching the Developer Console
-link supplied by Đạt. No replacement app was registered. Live Forge LLM evaluation is
-pending local CLI authentication and verification of contributor access. No site
-provisioning, seeding, deployment or installation has been attempted.
+The owner's registration commit `0668237` and build fix `a1391dc` have been merged into
+this branch. The existing app ID is `07520459-db83-4ab5-b000-09c3c8095691`, matching the
+Developer Console link supplied by Đạt. No replacement app was registered.
 
-When the integration owner provides the existing registered app and access, run the
-existing `docs/EVAL.md` procedure on `dev-dat` and record a real extraction/semantic
-baseline. That runner uses real LLM calls with fixture-backed ticket/decision ports;
-the Jira/Confluence integration must be checked separately on a real site.
+Forge CLI 15.0.0 is prepared locally with a separate Node v22.23.4 runtime. CLI login
+and contributor access were verified. The private development environment `dev-dat`
+was created and version 2.0.0 successfully deployed there. Its evaluation endpoint
+secret is encrypted in Forge; the local copy is under gitignored `.forge/`.
 
-Golden expectations for S16–S30 should be reviewed by the team before merge. Changes
-are local on the branch above; nothing has been pushed or deployed.
+**Current blocker:** installing `dev-dat` into Jira on the team's existing
+`one-atlas-dscw.atlassian.net` site failed with `Insufficient permissions to install
+app`. No successful `dev-dat` installation or live LLM evaluation has occurred. No
+new site was provisioned, no data was seeded and no shared or Bảo environment was
+modified. Contributor access to the Forge app and site administration are separate.
+
+The site admin can either grant the required installation access or install this
+existing environment from their checked-out Tether repository:
+
+```sh
+forge install -e dev-dat --site one-atlas-dscw.atlassian.net --product Jira
+forge install -e dev-dat --site one-atlas-dscw.atlassian.net --product Confluence
+```
+
+After installation, continue the existing `docs/EVAL.md` procedure on `dev-dat` and
+record a real extraction/semantic baseline. That runner uses real LLM calls with
+fixture-backed ticket/decision ports; Jira/Confluence integration must be checked
+separately on a real site.
+
+Golden expectations for S16–S30 should be reviewed by the team before merge. Engine
+changes are pushed only to `feat/engine-extraction-evaluation`; `main` was not changed.
