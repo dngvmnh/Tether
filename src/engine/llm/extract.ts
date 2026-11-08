@@ -25,7 +25,7 @@ const ExtractedConstraint = z.object({
   ),
   modality: Modality.describe('Explicit should/recommended is SHOULD even with a numeric limit. Genuinely optional behaviour is MAY. MUST is for binding requirements, including a maximum phrased may be attempted at most N without advisory wording. Numeric operators alone never imply MUST'),
   environments: z.array(z.string()).describe('Environments named in the text, e.g. ["production"]. Empty if none named'),
-  conditions: z.array(z.string()).describe('Applicability restrictions: preserve request types such as "payment creation requests"; use "each retry" for per-retry obligations. Empty if none'),
+  conditions: z.array(z.string()).describe('Only applicability restrictions grounded in THIS document or declared scope. Empty [] when unspecified. Never copy another document/example condition or a generic actor label. Preserve genuinely stated request subtypes and per-event scope'),
   quote: z.string().describe('The exact sentence or phrase from the text, copied verbatim'),
   location: z.string().describe('Where the quote is: "summary", "description", "acceptance criteria" or "decision"'),
   material: z.boolean().describe('true if this is a technical requirement an implementation must satisfy'),
@@ -36,7 +36,12 @@ type ExtractedConstraint = z.infer<typeof ExtractedConstraint>;
 const Extraction = z.object({ constraints: z.array(ExtractedConstraint) });
 
 /** Validate source grounding and operator payloads without changing the shared contract. */
-function extractionSchema(sources: Record<string, string>) {
+const scopeWords = (s: string) => s.toLowerCase().replace(/\brequests\b/g, 'request')
+  .replace(/\bpayments\b/g, 'payment').replace(/\b(?:create|creating)\b/g, 'creation')
+  .split(/[^a-z0-9]+/).filter((w) => w && !['a', 'an', 'the', 'each', 'every', 'for', 'when', 'if', 'on', 'in', 'to', 'of'].includes(w));
+
+function extractionSchema(sources: Record<string, string>, declaredConditions: string[] = []) {
+  const sourceWords = new Set(scopeWords([...Object.values(sources), ...declaredConditions].join(' ')));
   return Extraction.superRefine(({ constraints }, ctx) => {
     constraints.forEach((c, i) => {
       const issue = (field: string, message: string) => ctx.addIssue({ code: 'custom', path: ['constraints', i, field], message });
@@ -46,6 +51,17 @@ function extractionSchema(sources: Record<string, string>) {
       }
       if (!c.subject.trim() || !c.service.trim() || !c.attribute.trim() || !c.attributeLabel.trim()) {
         issue('attribute', 'Subject, service, attribute and attributeLabel must be non-empty.');
+      }
+      for (const condition of c.conditions.filter((s) => /\brequests?\b/i.test(s))) {
+        const words = scopeWords(condition);
+        if (words.some((w) => !sourceWords.has(w))) {
+          issue('conditions', 'This request-type restriction is not grounded in this document or declared scope. Do not copy conditions from the vocabulary or another decision. If no request subtype is stated, use [] rather than a generic actor/request label.');
+        }
+        const actorWords = scopeWords(c.service.replace(/[-_]/g, ' ')).filter((w) => w !== 'service');
+        if (actorWords.length && words.length === actorWords.length + 1
+          && words.includes('request') && actorWords.every((w) => words.includes(w))) {
+          issue('conditions', 'A generic actor label such as payment requests does not narrow the payment service scope. Keep only an explicitly stated request subtype, otherwise use [].');
+        }
       }
       if (['EQ', 'LTE', 'LT', 'GTE', 'GT', 'RANGE'].includes(c.operator) && c.value === undefined) {
         issue('value', 'A numeric operator requires a numeric value.');
@@ -163,7 +179,7 @@ export async function extractDecisionConstraints(llm: LlmPort, d: RawDecision, v
     user: `${vocabText(vocab)}\n\nDecision ${d.decisionId} (${d.status}), service ${d.scope.service}, environments ${d.scope.environments.join(', ') || 'all'}.\nDocument data:\n${JSON.stringify({ decision: d.statement, scope: d.scope })}`,
     toolName: 'record_constraints',
     toolDescription: 'Record every atomic technical constraint the decision imposes.',
-    schema: extractionSchema({ decision: d.statement }),
+    schema: extractionSchema({ decision: d.statement }, d.scope.conditions),
     maxTokens: 2000,
   });
   const source = { kind: 'CONFLUENCE_PAGE' as const, id: d.source.id, title: d.title, url: d.source.url, version: d.source.version };

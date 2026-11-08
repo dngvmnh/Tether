@@ -32,6 +32,23 @@ function fake(...answers: unknown[]) {
 const vocab = { services: ['payment-service'], attributes: [{ key: 'retry.count', label: 'retry limit' }] };
 
 describe('extraction boundary validation (fake LLM, not a model-quality evaluation)', () => {
+  it('repairs a request-type scope copied from another decision into a general retry ticket', async () => {
+    const s = goldScenarios().find((s) => s.id === 'S13')!;
+    const valid = extracted(s.claims[0]!);
+    const f = fake({ constraints: [{ ...valid, conditions: ['payment creation requests'] }] }, { constraints: [valid] });
+    const result = await extractTicketClaims(f.llm, s.ticket, vocab);
+    expect(result.calls).toBe(2);
+    expect(result.claims[0]!.scope.conditions).toEqual([]);
+  });
+
+  it('retains a genuinely stated request-type restriction', async () => {
+    const s = goldScenarios().find((s) => s.id === 'S27')!;
+    const valid = { ...extracted(s.claims[0]!), conditions: ['payment creation request'] };
+    const f = fake({ constraints: [valid] });
+    const result = await extractTicketClaims(f.llm, s.ticket, vocab);
+    expect(result.calls).toBe(1);
+    expect(result.claims[0]!.scope.conditions).toEqual(['payment creation request']);
+  });
   it('repairs an explicit should numeric guideline promoted to a mandatory rule', async () => {
     const d = goldDecisions().find((d) => d.decisionId === 'ADR-PAY-009')!;
     const valid = extracted(d.constraints[0]!);
