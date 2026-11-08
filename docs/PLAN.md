@@ -52,6 +52,7 @@ scope chips and decision history.
 |---|---|
 | App registered, deployed to `development` (2.4.0, Runs on Atlassian eligible), installed on `one-atlas-dscw` (Jira + Confluence) | `manifest.yml` |
 | Shared site seeded: project `PAY` (PAY-1..15 = S01..S15), space `ENG` (9 ADRs labelled `tether-decision`) | `npm run seed` |
+| Tether Rovo agent answers PAY-1 in Rovo Chat (check action) | `src/handlers/rovo.ts` |
 | In-Forge eval runs from Tether settings → Run eval (no web trigger, keeps Runs on Atlassian) | `src/handlers/evalSuite.ts` |
 | Teamwork Graph moved to persisted queries (`customQuery`); falls back to Jira remote links until a query key is set | `src/adapters/teamworkGraph.ts` |
 
@@ -81,7 +82,7 @@ Rules that remove waiting:
 - Needs nothing from others: `npm run test:watch`, `npm run eval:offline`, your own `dev-dat`.
 
 ### Đăng: Forge integration (`src/adapters/`, `src/handlers/`, `manifest.yml`)
-1. Rovo: Tether agent answers "Does PAY-1 conflict with any decision?" in Rovo Chat on the shared site (agent + skill + actions).
+1. ~~Rovo: Tether agent answers "Does PAY-1 conflict with any decision?" in Rovo Chat~~ **Done 8 Nov**: CONFLICT vs ADR-PAY-001 with both quotes and the decision link (Rovo → View all agents → Tether). Remaining: try "find decisions about retries" (find action).
 2. MCP: admin enables the app's MCP server, connect from Claude Code (`https://mcp.atlassian.com/forge/<appId>`), call check + find.
 3. Follow-up issue: preview → confirm → created as the user, linked to the issue and decision page.
 4. Drift: edit ADR-PAY-001 → PAY-1 shows the stale banner (trigger end to end).
