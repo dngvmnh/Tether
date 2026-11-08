@@ -1,8 +1,9 @@
 # Independent six-case audit — 8 November 2026
 
-**Current status:** Đăng's four clarifications have now been received and applied in
-the implementation/reference data. The pending-review notes below describe the earlier
-diagnostic stage; the adopted decisions are recorded at the end of this file.
+**Current status:** Đăng's four clarifications are implemented and verified. Final
+`dev-dat` 2.9.0 real-model run: **30/30 verdicts and 30/30 strict passes**, no missed
+conflicts/false conflicts/false clean passes. The independent v1 engine/evaluation
+handoff is ready. Pending-review notes below describe the earlier diagnostic stage.
 
 Scope: S01, S09, S12, S13, S27, S28 only. S02 remains in the earlier review record.
 Before evidence: `remaining-six-before-2026-11-08.json`, deployed version 2.5.0 with
@@ -93,3 +94,56 @@ threshold safety, approved operator alternative, and request-type scope separati
 The annotation revision has changed intentionally. A new real-model strict score must
 be reported with that revision, not described as a directly comparable accuracy gain
 over the earlier incomplete labels.
+
+## Final live verification and repairs
+
+The first run with the corrected reference labels (`team-approved-initial-2026-11-08.json`,
+2.7.0) was retained with all its failures: 27/30 verdict/strict matches, one false
+conflict from an explicit SHOULD recommendation extracted as MUST, an invalid S11
+extraction, and an invented S13 request-type condition. It was not declared a pass.
+
+- Explicit should/recommended wording now takes priority over the presence of a numeric
+  bound. Validation requests repair if an advisory source is promoted to MUST.
+- The engine passes existing operator/unit hints with the vocabulary, without treating
+  those hints as values to copy. This distinguishes qualitative strategy properties
+  from numeric delays. Validation failure messages preserve the repair issues.
+- A bounded three-case run (`three-case-diagnostic-2026-11-08.json`, 2.8.0) confirmed
+  S11/S21 but exposed S13 copying `payment creation requests` from elsewhere, absent
+  from its source. Request-type conditions now need lexical grounding in this document
+  or declared decision scope, with limited grammatical normalization. Generic actor
+  labels are not treated as extra request-type restrictions. A positive regression
+  retains genuine creation-request scope. This is not a general semantic proof for
+  arbitrary free-text conditions.
+
+Final evidence: `team-approved-final-2026-11-08.json`, code **be2e9f9**, deployment
+**2.9.0**, annotation revision `dang-four-clarifications-2026-11-08`.
+
+| Final metric | Result |
+|---|---:|
+| Completed scenarios | 30/30 |
+| Verdict matches | 30/30 |
+| Strict passes | 30/30 |
+| Missed conflicts / false conflicts / false clean passes | 0 / 0 / 0 |
+| Model recorded by the pipeline | claude-sonnet-5 |
+| Suite processing duration | 115,942 ms |
+| Software tests | 126/126 |
+
+Verified details: S01/S02 both report 1 of 2 material requirements checked. S02 keeps
+the merchant qualifier and reports the missing configuration decision honestly. S12
+extracts EQ 50,000 USD on the configured threshold and remains inapplicable to the
+production-only decision. S13 has MUST and no invented creation-request condition.
+The cache TTL recommendation retains SHOULD.
+
+The temporary scenario filter was removed. `dev-dat` currently runs all 30 scenarios,
+retaining diagnostics for S01/S02/S11/S12/S13/S21. Diagnostics stay under a 160 KB
+budget. No further live batch was submitted after the passing full run.
+
+This completes the independent v1 extraction/evaluation iteration and is ready for
+team integration. The main branch and Đăng/Bảo environments were not deployed or
+modified. API schemas were unchanged; mock data and the README coverage example were
+updated as consequences of the approved reference corrections.
+
+This is a single run on curated labelled fixtures, not production accuracy or proof
+that every possible real-world requirement is labelled/extracted. Live Jira/Confluence
+retrieval, permission filtering, UI, persistent extraction-cache lifecycle, drift and
+Rovo/MCP flows remain part of the coordinated integration check with Đăng and Bảo.

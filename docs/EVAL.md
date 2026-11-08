@@ -54,4 +54,4 @@ real-world precision or recall.
 
 | Date | Model | Passed | Missed conflicts | False conflicts | False "no conflict" | Notes |
 |---|---|---|---|---|---|---|
-| | | | | | | |
+| 2026-11-08 (UTC+8) | claude-sonnet-5 | 30/30 strict and overall | 0 | 0 | 0 | dev-dat 2.9.0; team-approved labels; 115,942 ms; see eval/team-approved-final-2026-11-08.json |

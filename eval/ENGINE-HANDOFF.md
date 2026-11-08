@@ -1,5 +1,17 @@
 # Engine and evaluation handoff — 8 November 2026
 
+**Current handoff (supersedes the historical baselines below):** Đăng's four
+clarifications have been implemented. Version **2.9.0**, code `be2e9f9`, is deployed
+only to `dev-dat`. The final real `claude-sonnet-5` run completed **30/30 verdict
+matches and 30/30 strict passes**, with zero missed conflicts, false conflicts or
+false clean passes, in 115,942 ms. Software validation passed **126 tests**, 30/30
+offline cases, type checks, manifest and UI build. S02 is no longer waiting for review.
+
+Latest evidence: `eval/team-approved-final-2026-11-08.json`.
+Decisions, fixes, failed intermediate runs and remaining integration limits:
+`eval/REMAINING-SIX-AUDIT.md`. Earlier sections record earlier annotation/code versions;
+their scores are not directly comparable with the corrected reference labels.
+
 Owner: Đạt. Local branch: `feat/engine-extraction-evaluation`.
 Base: `e8c97cc25273259a0f506fa3958040ad9539f787`.
 
@@ -54,7 +66,7 @@ v22.23.4 after incorporating the owner's Forge build fix `a1391dc`:
 | Check | Result |
 |---|---|
 | TypeScript (backend and UI) | Pass |
-| Unit/functional tests | 111/111 (baseline: 42/42) |
+| Unit/functional tests | 126/126 (baseline: 42/42) |
 | Offline golden scenarios | 30/30 (baseline: 15/15) |
 | Offline missed conflicts / false conflicts / false clean passes | 0 / 0 / 0 |
 | Offline evidence quote errors | 0 |

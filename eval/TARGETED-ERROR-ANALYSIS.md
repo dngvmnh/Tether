@@ -1,5 +1,11 @@
 # Targeted extraction analysis — S02, S05, S11
 
+**Historical record:** the review questions in this file were subsequently answered
+by Đăng. The corrected labels and implementation now have a 30/30 strict real-model
+run on `dev-dat` 2.9.0. Read `REMAINING-SIX-AUDIT.md` and
+`team-approved-final-2026-11-08.json` for the current handoff; the earlier results and
+pending annotations below describe the earlier phase, not current blockers.
+
 Scope: Đạt's engine/evaluation work. Original golden tickets and labels are unchanged.
 Evidence before changes: `targeted-before-2026-11-08.json` (Forge 2.2.0, real
 `claude-sonnet-5`, three scenarios, 47,677 ms). This is a fresh stochastic run;
