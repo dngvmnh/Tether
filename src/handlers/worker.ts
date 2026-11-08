@@ -1,5 +1,5 @@
 /** Queue consumer (900 s limit): runs analyses and eval suites. */
-import type { AsyncEvent } from '@forge/events';
+import { Queue, type AsyncEvent } from '@forge/events';
 import type { JobProgressStage } from '../contracts';
 import { ConfluenceDecisionAdapter } from '../adapters/confluence';
 import { ForgeLlmAdapter } from '../adapters/forgeLlm';
@@ -47,7 +47,24 @@ async function runAnalysis(body: AnalysisJobBody) {
 export async function handler(event: AsyncEvent) {
   const body = event.body as unknown as AnalysisJobBody | EvalJobBody;
   if (body.kind === 'eval') {
-    await store.putEval(await runEvalSuite());
+    // An eval batch is an explicit experiment, not a retryable user analysis.
+    // In particular, never re-run all LLM calls after a 900-second timeout.
+    if (event.retryContext) {
+      await new Queue({ key: event.queueName }).getJob(event.jobId).cancel();
+      console.warn('[tether] cancelled eval retry', event.jobId);
+      return;
+    }
+    try {
+      await store.putEval({ ...await runEvalSuite(), requestedAt: body.requestedAt });
+    } catch (e) {
+      console.error('[tether] eval worker failed', e);
+      await new Queue({ key: event.queueName }).getJob(event.jobId).cancel();
+      await store.putEval({
+        ranAt: new Date().toISOString(), requestedAt: body.requestedAt,
+        complete: false, stoppedReason: 'EVAL_WORKER_FAILURE',
+        message: 'Evaluation failed; inspect worker logs before starting another run.',
+      });
+    }
     return;
   }
   try {
