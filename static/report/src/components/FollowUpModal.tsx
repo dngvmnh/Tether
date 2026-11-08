@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import type { AnalysisReport, Finding, FollowUpDraft } from '../../../../src/contracts';
+import type { AnalysisReport, Finding, FollowUpDraft, StaleInfo } from '../../../../src/contracts';
 import { ApiError, call, openUrl } from '../api/client';
+import { STALE_COPY } from '../copy';
 
 const FOCUSABLE = 'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href]';
 
@@ -10,7 +11,7 @@ const failureText = (e: ApiError) => (e.retryable ? `${e.message} You can try ag
  * Preview -> user edits -> explicit confirm. Tether never creates issues silently:
  * the issue is only created by clicking "Create issue" (Enter does not submit).
  */
-export function FollowUpModal({ report, finding, onClose }: { report: AnalysisReport; finding: Finding; onClose: () => void }) {
+export function FollowUpModal({ report, finding, stale = null, onClose }: { report: AnalysisReport; finding: Finding; stale?: StaleInfo | null; onClose: () => void }) {
   const [draft, setDraft] = useState<FollowUpDraft | null>(null);
   const [loadError, setLoadError] = useState<ApiError | null>(null);
   const [createError, setCreateError] = useState<ApiError | null>(null);
@@ -129,6 +130,16 @@ export function FollowUpModal({ report, finding, onClose }: { report: AnalysisRe
             <p id={introId} className="muted modal__intro">
               Review the draft below. Nothing is created until you click “Create issue”.
             </p>
+            {stale && (
+              <div className="banner banner--stale" role="note">
+                <div className="banner__text">
+                  <strong className="banner__headline">This finding may be out of date.</strong>
+                  <div className="banner__sub">
+                    {STALE_COPY[stale.reason].title}. Close this and re-check the ticket first, or create the issue only if you have verified the conflict still applies.
+                  </div>
+                </div>
+              </div>
+            )}
             {loadError && (
               <div className="banner banner--FAILED" role="alert">
                 <strong>Could not prepare the draft.</strong> {failureText(loadError)}

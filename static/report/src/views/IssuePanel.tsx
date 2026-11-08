@@ -143,8 +143,11 @@ function PanelBody({ issueKey, announce }: { issueKey: string; announce: (messag
 
   const { report, stale } = state;
   const findings = [...report.findings].sort((a, b) => OUTCOME_RANK[a.outcome] - OUTCOME_RANK[b.outcome]);
+  // While the dialog is open the page behind it is inert: hidden from assistive tech and unreachable by Tab or click.
+  const behindModal = followUp ? { inert: '', 'aria-hidden': true } : {};
   return (
-    <div className="panel">
+    <>
+    <div className="panel" {...behindModal}>
       {stale && (
         <div className="banner banner--stale" role="status">
           <div className="banner__text">
@@ -212,12 +215,16 @@ function PanelBody({ issueKey, announce }: { issueKey: string; announce: (messag
           </>
         )}
         {report.context.graph.note ? ` · ${report.context.graph.note}` : ''} · {new Date(report.generatedAt).toLocaleString()}
-        <br />A lack of detected conflict is not proof of complete consistency.{' '}
+        <br />
+        {report.status === 'FAILED'
+          ? 'The check did not complete, so this says nothing about whether the ticket is consistent.'
+          : 'A lack of detected conflict is not proof of complete consistency.'}{' '}
         <button type="button" className="link" onClick={run}>
           Re-run check
         </button>
       </footer>
-      {followUp && <FollowUpModal report={report} finding={followUp} onClose={() => setFollowUp(null)} />}
     </div>
+    {followUp && <FollowUpModal report={report} finding={followUp} stale={stale} onClose={() => setFollowUp(null)} />}
+    </>
   );
 }

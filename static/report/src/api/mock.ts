@@ -37,7 +37,7 @@ let config: TetherConfig = {
   autoRecheckOnDecisionChange: false,
 };
 
-const failedOnce = { preview: 0, create: false, load: 0, save: false };
+const failedOnce = { preview: 0, create: false, load: 0, save: false, start: false };
 const settingsMode = () => new URLSearchParams(window.location.search).get('settings');
 const followUpMode = () => new URLSearchParams(window.location.search).get('followup');
 
@@ -52,6 +52,11 @@ export async function mockInvoke<N extends ResolverName>(name: N, input: Resolve
     case 'startAnalysis': {
       if (currentScenario() === 'E_API') {
         return { ok: false, error: { code: 'HTTP_403', message: 'You do not have permission to view this issue.', retryable: false } } as Out;
+      }
+      // ?analysis=fail-once makes the first start fail with a retryable error (panel retry-then-recover).
+      if (new URLSearchParams(window.location.search).get('analysis') === 'fail-once' && !failedOnce.start) {
+        failedOnce.start = true;
+        return { ok: false, error: { code: 'HTTP_503', message: 'Jira is temporarily unavailable.', retryable: true } } as Out;
       }
       const jobId = `job-${Date.now()}`;
       jobs.set(jobId, { started: Date.now(), issueKey: String(i.issueKey), scenario: currentScenario() });
