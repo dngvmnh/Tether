@@ -18,8 +18,12 @@ import type { TicketSnapshot } from '../contracts';
 import type { GraphContext, GraphPort } from '../engine/ports';
 
 /** Register this text in TWG Labs. paramsSchema: [{ name: "workItemId", type: "ARI", required: true }] */
-export const LINKED_PAGES_CYPHER = `MATCH (item:JiraWorkItem {ari: $workItemId})<-[:content_entity_links_entity]-(page:ConfluencePage)
-RETURN collect(distinct page) AS pages`;
+// Verified in TWG Labs on a real site: `content_entity_links_entity` between a work item and a
+// ConfluencePage errors in both directions, but the work item's web links ARE indexed as
+// JiraWorkItemRemoteLink objects carrying the page URL (webUrl ...viewpage.action?pageId=N).
+// Registered as "tether-linked-remote-links" (queryKey in docs/TEAM-SETUP.md).
+export const LINKED_PAGES_CYPHER = `MATCH (item:JiraWorkItem {ari: $workItemId})-[:jira_work_item_links_jira_work_item_remote_link]->(link:JiraWorkItemRemoteLink)
+RETURN link`;
 
 const OWNER_TEAMS = `
 MATCH (user:AtlassianUser {ari: $userAri})-[:atlassian_user_is_in_atlassian_team]->(team:AtlassianTeam)
@@ -28,7 +32,7 @@ RETURN team`;
 // TWG requires operation names shaped `[company]_[operation]` (company >= 3 chars, operation >= 4).
 const GQL = `query tether_linkedPages($queryKey: String!, $queryParams: CypherRequestParams) {
   customQuery(queryKey: $queryKey, queryParams: $queryParams, first: 25) {
-    edges { node { columns { key value { __typename ... on CypherQueryResultListNode { nodes { id } } ... on CypherQueryResultNode { id } } } } }
+    edges { node { columns { key value { __typename ... on CypherQueryResultListNode { nodes { id } } ... on CypherQueryResultNode { id data { __typename ... on JiraWorkItemRemoteLink { webUrl } } } } } } }
   }
 }`;
 
@@ -43,7 +47,10 @@ async function persisted(queryKey: string, queryParams: Record<string, unknown>)
 /** Shape-agnostic: pulls every Confluence page ARI out of a GraphQL response. */
 export function pageIdsFromGraph(data: unknown): string[] {
   const ids = new Set<string>();
-  for (const m of JSON.stringify(data ?? null).matchAll(/ari:cloud:confluence:[^:"]+:page\/(\d+)/g)) ids.add(m[1]!);
+  const text = JSON.stringify(data ?? null);
+  for (const m of text.matchAll(/ari:cloud:confluence:[^:"]+:page\/(\d+)/g)) ids.add(m[1]!);
+  // Remote links carry the page URL: ...viewpage.action?pageId=N or .../pages/N/Title
+  for (const m of text.matchAll(/"webUrl":"[^"]*?(?:[?&]pageId=|\/pages\/)(\d+)/g)) ids.add(m[1]!);
   return [...ids];
 }
 

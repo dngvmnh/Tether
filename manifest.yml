@@ -173,8 +173,8 @@ permissions:
     # Teamwork Graph (Preview). Week-1 task for integration: uncomment, deploy to YOUR
     # environment, confirm deploy + queries work, then commit. Missing scopes make graph
     # queries return EMPTY (not errors); Tether reports that as "graph unavailable".
-    # - read:graph:issue:jira
+    - read:graph:issue:jira
     # - read:graph:issue-remote-link:jira
-    # - read:graph:page:confluence
+    - read:graph:page:confluence
     # - read:graph:user:atlassian
     # - read:graph:team:atlassian

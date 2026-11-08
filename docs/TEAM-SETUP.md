@@ -111,4 +111,12 @@ says so in the report footer.
 4. Enable the graph scopes in `manifest.yml` (`read:graph:issue:jira`, `read:graph:page:confluence`), deploy, `forge install --upgrade`.
    Missing scopes return empty results, not errors.
 
+**Registered key (Bảo, 8 Nov):** `66b8902d-a241-4a00-86ad-5c5f8a461be4`, query name
+`tether-linked-remote-links`, app `07520459-…`. Finding from TWG Labs on `one-atlas-zthc`:
+`content_entity_links_entity` between a work item and a `ConfluencePage` errors in both
+directions, but the issue's web links are indexed as `JiraWorkItemRemoteLink` (via
+`jira_work_item_links_jira_work_item_remote_link`) carrying `webUrl` with the page id, which the
+adapter parses. Only issues with a web link to the ADR are matched (PAY-1 qualifies). Paste the same
+key into the shared site's Tether settings.
+
 Registered queries are immutable: to change the Cypher, register a new one and paste the new key.
