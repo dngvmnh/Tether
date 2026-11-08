@@ -3,7 +3,7 @@
 # Changing scopes, `llm`, or adding Confluence/Jira products = major version: reinstall with
 # `forge install --upgrade` on your dev site.
 app:
-  id: ari:cloud:ecosystem::app/00000000-0000-0000-0000-000000000000
+  id: ari:cloud:ecosystem::app/07520459-db83-4ab5-b000-09c3c8095691
   runtime:
     name: nodejs22.x
     memoryMB: 512
@@ -57,35 +57,40 @@ modules:
       function: action-check
       actionVerb: GET
       description: >
-        Checks if a Jira issue's technical requirements contradict current engineering
-        decisions in Confluence. Returns CONFLICT, NEEDS_REVIEW, NO_CONFLICT_FOUND or
-        INSUFFICIENT_EVIDENCE with coverage and verbatim, linked evidence.
+        Checks if a Jira issue's technical requirements contradict current
+        engineering decisions in Confluence. Returns CONFLICT, NEEDS_REVIEW,
+        NO_CONFLICT_FOUND or INSUFFICIENT_EVIDENCE with coverage and verbatim,
+        linked evidence.
       inputs:
         issueKey:
           title: Jira issue key
           type: string
           required: false
-          description: The Jira issue key, for example PAY-142. Optional when used from an issue.
+          description: The Jira issue key, for example PAY-142. Optional when used from an
+            issue.
     - key: find-decisions
       name: Find engineering decisions
       function: action-find
       actionVerb: GET
       description: >
-        Lists engineering decision records (ADRs) from the configured Confluence spaces with
-        status, service, scope, supersession and links. Answers "what did we decide about X?".
+        Lists engineering decision records (ADRs) from the configured Confluence
+        spaces with status, service, scope, supersession and links. Answers
+        "what did we decide about X?".
       inputs:
         query:
           title: Search text
           type: string
           required: false
-          description: Optional text to filter decisions, for example "retry" or "payment-service".
+          description: Optional text to filter decisions, for example "retry" or
+            "payment-service".
     - key: create-follow-up-issue
       name: Create clarification issue
       function: action-follow-up
       actionVerb: CREATE
       description: >
-        Creates a Jira clarification issue for a conflict found by check-issue-consistency,
-        linked to the checked issue and the decision pages. Never edits either.
+        Creates a Jira clarification issue for a conflict found by
+        check-issue-consistency, linked to the checked issue and the decision
+        pages. Never edits either.
       inputs:
         issueKey:
           title: Jira issue key
@@ -108,7 +113,8 @@ modules:
   rovo:agent:
     - key: tether-agent
       name: Tether
-      description: Checks Jira work against your team's engineering decisions in Confluence, with evidence.
+      description: Checks Jira work against your team's engineering decisions in
+        Confluence, with evidence.
       icon: resource:report-ui;tether.svg
       prompt: resource:agent-prompts;tether-agent.md
       conversationStarters:
