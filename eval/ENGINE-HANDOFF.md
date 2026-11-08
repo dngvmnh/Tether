@@ -76,10 +76,11 @@ to exercise validation/repair and failure handling; they do **not** measure live
 accuracy or demonstrate resistance to prompt injection. Quotes present in the source
 also do not prove the model extracted their meaning correctly.
 
-Live Forge LLM evaluation is intentionally deferred at Đạt's request. The checked-out
-manifest still contains a placeholder app ID; app registration/contributor access and
-authentication have not been verified. No app/site registration, provisioning, seeding,
-deployment or installation was attempted.
+The owner's registration commit `0668237` has now been merged into this branch. The
+existing app ID is `07520459-db83-4ab5-b000-09c3c8095691`, matching the Developer Console
+link supplied by Đạt. No replacement app was registered. Live Forge LLM evaluation is
+pending local CLI authentication and verification of contributor access. No site
+provisioning, seeding, deployment or installation has been attempted.
 
 When the integration owner provides the existing registered app and access, run the
 existing `docs/EVAL.md` procedure on `dev-dat` and record a real extraction/semantic
