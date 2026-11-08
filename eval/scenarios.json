@@ -201,6 +201,547 @@
       },
       "claims": [],
       "expected": { "overall": "INSUFFICIENT_EVIDENCE", "claims": {} }
+    },
+    {
+      "id": "S16",
+      "title": "Equivalent timeout units are consistent",
+      "ticket": {
+        "summary": "Equivalent timeout units are consistent",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "Set the payment gateway timeout to 10000 ms."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "gateway.timeout",
+          "label": "gateway timeout",
+          "op": "EQ",
+          "value": 10000,
+          "unit": "ms",
+          "modality": "MUST",
+          "quote": "Set the payment gateway timeout to 10000 ms.",
+          "location": "acceptance criteria",
+          "material": true
+        }
+      ],
+      "expected": {
+        "overall": "NO_CONFLICT_FOUND",
+        "claims": {
+          "C1": [
+            "NO_CONFLICT_FOUND",
+            "CONSISTENT"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S17",
+      "title": "Strict lower bound cannot meet the timeout limit",
+      "ticket": {
+        "summary": "Strict lower bound cannot meet the timeout limit",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "The payment gateway timeout must exceed 10 seconds."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "gateway.timeout",
+          "label": "gateway timeout",
+          "op": "GT",
+          "value": 10,
+          "unit": "s",
+          "modality": "MUST",
+          "quote": "The payment gateway timeout must exceed 10 seconds.",
+          "location": "acceptance criteria",
+          "material": true
+        }
+      ],
+      "expected": {
+        "overall": "CONFLICT",
+        "claims": {
+          "C1": [
+            "CONFLICT",
+            "VALUE_CONTRADICTION"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S18",
+      "title": "Strict upper bound stays within the timeout limit",
+      "ticket": {
+        "summary": "Strict upper bound stays within the timeout limit",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "The payment gateway timeout must be less than 10 seconds."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "gateway.timeout",
+          "label": "gateway timeout",
+          "op": "LT",
+          "value": 10,
+          "unit": "s",
+          "modality": "MUST",
+          "quote": "The payment gateway timeout must be less than 10 seconds.",
+          "location": "acceptance criteria",
+          "material": true
+        }
+      ],
+      "expected": {
+        "overall": "NO_CONFLICT_FOUND",
+        "claims": {
+          "C1": [
+            "NO_CONFLICT_FOUND",
+            "CONSISTENT"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S19",
+      "title": "An overlapping timeout range requires the tighter limit",
+      "ticket": {
+        "summary": "An overlapping timeout range requires the tighter limit",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "Set the payment gateway timeout between 8 and 12 seconds."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "gateway.timeout",
+          "label": "gateway timeout",
+          "op": "RANGE",
+          "value": 8,
+          "unit": "s",
+          "modality": "MUST",
+          "quote": "Set the payment gateway timeout between 8 and 12 seconds.",
+          "location": "acceptance criteria",
+          "material": true,
+          "valueMax": 12
+        }
+      ],
+      "expected": {
+        "overall": "NO_CONFLICT_FOUND",
+        "claims": {
+          "C1": [
+            "NO_CONFLICT_FOUND",
+            "CONSISTENT_IF_TIGHTER"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S20",
+      "title": "A disjoint timeout range conflicts",
+      "ticket": {
+        "summary": "A disjoint timeout range conflicts",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "Set the payment gateway timeout between 11 and 15 seconds."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "gateway.timeout",
+          "label": "gateway timeout",
+          "op": "RANGE",
+          "value": 11,
+          "unit": "s",
+          "modality": "MUST",
+          "quote": "Set the payment gateway timeout between 11 and 15 seconds.",
+          "location": "acceptance criteria",
+          "material": true,
+          "valueMax": 15
+        }
+      ],
+      "expected": {
+        "overall": "CONFLICT",
+        "claims": {
+          "C1": [
+            "CONFLICT",
+            "VALUE_CONTRADICTION"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S21",
+      "title": "An accepted recommendation is not a binding constraint",
+      "ticket": {
+        "summary": "An accepted recommendation is not a binding constraint",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "Payment cache entries must expire after exactly 120 seconds."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "cache.ttl",
+          "label": "cache TTL",
+          "op": "EQ",
+          "value": 120,
+          "unit": "s",
+          "modality": "MUST",
+          "quote": "Payment cache entries must expire after exactly 120 seconds.",
+          "location": "acceptance criteria",
+          "material": true
+        }
+      ],
+      "expected": {
+        "overall": "NEEDS_REVIEW",
+        "claims": {
+          "C1": [
+            "NEEDS_REVIEW",
+            "GUIDELINE_ONLY"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S22",
+      "title": "Matching prohibitions are consistent",
+      "ticket": {
+        "summary": "Matching prohibitions are consistent",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "The payment service must never store full card numbers."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "card.pan_storage",
+          "label": "card pan_storage",
+          "op": "PROHIBITED",
+          "modality": "MUST",
+          "quote": "The payment service must never store full card numbers.",
+          "location": "acceptance criteria",
+          "material": true
+        }
+      ],
+      "expected": {
+        "overall": "NO_CONFLICT_FOUND",
+        "claims": {
+          "C1": [
+            "NO_CONFLICT_FOUND",
+            "CONSISTENT"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S23",
+      "title": "A ticket recommendation is not a mandatory contradiction",
+      "ticket": {
+        "summary": "A ticket recommendation is not a mandatory contradiction",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "The payment service should retry failed transactions exactly 5 times."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "retry.count",
+          "label": "retry limit",
+          "op": "EQ",
+          "value": 5,
+          "unit": "retries",
+          "counting": "UNSPECIFIED",
+          "conditions": [
+            "failed transactions"
+          ],
+          "modality": "SHOULD",
+          "quote": "The payment service should retry failed transactions exactly 5 times.",
+          "location": "acceptance criteria",
+          "material": true
+        }
+      ],
+      "expected": {
+        "overall": "NEEDS_REVIEW",
+        "claims": {
+          "C1": [
+            "NEEDS_REVIEW",
+            "GUIDELINE_ONLY"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S24",
+      "title": "Decision covers every named environment",
+      "ticket": {
+        "summary": "Decision covers every named environment",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "In production and staging, retry failed transactions at most 2 times."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "retry.count",
+          "label": "retry limit",
+          "op": "LTE",
+          "value": 2,
+          "unit": "retries",
+          "counting": "UNSPECIFIED",
+          "conditions": [
+            "failed transactions"
+          ],
+          "modality": "MUST",
+          "quote": "In production and staging, retry failed transactions at most 2 times.",
+          "location": "acceptance criteria",
+          "material": true,
+          "environments": [
+            "production",
+            "staging"
+          ]
+        }
+      ],
+      "expected": {
+        "overall": "NO_CONFLICT_FOUND",
+        "claims": {
+          "C1": [
+            "NO_CONFLICT_FOUND",
+            "CONSISTENT"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S25",
+      "title": "A partial environment match needs review",
+      "ticket": {
+        "summary": "A partial environment match needs review",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "In production and development, retry failed transactions at most 2 times."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "retry.count",
+          "label": "retry limit",
+          "op": "LTE",
+          "value": 2,
+          "unit": "retries",
+          "counting": "UNSPECIFIED",
+          "conditions": [
+            "failed transactions"
+          ],
+          "modality": "MUST",
+          "quote": "In production and development, retry failed transactions at most 2 times.",
+          "location": "acceptance criteria",
+          "material": true,
+          "environments": [
+            "production",
+            "development"
+          ]
+        }
+      ],
+      "expected": {
+        "overall": "NEEDS_REVIEW",
+        "claims": {
+          "C1": [
+            "NEEDS_REVIEW",
+            "AMBIGUOUS_SCOPE"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S26",
+      "title": "Different operating conditions cannot establish a clean pass",
+      "ticket": {
+        "summary": "Different operating conditions cannot establish a clean pass",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "For validation errors, the payment service must retry at most 2 times."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "retry.count",
+          "label": "retry limit",
+          "op": "LTE",
+          "value": 2,
+          "unit": "retries",
+          "counting": "UNSPECIFIED",
+          "conditions": [
+            "validation errors"
+          ],
+          "modality": "MUST",
+          "quote": "For validation errors, the payment service must retry at most 2 times.",
+          "location": "acceptance criteria",
+          "material": true
+        }
+      ],
+      "expected": {
+        "overall": "NEEDS_REVIEW",
+        "claims": {
+          "C1": [
+            "NEEDS_REVIEW",
+            "AMBIGUOUS_SCOPE"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S27",
+      "title": "Prohibiting required idempotency keys conflicts",
+      "ticket": {
+        "summary": "Prohibiting required idempotency keys conflicts",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "Payment creation requests must not include an idempotency key."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "idempotency_key",
+          "label": "idempotency_key",
+          "op": "PROHIBITED",
+          "modality": "MUST",
+          "quote": "Payment creation requests must not include an idempotency key.",
+          "location": "acceptance criteria",
+          "material": true
+        }
+      ],
+      "expected": {
+        "overall": "CONFLICT",
+        "claims": {
+          "C1": [
+            "CONFLICT",
+            "PROHIBITION_VIOLATED"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S28",
+      "title": "A covered requirement does not hide a missing decision",
+      "ticket": {
+        "summary": "A covered requirement does not hide a missing decision",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "Payment creation requests must include an idempotency key.\nEmit payment latency metrics every 10 seconds."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "idempotency_key",
+          "label": "idempotency_key",
+          "op": "REQUIRED",
+          "modality": "MUST",
+          "quote": "Payment creation requests must include an idempotency key.",
+          "location": "acceptance criteria",
+          "material": true
+        },
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "metrics.emit_interval",
+          "label": "gateway timeout",
+          "op": "EQ",
+          "value": 10,
+          "unit": "s",
+          "modality": "MUST",
+          "quote": "Emit payment latency metrics every 10 seconds.",
+          "location": "acceptance criteria",
+          "material": true
+        }
+      ],
+      "expected": {
+        "overall": "INSUFFICIENT_EVIDENCE",
+        "coverage": "1/2",
+        "claims": {
+          "C1": [
+            "NO_CONFLICT_FOUND",
+            "CONSISTENT"
+          ],
+          "C2": [
+            "INSUFFICIENT_EVIDENCE",
+            "NO_DECISION_FOUND"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S29",
+      "title": "The current retry limit wins over a superseded limit",
+      "ticket": {
+        "summary": "The current retry limit wins over a superseded limit",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "The payment service must retry failed transactions exactly 3 times."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "retry.count",
+          "label": "retry limit",
+          "op": "EQ",
+          "value": 3,
+          "unit": "retries",
+          "counting": "UNSPECIFIED",
+          "conditions": [
+            "failed transactions"
+          ],
+          "modality": "MUST",
+          "quote": "The payment service must retry failed transactions exactly 3 times.",
+          "location": "acceptance criteria",
+          "material": true
+        }
+      ],
+      "expected": {
+        "overall": "NO_CONFLICT_FOUND",
+        "claims": {
+          "C1": [
+            "NO_CONFLICT_FOUND",
+            "CONSISTENT"
+          ]
+        }
+      }
+    },
+    {
+      "id": "S30",
+      "title": "Numeric negation expresses an upper bound",
+      "ticket": {
+        "summary": "Numeric negation expresses an upper bound",
+        "description": "Payment Service implementation requirements.",
+        "acceptanceCriteria": "The payment service must not retry failed transactions more than 3 times."
+      },
+      "claims": [
+        {
+          "subject": "Payment Service",
+          "service": "payment-service",
+          "attr": "retry.count",
+          "label": "retry limit",
+          "op": "LTE",
+          "value": 3,
+          "unit": "retries",
+          "counting": "UNSPECIFIED",
+          "conditions": [
+            "failed transactions"
+          ],
+          "modality": "MUST",
+          "quote": "The payment service must not retry failed transactions more than 3 times.",
+          "location": "acceptance criteria",
+          "material": true
+        }
+      ],
+      "expected": {
+        "overall": "NO_CONFLICT_FOUND",
+        "claims": {
+          "C1": [
+            "NO_CONFLICT_FOUND",
+            "CONSISTENT"
+          ]
+        }
+      }
     }
   ]
 }

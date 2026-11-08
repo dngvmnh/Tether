@@ -137,6 +137,7 @@ export async function analyzeIssue(issueKey: string, deps: EngineDeps): Promise<
   // 3. Decisions
   await progress('RETRIEVING_DECISIONS');
   let retrievalFailed = false;
+  let decisionExtractionFailed = false;
   const decisions: DecisionRecord[] = [];
   try {
     const found = await deps.decisions.search({
@@ -161,6 +162,7 @@ export async function analyzeIssue(issueKey: string, deps: EngineDeps): Promise<
         }
         decisions.push({ ...raw, ownerTeam: raw.ownerTeam ?? graph.ownerTeams[raw.decisionId], constraints });
       } catch (e) {
+        decisionExtractionFailed = true;
         errors.push({ ...toError('EXTRACT_DECISION_CONSTRAINTS', e), message: `${raw.decisionId}: ${(e as Error).message}` });
       }
     }
@@ -194,7 +196,20 @@ export async function analyzeIssue(issueKey: string, deps: EngineDeps): Promise<
       retrievalFailedClaimIds: retrievalFailed ? new Set(claims.map((c) => c.id)) : undefined,
       unverifiedClaimIds: unverified,
       semantic: llmSemanticComparator(deps.llm, counter),
+      onError: (claim, error) => errors.push(toError('COMPARE', error, [claim.id])),
     });
+    // An unreadable decision may contain a relevant restriction. Preserve supported
+    // conflicts, but never turn a partial decision library into a clean pass.
+    if (decisionExtractionFailed) {
+      findings = findings.map((f) => f.outcome !== 'NO_CONFLICT_FOUND' ? f : {
+        ...f,
+        outcome: 'INSUFFICIENT_EVIDENCE',
+        reason: 'RETRIEVAL_FAILED',
+        headline: 'Decision analysis is incomplete',
+        explanation: 'At least one retrieved decision could not be analysed. A complete consistency check is not established.',
+        suggestedActions: [],
+      });
+    }
   } catch (e) {
     errors.push(toError('COMPARE', e, claims.map((c) => c.id)));
   }
