@@ -21,7 +21,7 @@ MATCH (user:AtlassianUser {ari: $userAri})-[:atlassian_user_is_in_atlassian_team
 RETURN team`;
 
 // TODO(integration): confirm field names in GraphiQL; the parsers below are shape-agnostic.
-const GQL = `query TetherCypher($cypherQuery: String!, $params: JSON) {
+const GQL = `query TetherCypher($cypherQuery: String!, $params: CypherRequestParams) {
   cypherQuery(query: $cypherQuery, params: $params) {
     edges { node { columns { key value { ... on CypherQueryResultListNode { nodes { id } } } } } }
   }
