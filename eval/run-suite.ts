@@ -58,7 +58,7 @@ export async function runGoldenSuite(llm: LlmPort, options: SuiteOptions = {}) {
     if (diagnosticIds.has(scenario.id)) {
       const snapshot = { id: scenario.id, report: structuredClone(report) };
       const bytes = new TextEncoder().encode(JSON.stringify(snapshot)).byteLength;
-      if (diagnosticBytes + bytes <= 120_000) { diagnostics.push(snapshot); diagnosticBytes += bytes; }
+      if (diagnosticBytes + bytes <= 160_000) { diagnostics.push(snapshot); diagnosticBytes += bytes; }
       else diagnosticsOmittedIds.push(scenario.id);
     }
     await options.onResult?.(scenario, report, score);

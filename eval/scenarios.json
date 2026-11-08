@@ -644,7 +644,7 @@
           "subject": "Payment Service",
           "service": "payment-service",
           "attr": "metrics.emit_interval",
-          "label": "gateway timeout",
+          "label": "metrics emit interval",
           "op": "EQ",
           "value": 10,
           "unit": "s",

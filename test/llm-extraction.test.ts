@@ -32,6 +32,24 @@ function fake(...answers: unknown[]) {
 const vocab = { services: ['payment-service'], attributes: [{ key: 'retry.count', label: 'retry limit' }] };
 
 describe('extraction boundary validation (fake LLM, not a model-quality evaluation)', () => {
+  it('repairs optional modality on a binding maximum attempts permission', async () => {
+    const s = goldScenarios().find((s) => s.id === 'S13')!;
+    const valid = extracted(s.claims[0]!);
+    const f = fake({ constraints: [{ ...valid, modality: 'MAY' }] }, { constraints: [valid] });
+    const result = await extractTicketClaims(f.llm, s.ticket, vocab);
+    expect(result.calls).toBe(2);
+    expect(result.claims[0]).toMatchObject({ modality: 'MUST', operator: 'LTE', value: 4, unit: 'attempts', countingSemantics: 'INCLUDES_INITIAL' });
+  });
+
+  it('preserves genuine optional configuration instead of globally promoting every may to must', async () => {
+    const s = goldScenarios().find((s) => s.id === 'S13')!;
+    const quote = 'Teams may optionally configure a retry cap of 4 total attempts, including the initial request.';
+    const optional = { ...extracted(s.claims[0]!), attribute: 'retry.configurability', modality: 'MAY', quote };
+    const f = fake({ constraints: [optional] });
+    const result = await extractTicketClaims(f.llm, { ...s.ticket, acceptanceCriteria: quote }, vocab);
+    expect(result.calls).toBe(1);
+    expect(result.claims[0]!.modality).toBe('MAY');
+  });
   it('repairs a duration stored under a strategy key without discarding the numeric requirement', async () => {
     const s = goldScenarios().find((s) => s.id === 'S11')!;
     const valid = extracted(s.claims[0]!);

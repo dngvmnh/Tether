@@ -6520,7 +6520,7 @@
      "id": "PAY-128-C2",
      "subject": "Payment Service",
      "attribute": "metrics.emit_interval",
-     "attributeLabel": "gateway timeout",
+     "attributeLabel": "metrics emit interval",
      "operator": "EQ",
      "value": 10,
      "unit": "s",
@@ -6658,8 +6658,8 @@
      "claimId": "PAY-128-C2",
      "outcome": "INSUFFICIENT_EVIDENCE",
      "reason": "NO_DECISION_FOUND",
-     "headline": "No decision covers Payment Service gateway timeout",
-     "explanation": "No decision record in the configured spaces constrains gateway timeout for Payment Service.",
+     "headline": "No decision covers Payment Service metrics emit interval",
+     "explanation": "No decision record in the configured spaces constrains metrics emit interval for Payment Service.",
      "ticketEvidence": {
       "kind": "JIRA_ISSUE",
       "id": "PAY-128",
@@ -6682,7 +6682,7 @@
      "suggestedActions": [
       {
        "kind": "DOCUMENT_DECISION",
-       "label": "Record a decision for Payment Service: gateway timeout"
+       "label": "Record a decision for Payment Service: metrics emit interval"
       },
       {
        "kind": "LINK_DECISION",

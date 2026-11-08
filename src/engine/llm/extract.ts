@@ -12,7 +12,7 @@ import { callStructured } from './structured';
 /** What the model returns per constraint. Ids and source metadata are added by code. */
 const ExtractedConstraint = z.object({
   subject: z.string().describe('Human name of the system/component, e.g. "Payment Service"'),
-  service: z.string().describe('Canonical service slug, including a newly named service absent from the vocabulary. Notification Service is notification-service. Use "*" only for genuinely unspecified or cross-service scope'),
+  service: z.string().describe('Canonical slug of the service performing the required behaviour, not a recipient/dependency merely mentioned. Named services absent from the vocabulary may get new slugs. Use "*" for genuinely unspecified or cross-service scope'),
   attribute: z.string().describe('Canonical attribute key, e.g. "retry.count". Reuse a known attribute key whenever the meaning matches'),
   attributeLabel: z.string().describe('Short human label, e.g. "retry limit"'),
   operator: Operator,
@@ -23,7 +23,7 @@ const ExtractedConstraint = z.object({
   countingSemantics: CountingSemantics.describe(
     'For retry/attempt counts: does the number include the initial request? UNSPECIFIED if the text does not say. NOT_APPLICABLE for non-counts',
   ),
-  modality: Modality.describe('MUST for must/shall/required/exactly; SHOULD for should/recommended; MAY for may/can/optional'),
+  modality: Modality.describe('Strength of the constraint: MUST for binding requirements or upper/lower limits, even when phrased as permission (may be attempted at most N). SHOULD for recommendations. MAY only for genuinely optional behaviour, not merely the words may/can'),
   environments: z.array(z.string()).describe('Environments named in the text, e.g. ["production"]. Empty if none named'),
   conditions: z.array(z.string()).describe('Operating conditions, e.g. ["failed transactions"]. Empty if none'),
   quote: z.string().describe('The exact sentence or phrase from the text, copied verbatim'),
@@ -63,6 +63,10 @@ function extractionSchema(sources: Record<string, string>) {
       if (unitInfo(c.unit)?.dimension === 'count' && c.value !== undefined && (!Number.isInteger(c.value) || c.value < 0)) {
         issue('value', 'Retry/attempt counts must be non-negative integers.');
       }
+      if (c.modality === 'MAY' && ['LTE', 'LT'].includes(c.operator) && unitInfo(c.unit)?.dimension === 'count'
+        && /\b(?:may|can)\s+(?:be\s+)?(?:attempted|retried|attempt|retry)\b[^.!?]*\b(?:at most|no more than|fewer than|less than)\b/i.test(c.quote)) {
+        issue('modality', 'This permission still imposes a binding maximum attempt/retry count. Keep the numeric limit and mark that constraint MUST; do not confuse it with optional enabling/configuration of a retry policy.');
+      }
     });
   });
 }
@@ -84,7 +88,9 @@ Rules:
 - Preserve values and units as written (15000 ms stays 15000 ms); code converts units. For non-retry/attempt attributes use NOT_APPLICABLE counting semantics.
 - Modality describes obligation: MUST for binding acceptance criteria, SHALL or required behaviour; SHOULD for recommendations; MAY for genuinely optional behaviour. The "may" in "may use at most 4 attempts" still imposes a binding upper limit.
 - The vocabulary is open, not an allowlist. If a named service is absent, derive its own slug: "Notification Service" -> "notification-service", even if only "payment-service" is known. Never replace an explicitly named service with "*" or the closest known service. If no service is identifiable, keep "*" instead of inventing one.
+- Service identifies the actor performing the requirement. A named recipient or dependency is not automatically the actor: if a billing worker sends a record to a search service, attribute the sending requirement to the billing worker, not the search service. Use ticket context when the actor is clear; otherwise preserve unknown scope.
 - Reuse known attribute keys only for the SAME property. A retry count, its configurability and its backoff strategy are different properties, even if the same sentence mentions them. Use stable keys such as retry.count, retry.configurability, webhook.retry.initial_backoff, webhook.retry.backoff_strategy, gateway.timeout, idempotency_key, card.pan_storage and logs.retention when applicable.
+- For newly encountered properties without a known equivalent key, use retry.logging for logging retry attempts, audit.retry_event for emitting an audit event per retry, and metrics.emit_interval for the interval between metric emissions. These are naming conventions, not evidence that any decision covers those requirements.
 - Include every technical acceptance criterion, even if no decision covers it. material must not depend on whether a matching decision exists. Ignore process chatter, meeting dates and estimates.
 - Never invent values, units, environments or conditions that are not in the text.
 - Conditions are operating restrictions such as "failed transactions" or "when the provider is unavailable". Do not repeat a component or action already represented by service/attribute (for example "webhook deliveries") as a condition by itself.

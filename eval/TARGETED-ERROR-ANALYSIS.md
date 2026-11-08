@@ -95,7 +95,8 @@ expected overall verdict; those other annotation/extraction differences were out
 this focused repair. The result is one observation on curated fixtures, not a production
 accuracy estimate. No regression run after this final measurement has been requested.
 
-The eval harness can capture named full reports within a 120 KB diagnostic budget.
+The eval harness can capture named full reports within a 160 KB diagnostic budget
+(raised from 120 KB for the subsequent six-case audit, still below the KVS value limit).
 `TETHER_EVAL_SCENARIO_IDS` optionally selects cases; unknown IDs fail explicitly.
 `TETHER_EVAL_DIAGNOSTIC_IDS` selects reports to retain. Both settings belong to the
 developer's own Forge environment. No extra site, app, repository or endpoint is used.
