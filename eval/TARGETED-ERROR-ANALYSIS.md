@@ -55,13 +55,49 @@ and uses distinct keys for delay versus strategy. Independently stated strategy 
 are still retained. It also distinguishes a component/action name from a true operating
 condition. Proposed decisions must still produce review, never authoritative conflicts.
 
+The first prompt-only full regression (`targeted-prompt-only-2026-11-08.json`, version
+2.3.0) reached 28/30 verdict matches and 22/30 strict passes. S05 passed, but S11
+stored EQ 1 s under `webhook.retry.backoff_strategy`, still missing the matching
+proposed numeric delay. Extraction validation now rejects a duration under a terminal
+`strategy` attribute segment and requests the normal single repair. It does not silently
+rename attributes, erase numeric values, or promote proposed decisions to conflicts.
+
 ## Verification
 
-`npm run check` passed: 110 tests, 30/30 offline scenarios, type checks, manifest and UI
-build. These checks do not measure prompt quality. A full real-model regression with
-diagnostics for the same three cases is required before claiming improvement.
+`npm run check` passed: **111 tests**, 30/30 offline scenarios, type checks, manifest and
+UI build. A new fake-model regression verifies the invalid strategy/duration response
+is repaired to the numeric delay property while preserving EQ 1 s.
+
+Final real-model regression: `targeted-final-2026-11-08.json`, code `5fffe95`, version
+**2.4.0**, only `dev-dat`, `claude-sonnet-5`, all 30 scenarios completed in 124,591 ms.
+
+| Metric | Initial full baseline | Final full regression |
+|---|---:|---:|
+| Overall verdict matches | 27/30 | 29/30 |
+| Strict passes | 19/30 | 23/30 |
+| Missed conflicts / false conflicts / false clean passes | 0 / 0 / 0 | 0 / 0 / 0 |
+
+- **S05 passes strictly:** service `notification-service`, outcome Insufficient Evidence,
+  reason `DECISION_NOT_APPLICABLE`. No payment decision is treated as applicable.
+- **S11 passes strictly:** attribute `webhook.retry.initial_backoff`, EQ 1 s, no invented
+  operating condition; Needs Review with `NON_AUTHORITATIVE_DECISION_DISAGREES`, citing
+  the proposed `ADR-PAY-005`. This final live row took one pipeline LLM call, so it
+  does not prove that repair ran in the live attempt; the fake-model regression tests
+  that guard directly. Do not attribute every stochastic run difference to one change.
+- **S02 remains an explicit legacy mismatch:** the numeric finding still passes; the
+  additional real configurability claim is retained (`retry.configurability`, REQUIRED)
+  and receives Needs Review. The semantic prompt still did not select Not Related for
+  this property. Neither the label gap nor the exact policy for that extra property is
+  declared resolved. Đăng was unavailable for review; gold inputs/labels stay unchanged.
+
+Remaining strict failures: S01, S02, S09, S12, S13, S27, S28. All except S02 have the
+expected overall verdict; those other annotation/extraction differences were outside
+this focused repair. The result is one observation on curated fixtures, not a production
+accuracy estimate. No regression run after this final measurement has been requested.
 
 The eval harness can capture named full reports within a 120 KB diagnostic budget.
 `TETHER_EVAL_SCENARIO_IDS` optionally selects cases; unknown IDs fail explicitly.
 `TETHER_EVAL_DIAGNOSTIC_IDS` selects reports to retain. Both settings belong to the
 developer's own Forge environment. No extra site, app, repository or endpoint is used.
+The temporary scenario filter was removed before both full regressions; the diagnostic
+ID list remains S02/S05/S11. No changes were made to Đăng's or Bảo's environments.

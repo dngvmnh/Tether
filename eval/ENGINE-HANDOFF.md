@@ -54,7 +54,7 @@ v22.23.4 after incorporating the owner's Forge build fix `a1391dc`:
 | Check | Result |
 |---|---|
 | TypeScript (backend and UI) | Pass |
-| Unit/functional tests | 110/110 (baseline: 42/42) |
+| Unit/functional tests | 111/111 (baseline: 42/42) |
 | Offline golden scenarios | 30/30 (baseline: 15/15) |
 | Offline missed conflicts / false conflicts / false clean passes | 0 / 0 / 0 |
 | Offline evidence quote errors | 0 |
@@ -219,3 +219,20 @@ separate integration check.
 
 Golden expectations for S16–S30 should be reviewed by the team before merge. Engine
 changes are pushed only to `feat/engine-extraction-evaluation`; `main` was not changed.
+
+## Focused follow-up — S02, S05, S11
+
+Latest deployment: **2.4.0**, code `5fffe95`, only `dev-dat`. Full regression completed:
+**29/30 verdict matches, 23/30 strict passes**, no missed conflicts, false conflicts,
+false clean passes, evidence errors or operational errors in this run. Both **S05 and
+S11 pass strict scoring**. Original golden inputs/labels remain unchanged.
+
+Root causes, before/intermediate/final real reports, exact changes and remaining limits
+are in `eval/TARGETED-ERROR-ANALYSIS.md` and its linked JSON artifacts. The tests now
+total 111; `npm run check` passed after the final code change.
+
+**S02 needs team review:** its source includes a real per-merchant configurability
+requirement omitted by gold. The numeric limit is compared correctly, while the extra
+property still receives Needs Review. Đạt reported that Đăng was not yet available;
+no labels were changed or requirements suppressed to make the score pass. Remaining
+non-target strict failures were recorded without expanding this repair to them.
