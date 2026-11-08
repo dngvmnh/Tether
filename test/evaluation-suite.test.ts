@@ -36,7 +36,7 @@ const scenarios = goldScenarios().filter((s) => ['S01', 'S13'].includes(s.id));
 describe('evaluation suite orchestration', () => {
   it('extracts decisions once per suite, isolates cached values, and scores real engine reports', async () => {
     const { llm, counts } = fakeModel();
-    const result = await runGoldenSuite(llm, { scenarios, onResult(s, report) {
+    const result = await runGoldenSuite(llm, { scenarios, diagnosticIds: ['S01'], onResult(s, report) {
       if (s.id === 'S01') for (const d of report.decisions) for (const c of d.constraints) c.value = 999;
     } });
     expect(result.complete).toBe(true);
@@ -45,6 +45,9 @@ describe('evaluation suite orchestration', () => {
     expect(result.models).toEqual(['test-only']);
     expect(counts.decisions).toBe(goldDecisions().length);
     expect(counts.tickets).toBe(2);
+    expect(result.diagnostics.map((d) => d.id)).toEqual(['S01']);
+    expect(result.diagnostics[0]!.report.decisions[0]!.constraints[0]!.value).not.toBe(999);
+    expect(result.diagnosticsOmittedIds).toEqual([]);
     await runGoldenSuite(llm, { scenarios: scenarios.slice(0, 1) });
     expect(counts.decisions).toBe(goldDecisions().length * 2);
   });

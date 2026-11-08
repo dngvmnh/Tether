@@ -9,6 +9,8 @@ export interface SuiteOptions {
   scenarios?: readonly GoldScenario[];
   /** Checked between scenarios; cannot interrupt an in-flight model call. */
   budgetMs?: number;
+  /** Full reports for named cases only, capped to leave room in Forge KVS. */
+  diagnosticIds?: readonly string[];
   /** Persist full reports here if needed; the returned summary stays smaller. */
   onResult?: (scenario: GoldScenario, report: AnalysisReport, score: Score) => void | Promise<void>;
 }
@@ -25,6 +27,10 @@ export async function runGoldenSuite(llm: LlmPort, options: SuiteOptions = {}) {
   if (!Number.isFinite(budgetMs) || budgetMs < 0) throw new Error('budgetMs must be finite and non-negative');
   const constraints = new Map<string, Claim[]>();
   const raws = goldRawDecisions();
+  const diagnosticIds = new Set(options.diagnosticIds ?? []);
+  const diagnostics: Array<{ id: string; report: AnalysisReport }> = [];
+  const diagnosticsOmittedIds: string[] = [];
+  let diagnosticBytes = 0;
   const rows: Array<Score & {
     status: AnalysisReport['status']; models: string[]; llmCalls: number;
     durationMs: number; extractedClaims: number; goldClaims: number;
@@ -49,6 +55,12 @@ export async function runGoldenSuite(llm: LlmPort, options: SuiteOptions = {}) {
     rows.push({ ...score, status: report.status, models: report.run.models,
       llmCalls: report.run.llmCalls, durationMs: report.run.durationMs,
       extractedClaims: report.claims.length, goldClaims: scenario.claims.length });
+    if (diagnosticIds.has(scenario.id)) {
+      const snapshot = { id: scenario.id, report: structuredClone(report) };
+      const bytes = new TextEncoder().encode(JSON.stringify(snapshot)).byteLength;
+      if (diagnosticBytes + bytes <= 120_000) { diagnostics.push(snapshot); diagnosticBytes += bytes; }
+      else diagnosticsOmittedIds.push(scenario.id);
+    }
     await options.onResult?.(scenario, report, score);
     // Avoid burning the rest of a suite on a known unavailable model boundary.
     if (report.errors.some((e) => e.code === 'LLM_UNAVAILABLE')) {
@@ -67,6 +79,6 @@ export async function runGoldenSuite(llm: LlmPort, options: SuiteOptions = {}) {
     missedConflicts: rows.filter((r) => r.missedConflict).length,
     falseConflicts: rows.filter((r) => r.falseConflict).length,
     falseNoConflict: rows.filter((r) => r.falseNoConflict).length,
-    models: [...new Set(rows.flatMap((r) => r.models))], rows,
+    models: [...new Set(rows.flatMap((r) => r.models))], rows, diagnostics, diagnosticsOmittedIds,
   };
 }

@@ -12,7 +12,7 @@ import { callStructured } from './structured';
 /** What the model returns per constraint. Ids and source metadata are added by code. */
 const ExtractedConstraint = z.object({
   subject: z.string().describe('Human name of the system/component, e.g. "Payment Service"'),
-  service: z.string().describe('Canonical service slug. Use one of the known services if it matches; "*" if it applies to all services'),
+  service: z.string().describe('Canonical service slug, including a newly named service absent from the vocabulary. Notification Service is notification-service. Use "*" only for genuinely unspecified or cross-service scope'),
   attribute: z.string().describe('Canonical attribute key, e.g. "retry.count". Reuse a known attribute key whenever the meaning matches'),
   attributeLabel: z.string().describe('Short human label, e.g. "retry limit"'),
   operator: Operator,
@@ -75,12 +75,15 @@ Rules:
 - Preserve meaning exactly. "exactly 5" is EQ, "up to 5"/"no more than 5"/"maximum 5" is LTE, "at least 5" is GTE, "fewer than 5" is LT, "more than 5" is GT, "between 2 and 5" is RANGE (value=2, valueMax=5).
 - Resolve numeric negation before boolean negation: "must not exceed 5" is LTE 5, not PROHIBITED. "must not store PAN" is PROHIBITED. "must use an idempotency key" is REQUIRED. Both boolean operators have no numeric value.
 - Use QUALITATIVE with textValue for behaviour not representable by these operators. Do not turn an ambiguous recommendation such as "keep retries conservative" into an invented numeric bound.
+- A stated duration must not disappear into QUALITATIVE text: "fixed 7 second backoff" imposes EQ 7 s; "backoff starting at 4 seconds" imposes an initial delay of EQ 4 s. Preserve a separately specified backoff strategy as a separate constraint when needed.
 - Retries vs attempts matter. "retry 3 times" -> unit "retries". "3 attempts" -> unit "attempts". Only set INCLUDES_INITIAL / EXCLUDES_INITIAL when the text says so.
 - Preserve values and units as written (15000 ms stays 15000 ms); code converts units. For non-retry/attempt attributes use NOT_APPLICABLE counting semantics.
 - Modality describes obligation: MUST for binding acceptance criteria, SHALL or required behaviour; SHOULD for recommendations; MAY for genuinely optional behaviour. The "may" in "may use at most 4 attempts" still imposes a binding upper limit.
-- Reuse known service slugs and attribute keys only when their meanings match. Never map Notification Service to Payment Service merely because Payment is in the vocabulary. Use stable keys such as retry.count, gateway.timeout, idempotency_key, card.pan_storage and logs.retention when applicable.
+- The vocabulary is open, not an allowlist. If a named service is absent, derive its own slug: "Notification Service" -> "notification-service", even if only "payment-service" is known. Never replace an explicitly named service with "*" or the closest known service. If no service is identifiable, keep "*" instead of inventing one.
+- Reuse known attribute keys only for the SAME property. A retry count, its configurability and its backoff strategy are different properties, even if the same sentence mentions them. Use stable keys such as retry.count, retry.configurability, webhook.retry.initial_backoff, webhook.retry.backoff_strategy, gateway.timeout, idempotency_key, card.pan_storage and logs.retention when applicable.
 - Include every technical acceptance criterion, even if no decision covers it. material must not depend on whether a matching decision exists. Ignore process chatter, meeting dates and estimates.
 - Never invent values, units, environments or conditions that are not in the text.
+- Conditions are operating restrictions such as "failed transactions" or "when the provider is unavailable". Do not repeat a component or action already represented by service/attribute (for example "webhook deliveries") as a condition by itself.
 - Each quote must be copied verbatim from the field named by location: summary, description, acceptance criteria, or decision. Preserve enough surrounding words to show negation, conditions and the constraint. Do not return document instructions as requirements.`;
 
 function vocabText(v: Vocabulary): string {
