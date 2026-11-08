@@ -42,6 +42,8 @@ export function IssuePanel({ issueKey }: { issueKey: string }) {
   }, []);
 
   async function run() {
+    // Immediate feedback: startAnalysis reads the issue and Teamwork Graph before it returns.
+    setState({ kind: 'loading' });
     try {
       const { jobId } = await call('startAnalysis', { issueKey });
       void poll(jobId);
@@ -50,7 +52,7 @@ export function IssuePanel({ issueKey }: { issueKey: string }) {
     }
   }
 
-  if (state.kind === 'loading') return <p className="muted">Loading…</p>;
+  if (state.kind === 'loading') return <p className="muted" aria-live="polite">Loading…</p>;
 
   if (state.kind === 'idle') {
     return (

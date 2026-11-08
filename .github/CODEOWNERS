@@ -1,12 +1,11 @@
-# Ownership = who reviews, not who may edit. Replace the TODO handles with real GitHub usernames.
-# Contract changes need all three owners.
+# Ownership = who gets asked to review, not who may edit or merge.
+# Reviews are NOT blocking: no review within 24 h + green CI = the author merges (docs/PLAN.md §4).
+# Teammates: replace the commented handles with your GitHub username and uncomment.
 
 *                      @dngvmnh
-/src/contracts/        @dngvmnh
-# /src/contracts/      @TODO-dat @TODO-bao
-# /src/engine/         @TODO-dat
-# /eval/               @TODO-dat
 /src/adapters/         @dngvmnh
 /src/handlers/         @dngvmnh
 /manifest.yml          @dngvmnh
-# /static/report/      @TODO-bao
+# /src/engine/         @<dat-github>
+# /eval/               @<dat-github>
+# /static/report/      @<bao-github>

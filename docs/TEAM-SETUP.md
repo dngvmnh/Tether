@@ -9,8 +9,8 @@ and recording.
 
 | Thing | How | Secret? |
 |---|---|---|
-| GitHub repo `dngvmnh/Codegeist-2026` | GitHub → Settings → Collaborators → add each teammate (Write) | No |
-| Forge app (one app id) | developer.atlassian.com/console → Tether → **Contributors** → add each teammate's Atlassian email. Role: **Developer** for UI/engine, **Deployer** for whoever ships to production | No |
+| GitHub repo `dngvmnh/Tether` | GitHub → Settings → Collaborators → add each teammate (Write) | No |
+| Forge app (one app id) | developer.atlassian.com/console → Tether → **Contributors** → add each teammate's Atlassian email. Role: **Deployer** for everyone, so anyone can deploy `main` to the shared site | No |
 | App id | Committed in `manifest.yml` after `forge register` | No |
 | Shared demo site `one-atlas-dscw.atlassian.net` | admin.atlassian.com → Users → invite teammates, make them **site admins** (needed to install apps) | No |
 | Conventions: Jira project `PAY`, Confluence space `ENG`, label `tether-decision` | In the repo (`eval/`, `.env.example`) | No |
@@ -38,7 +38,7 @@ Forge CLI is installed in WSL. Working under `/mnt/c/...` is slow and file watch
 
 ```bash
 mkdir -p ~/code && cd ~/code
-git clone https://github.com/dngvmnh/Codegeist-2026.git && cd Codegeist-2026
+git clone https://github.com/dngvmnh/Tether.git && cd Tether
 nvm install 22 && nvm use 22     # runtime is nodejs22.x
 npm install                      # also installs static/report
 npm run check                    # typecheck + tests + eval + manifest + UI build
@@ -91,8 +91,8 @@ Seed your site with the demo decisions and tickets:
 Rules that keep everyone unblocked:
 
 - **Only one tunnel per environment.** That is why everyone has their own `dev-<you>`.
-- **Never deploy to `development` or `production` from a feature branch.** `development` is the shared integration env on the shared site (owner deploys from `main`).
-- **Contracts first.** Anything in `src/contracts/` is a team decision: PR labelled `contract`, all three review, then `npm run fixtures`.
+- **Never deploy to `development` or `production` from a feature branch.** `development` is the shared integration env on the shared site: anyone with the Deployer role deploys it from `main` after merging (`npm run deploy:dev`).
+- **Contracts first.** Anything in `src/contracts/` is a team decision: PR labelled `contract`, 24 h heads-up in chat (additive optional fields can merge at once), then `npm run fixtures`. Reviews never block: no review in 24 h + green CI = merge it yourself.
 - **Branches:** `feat/<area>-<thing>`, small PRs, CI must be green. `main` is always deployable.
 - **Manifest changes** (scopes, modules) change everyone's install: announce in chat, then everyone runs `forge deploy -e dev-<you>` and `forge install --upgrade`.
 
