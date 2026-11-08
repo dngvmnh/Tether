@@ -4,7 +4,7 @@ import { ApiError, call } from '../api/client';
 import { FindingCard } from '../components/FindingCard';
 import { FollowUpModal } from '../components/FollowUpModal';
 import { VerdictBanner } from '../components/Verdict';
-import { OUTCOME_RANK, STAGE_LABEL } from '../copy';
+import { ERROR_STAGE_COPY, OUTCOME_RANK, STAGE_LABEL, STAGE_ORDER, STALE_COPY, formatChangedAt } from '../copy';
 
 type State =
   | { kind: 'loading' }
@@ -15,42 +15,82 @@ type State =
 
 const POLL_MS = 1500;
 
+/**
+ * The panel body swaps whole views as state changes, so a screen reader would miss the change.
+ * This wrapper keeps one polite live region mounted and the body reports progress/results to it.
+ */
 export function IssuePanel({ issueKey }: { issueKey: string }) {
+  const [announcement, setAnnouncement] = useState('');
+  return (
+    <>
+      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        {announcement}
+      </div>
+      <PanelBody issueKey={issueKey} announce={setAnnouncement} />
+    </>
+  );
+}
+
+function PanelBody({ issueKey, announce }: { issueKey: string; announce: (message: string) => void }) {
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [followUp, setFollowUp] = useState<Finding | null>(null);
   const timer = useRef<number>();
 
+  // False once the panel unmounts (e.g. the mock scenario changes): stops late responses
+  // from restarting the poll loop or touching state.
+  const alive = useRef(true);
+
   useEffect(() => {
+    alive.current = true;
     call('getLatestReport', { issueKey })
-      .then(({ report, stale }) => setState(report ? { kind: 'report', report, stale } : { kind: 'idle' }))
-      .catch((error: ApiError) => setState({ kind: 'error', error }));
-    return () => window.clearTimeout(timer.current);
+      .then(({ report, stale }) => alive.current && setState(report ? { kind: 'report', report, stale } : { kind: 'idle' }))
+      .catch((error: ApiError) => alive.current && setState({ kind: 'error', error }));
+    return () => {
+      alive.current = false;
+      window.clearTimeout(timer.current);
+    };
   }, [issueKey]);
 
   const poll = useCallback(async (jobId: string) => {
     try {
       const { job, report } = await call('getJob', { jobId });
-      if ((job.status === 'DONE' || job.status === 'FAILED') && report) setState({ kind: 'report', report, stale: null });
-      else if (job.status === 'FAILED') setState({ kind: 'error', error: new ApiError(job.error?.code ?? 'FAILED', job.error?.message ?? 'Check failed', true) });
-      else {
+      if (!alive.current) return;
+      const finished = job.status === 'DONE' || job.status === 'FAILED';
+      // Never show a stored report that belongs to an earlier run (e.g. the worker crashed).
+      const mine = report && job.reportId && report.reportId === job.reportId ? report : null;
+      if (finished && mine) {
+        announce(`Check complete. ${mine.headline}`);
+        setState({ kind: 'report', report: mine, stale: null });
+      }
+      else if (finished) {
+        setState({
+          kind: 'error',
+          error: new ApiError(
+            job.error?.code ?? 'NO_REPORT',
+            job.error?.message ?? 'The check finished without producing a report.',
+            job.error?.retryable ?? true,
+          ),
+        });
+      } else {
+        announce(STAGE_LABEL[job.stage] ?? 'Checking');
         setState({ kind: 'running', job });
         timer.current = window.setTimeout(() => void poll(jobId), POLL_MS);
       }
     } catch (e) {
-      setState({ kind: 'error', error: e as ApiError });
+      if (alive.current) setState({ kind: 'error', error: e as ApiError });
     }
-  }, []);
+  }, [announce]);
 
   async function run() {
     try {
       const { jobId } = await call('startAnalysis', { issueKey });
-      void poll(jobId);
+      if (alive.current) void poll(jobId);
     } catch (e) {
-      setState({ kind: 'error', error: e as ApiError });
+      if (alive.current) setState({ kind: 'error', error: e as ApiError });
     }
   }
 
-  if (state.kind === 'loading') return <p className="muted">Loading…</p>;
+  if (state.kind === 'loading') return <p className="muted" role="status">Loading…</p>;
 
   if (state.kind === 'idle') {
     return (
@@ -65,8 +105,22 @@ export function IssuePanel({ issueKey }: { issueKey: string }) {
 
   if (state.kind === 'running') {
     return (
-      <div className="running" aria-live="polite">
-        <span className="spinner" aria-hidden /> {STAGE_LABEL[state.job.stage]}…
+      <div className="running">
+        <ol className="stages" aria-label="Check progress">
+          {STAGE_ORDER.map((s, i) => {
+            const cur = Math.max(0, STAGE_ORDER.indexOf(state.job.stage));
+            const status = i < cur ? 'done' : i === cur ? 'current' : 'pending';
+            return (
+              <li key={s} className={`stage stage--${status}`} aria-current={status === 'current' ? 'step' : undefined}>
+                <span className="stage__icon" aria-hidden>
+                  {status === 'done' ? '✓' : status === 'current' ? <span className="spinner" /> : '○'}
+                </span>
+                {STAGE_LABEL[s]}
+                {status === 'current' ? '…' : ''}
+              </li>
+            );
+          })}
+        </ol>
       </div>
     );
   }
@@ -90,36 +144,71 @@ export function IssuePanel({ issueKey }: { issueKey: string }) {
   return (
     <div className="panel">
       {stale && (
-        <div className="banner banner--stale">
-          {stale.reason === 'DECISION_UPDATED'
-            ? `A decision used in this check changed (${stale.decisionIds.join(', ')}).`
-            : 'This ticket changed since the last check.'}{' '}
-          <button type="button" className="btn" onClick={run}>
+        <div className="banner banner--stale" role="status">
+          <div className="banner__text">
+            <strong className="banner__headline">{STALE_COPY[stale.reason].title}</strong>
+            <div className="banner__sub">
+              {STALE_COPY[stale.reason].detail}
+              {stale.reason === 'DECISION_UPDATED' && stale.decisionIds.length > 0 && (
+                <>
+                  {' '}
+                  Updated decision: <strong>{stale.decisionIds.join(', ')}</strong>.
+                </>
+              )}
+              {formatChangedAt(stale.at) && <> Detected {formatChangedAt(stale.at)}.</>}
+            </div>
+          </div>
+          <button type="button" className="btn" onClick={run} aria-label="Re-check this ticket now">
             Re-check
           </button>
         </div>
       )}
       <VerdictBanner report={report} />
-      {report.errors.length > 0 && report.status !== 'FAILED' && (
+      {report.errors.length > 0 && (
         <section className="errors" aria-label="Problems during the check">
-          <h3>Some parts could not be checked</h3>
+          <h3>{report.status === 'FAILED' ? 'What went wrong' : 'Some parts could not be checked'}</h3>
           <ul>
             {report.errors.map((e, i) => (
               <li key={i}>
-                <code>{e.stage}</code> {e.message}
+                {ERROR_STAGE_COPY[e.stage]}
+                <details>
+                  <summary>Technical detail</summary>
+                  <code>{e.stage}</code> {e.message}
+                </details>
               </li>
             ))}
           </ul>
+          {report.errors.some((e) => e.retryable) && (
+            <button type="button" className="btn" onClick={run}>
+              Try again
+            </button>
+          )}
         </section>
       )}
-      <section className="findings" aria-label="Findings">
-        {findings.map((f) => (
-          <FindingCard key={f.id} finding={f} onFollowUp={setFollowUp} />
-        ))}
-      </section>
+      {findings.length === 0 && report.status !== 'FAILED' ? (
+        <p className="empty-findings">
+          {report.coverage.totalClaims === 0
+            ? 'No technical requirements were found in this ticket, so there was nothing to compare with your decisions.'
+            : 'No findings to show for this ticket.'}
+        </p>
+      ) : (
+        <section className="findings" aria-label="Findings">
+          {findings.map((f) => (
+            <FindingCard key={f.id} finding={f} onFollowUp={setFollowUp} />
+          ))}
+        </section>
+      )}
       <footer className="muted footer">
-        Checked against {report.context.decisionsConsidered} decision(s) labelled <code>{report.context.decisionLabel}</code> in{' '}
-        {report.context.spacesSearched.join(', ') || 'no spaces'}
+        {report.context.decisionsConsidered === 0 && report.coverage.totalClaims > 0 ? (
+          <>
+            No decisions found labelled <code>{report.context.decisionLabel}</code> in {report.context.spacesSearched.join(', ') || 'no spaces'}
+          </>
+        ) : (
+          <>
+            Checked against {report.context.decisionsConsidered} decision(s) labelled <code>{report.context.decisionLabel}</code> in{' '}
+            {report.context.spacesSearched.join(', ') || 'no spaces'}
+          </>
+        )}
         {report.context.graph.note ? ` · ${report.context.graph.note}` : ''} · {new Date(report.generatedAt).toLocaleString()}
         <br />A lack of detected conflict is not proof of complete consistency.{' '}
         <button type="button" className="link" onClick={run}>
