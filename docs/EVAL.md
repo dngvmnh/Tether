@@ -18,7 +18,7 @@ Files: `eval/decisions.json` (decision library + gold constraints),
 | Id | Scenario | Expected |
 |---|---|---|
 | S01 | Exactly 5 retries vs current ADR max 3 | Conflict |
-| S02 | Up to 5 retries vs max 3 | No conflict found (compatible if tighter) |
+| S02 | Retry bound compatible; per-merchant configuration has no decision | Insufficient evidence (1 of 2 checked) |
 | S03 | "Exactly 4 attempts", counting unspecified | Needs review |
 | S04 | Cites superseded ADR-PAY-000 | Conflict with current ADR-PAY-001 |
 | S05 | Notification service; only payment ADRs exist | Insufficient evidence (not applicable) |

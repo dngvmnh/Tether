@@ -32,6 +32,23 @@ function fake(...answers: unknown[]) {
 const vocab = { services: ['payment-service'], attributes: [{ key: 'retry.count', label: 'retry limit' }] };
 
 describe('extraction boundary validation (fake LLM, not a model-quality evaluation)', () => {
+  it('repairs a required refund threshold incorrectly treated as an upper allowance', async () => {
+    const s = goldScenarios().find((s) => s.id === 'S12')!;
+    const valid = extracted(s.claims[0]!);
+    const f = fake({ constraints: [{ ...valid, operator: 'LTE' }] }, { constraints: [valid] });
+    const result = await extractTicketClaims(f.llm, s.ticket, vocab);
+    expect(result.calls).toBe(2);
+    expect(result.claims[0]).toMatchObject({ attribute: 'refund.auto_approval.max_amount', operator: 'EQ', value: 50000, unit: 'USD' });
+  });
+
+  it('requires a categorical configuration qualifier in the existing textValue field', async () => {
+    const s = goldScenarios().find((s) => s.id === 'S02')!;
+    const valid = extracted(s.claims[1]!);
+    const f = fake({ constraints: [{ ...valid, textValue: undefined }] }, { constraints: [valid] });
+    const result = await extractTicketClaims(f.llm, s.ticket, vocab);
+    expect(result.calls).toBe(2);
+    expect(result.claims[0]).toMatchObject({ attribute: 'retry.count.config_scope', operator: 'REQUIRED', textValue: 'merchant' });
+  });
   it('repairs optional modality on a binding maximum attempts permission', async () => {
     const s = goldScenarios().find((s) => s.id === 'S13')!;
     const valid = extracted(s.claims[0]!);

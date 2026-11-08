@@ -51,9 +51,11 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "each retry"
+      ]
      },
-     "material": false,
+     "material": true,
      "source": {
       "kind": "JIRA_ISSUE",
       "id": "PAY-101",
@@ -321,10 +323,15 @@
    ],
    "coverage": {
     "totalClaims": 2,
-    "materialClaims": 1,
+    "materialClaims": 2,
     "checkedMaterialClaims": 1,
-    "unchecked": [],
-    "summary": "1 of 1 requirement checked."
+    "unchecked": [
+     {
+      "claimId": "PAY-101-C2",
+      "reason": "NO_DECISION_FOUND"
+     }
+    ],
+    "summary": "1 of 2 requirements checked. 1 has insufficient evidence."
    },
    "errors": [],
    "context": {
@@ -358,8 +365,8 @@
    "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
    "generatedAt": "2026-11-08T09:00:00.000Z",
    "status": "COMPLETE",
-   "overallOutcome": "NO_CONFLICT_FOUND",
-   "headline": "No conflict found across 1 requirement",
+   "overallOutcome": "INSUFFICIENT_EVIDENCE",
+   "headline": "1 of 2 requirements could not be checked",
    "claims": [
     {
      "id": "PAY-102-C1",
@@ -386,6 +393,33 @@
       "url": "https://example.atlassian.net/browse/PAY-102",
       "location": "acceptance criteria",
       "quote": "Retry failed transactions up to 5 times"
+     },
+     "confidence": 1
+    },
+    {
+     "id": "PAY-102-C2",
+     "subject": "Payment Service",
+     "attribute": "retry.count.config_scope",
+     "attributeLabel": "retry configuration scope",
+     "operator": "REQUIRED",
+     "textValue": "merchant",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-102",
+      "title": "Make payment retries configurable",
+      "url": "https://example.atlassian.net/browse/PAY-102",
+      "location": "acceptance criteria",
+      "quote": "configurable per merchant"
      },
      "confidence": 1
     }
@@ -594,14 +628,56 @@
        "label": "Note the ADR-PAY-001 limit in the acceptance criteria"
       }
      ]
+    },
+    {
+     "id": "F-PAY-102-C2",
+     "claimId": "PAY-102-C2",
+     "outcome": "INSUFFICIENT_EVIDENCE",
+     "reason": "NO_DECISION_FOUND",
+     "headline": "No decision covers Payment Service retry configuration scope",
+     "explanation": "No decision record in the configured spaces constrains retry configuration scope for Payment Service.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-102",
+      "title": "Make payment retries configurable",
+      "url": "https://example.atlassian.net/browse/PAY-102",
+      "location": "acceptance criteria",
+      "quote": "configurable per merchant"
+     },
+     "decisionEvidence": [],
+     "decisionIds": [],
+     "history": [],
+     "scopeCheck": {
+      "service": "UNKNOWN",
+      "environment": "UNKNOWN",
+      "conditions": "UNKNOWN",
+      "counting": "UNKNOWN"
+     },
+     "method": "NONE",
+     "confidence": 1,
+     "suggestedActions": [
+      {
+       "kind": "DOCUMENT_DECISION",
+       "label": "Record a decision for Payment Service: retry configuration scope"
+      },
+      {
+       "kind": "LINK_DECISION",
+       "label": "Link an existing decision page to this ticket"
+      }
+     ]
     }
    ],
    "coverage": {
-    "totalClaims": 1,
-    "materialClaims": 1,
+    "totalClaims": 2,
+    "materialClaims": 2,
     "checkedMaterialClaims": 1,
-    "unchecked": [],
-    "summary": "1 of 1 requirement checked."
+    "unchecked": [
+     {
+      "claimId": "PAY-102-C2",
+      "reason": "NO_DECISION_FOUND"
+     }
+    ],
+    "summary": "1 of 2 requirements checked. 1 has insufficient evidence."
    },
    "errors": [],
    "context": {
@@ -1495,7 +1571,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "material": true,
      "source": {
@@ -1683,7 +1761,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "owner": {
       "displayName": "Priya Raman"
@@ -1718,7 +1798,9 @@
        "scope": {
         "service": "payment-service",
         "environments": [],
-        "conditions": []
+        "conditions": [
+         "payment creation requests"
+        ]
        },
        "material": true,
        "source": {
@@ -2312,7 +2394,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "material": true,
      "source": {
@@ -2336,7 +2420,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "each retry"
+      ]
      },
      "material": true,
      "source": {
@@ -2496,7 +2582,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "owner": {
       "displayName": "Priya Raman"
@@ -2531,7 +2619,9 @@
        "scope": {
         "service": "payment-service",
         "environments": [],
-        "conditions": []
+        "conditions": [
+         "payment creation requests"
+        ]
        },
        "material": true,
        "source": {
@@ -6309,7 +6399,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "material": true,
      "source": {
@@ -6331,7 +6423,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "owner": {
       "displayName": "Priya Raman"
@@ -6366,7 +6460,9 @@
        "scope": {
         "service": "payment-service",
         "environments": [],
-        "conditions": []
+        "conditions": [
+         "payment creation requests"
+        ]
        },
        "material": true,
        "source": {
@@ -6503,7 +6599,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "material": true,
      "source": {
@@ -6551,7 +6649,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "owner": {
       "displayName": "Priya Raman"
@@ -6586,7 +6686,9 @@
        "scope": {
         "service": "payment-service",
         "environments": [],
-        "conditions": []
+        "conditions": [
+         "payment creation requests"
+        ]
        },
        "material": true,
        "source": {
@@ -7321,7 +7423,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "material": true,
      "source": {
@@ -7345,7 +7449,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "each retry"
+      ]
      },
      "material": true,
      "source": {
@@ -7505,7 +7611,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "owner": {
       "displayName": "Priya Raman"
@@ -7540,7 +7648,9 @@
        "scope": {
         "service": "payment-service",
         "environments": [],
-        "conditions": []
+        "conditions": [
+         "payment creation requests"
+        ]
        },
        "material": true,
        "source": {
@@ -7873,9 +7983,11 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "each retry"
+      ]
      },
-     "material": false,
+     "material": true,
      "source": {
       "kind": "JIRA_ISSUE",
       "id": "PAY-101",
@@ -8143,10 +8255,15 @@
    ],
    "coverage": {
     "totalClaims": 2,
-    "materialClaims": 1,
+    "materialClaims": 2,
     "checkedMaterialClaims": 1,
-    "unchecked": [],
-    "summary": "1 of 1 requirement checked."
+    "unchecked": [
+     {
+      "claimId": "PAY-101-C2",
+      "reason": "NO_DECISION_FOUND"
+     }
+    ],
+    "summary": "1 of 2 requirements checked. 1 has insufficient evidence."
    },
    "errors": [],
    "context": {

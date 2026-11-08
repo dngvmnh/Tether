@@ -11,9 +11,9 @@
       },
       "claims": [
         { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "EQ", "value": 5, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "The payment service must retry failed transactions exactly 5 times", "location": "acceptance criteria", "material": true },
-        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.logging", "label": "retry logging", "op": "REQUIRED", "modality": "MUST", "quote": "Each retry is logged with the gateway error code.", "location": "acceptance criteria", "material": false }
+        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.logging", "label": "retry logging", "op": "REQUIRED", "modality": "MUST", "conditions": ["each retry"], "quote": "Each retry is logged with the gateway error code.", "location": "acceptance criteria", "material": true }
       ],
-      "expected": { "overall": "CONFLICT", "claims": { "C1": ["CONFLICT", "VALUE_CONTRADICTION"] } }
+      "expected": { "overall": "CONFLICT", "coverage": "1/2", "claims": { "C1": ["CONFLICT", "VALUE_CONTRADICTION"], "C2": ["INSUFFICIENT_EVIDENCE", "NO_DECISION_FOUND"] } }
     },
     {
       "id": "S02",
@@ -24,9 +24,10 @@
         "acceptanceCriteria": "Retry failed transactions up to 5 times, configurable per merchant."
       },
       "claims": [
-        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "LTE", "value": 5, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "Retry failed transactions up to 5 times", "location": "acceptance criteria", "material": true }
+        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "LTE", "value": 5, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "Retry failed transactions up to 5 times", "location": "acceptance criteria", "material": true },
+        { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count.config_scope", "label": "retry configuration scope", "op": "REQUIRED", "textValue": "merchant", "modality": "MUST", "conditions": ["failed transactions"], "quote": "configurable per merchant", "location": "acceptance criteria", "material": true }
       ],
-      "expected": { "overall": "NO_CONFLICT_FOUND", "claims": { "C1": ["NO_CONFLICT_FOUND", "CONSISTENT_IF_TIGHTER"] } }
+      "expected": { "overall": "INSUFFICIENT_EVIDENCE", "coverage": "1/2", "claims": { "C1": ["NO_CONFLICT_FOUND", "CONSISTENT_IF_TIGHTER"], "C2": ["INSUFFICIENT_EVIDENCE", "NO_DECISION_FOUND"] } }
     },
     {
       "id": "S03",
@@ -76,7 +77,7 @@
         "acceptanceCriteria": "Payment creation requests must include an idempotency key.\nRetry failed transactions at most 2 times."
       },
       "claims": [
-        { "subject": "Payment Service", "service": "payment-service", "attr": "idempotency_key", "label": "idempotency key", "op": "REQUIRED", "modality": "MUST", "quote": "Payment creation requests must include an idempotency key.", "location": "acceptance criteria", "material": true },
+        { "subject": "Payment Service", "service": "payment-service", "attr": "idempotency_key", "label": "idempotency key", "op": "REQUIRED", "modality": "MUST", "conditions": ["payment creation requests"], "quote": "Payment creation requests must include an idempotency key.", "location": "acceptance criteria", "material": true },
         { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "LTE", "value": 2, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "Retry failed transactions at most 2 times.", "location": "acceptance criteria", "material": true }
       ],
       "expected": { "overall": "NO_CONFLICT_FOUND", "claims": { "C1": ["NO_CONFLICT_FOUND", "CONSISTENT"], "C2": ["NO_CONFLICT_FOUND", "CONSISTENT"] } }
@@ -117,8 +118,8 @@
       },
       "claims": [
         { "subject": "Payment Service", "service": "payment-service", "attr": "retry.count", "label": "retry limit", "op": "EQ", "value": 5, "unit": "retries", "counting": "UNSPECIFIED", "modality": "MUST", "conditions": ["failed transactions"], "quote": "Retry failed transactions exactly 5 times.", "location": "acceptance criteria", "material": true },
-        { "subject": "Payment Service", "service": "payment-service", "attr": "idempotency_key", "label": "idempotency key", "op": "REQUIRED", "modality": "MUST", "quote": "Every payment creation request must include an idempotency key.", "location": "acceptance criteria", "material": true },
-        { "subject": "Payment Service", "service": "payment-service", "attr": "audit.retry_event", "label": "retry audit event", "op": "REQUIRED", "modality": "MUST", "quote": "Write an audit event to the new audit service for each retry.", "location": "acceptance criteria", "material": true }
+        { "subject": "Payment Service", "service": "payment-service", "attr": "idempotency_key", "label": "idempotency key", "op": "REQUIRED", "modality": "MUST", "conditions": ["payment creation requests"], "quote": "Every payment creation request must include an idempotency key.", "location": "acceptance criteria", "material": true },
+        { "subject": "Payment Service", "service": "payment-service", "attr": "audit.retry_event", "label": "retry audit event", "op": "REQUIRED", "modality": "MUST", "conditions": ["each retry"], "quote": "Write an audit event to the new audit service for each retry.", "location": "acceptance criteria", "material": true }
       ],
       "expected": {
         "overall": "CONFLICT",
@@ -163,7 +164,7 @@
       "claims": [
         { "subject": "Payment Service", "service": "payment-service", "environments": ["staging"], "attr": "refund.auto_approval.max_amount", "label": "refund auto-approval limit", "op": "EQ", "value": 50000, "unit": "USD", "modality": "MUST", "quote": "In staging, refunds up to 50,000 USD must be auto-approved.", "location": "acceptance criteria", "material": true }
       ],
-      "expected": { "overall": "INSUFFICIENT_EVIDENCE", "claims": { "C1": ["INSUFFICIENT_EVIDENCE", "DECISION_NOT_APPLICABLE"] } }
+      "expected": { "overall": "INSUFFICIENT_EVIDENCE", "claims": { "C1": ["INSUFFICIENT_EVIDENCE", "DECISION_NOT_APPLICABLE"] }, "acceptedOperators": { "C1": ["EQ", "GTE"] } }
     },
     {
       "id": "S13",
@@ -606,6 +607,7 @@
           "op": "PROHIBITED",
           "modality": "MUST",
           "quote": "Payment creation requests must not include an idempotency key.",
+          "conditions": ["payment creation requests"],
           "location": "acceptance criteria",
           "material": true
         }
@@ -637,6 +639,7 @@
           "op": "REQUIRED",
           "modality": "MUST",
           "quote": "Payment creation requests must include an idempotency key.",
+          "conditions": ["payment creation requests"],
           "location": "acceptance criteria",
           "material": true
         },

@@ -42,7 +42,7 @@
       "status": "ACCEPTED",
       "service": "payment-service",
       "environments": [],
-      "conditions": [],
+      "conditions": ["payment creation requests"],
       "owner": "Priya Raman",
       "effectiveDate": "2025-11-20",
       "supersedes": [],

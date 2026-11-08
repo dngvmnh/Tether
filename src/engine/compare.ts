@@ -88,6 +88,10 @@ export function compareConstraint(ticket: Claim, decision: Claim): PairVerdict {
     if (!(tBool && dBool)) {
       return { verdict: 'INCOMPARABLE', reason: 'INCOMPARABLE', counting: 'UNKNOWN', detail: `Ticket is ${t}; decision is ${d}.` };
     }
+    if ((ticket.textValue !== undefined || decision.textValue !== undefined)
+      && (ticket.textValue ?? '').trim().toLowerCase() !== (decision.textValue ?? '').trim().toLowerCase()) {
+      return { verdict: 'INCOMPARABLE', reason: 'INCOMPARABLE', counting: 'UNKNOWN', detail: 'Categorical qualifiers differ or are missing; feature presence alone does not establish compatibility.' };
+    }
     if (ticket.operator !== decision.operator) {
       return {
         verdict: 'CONFLICT',

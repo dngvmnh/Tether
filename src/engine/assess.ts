@@ -203,6 +203,13 @@ async function assessClaim(claim: Claim, input: AssessInput, validity: Map<strin
     && (c.validity.authoritative || c.validity.advisory) && verifiedConstraint(c));
 
   if (sameAttr.length === 0) {
+    // These independent feature obligations require their own decision constraint;
+    // sibling retry-count/log-retention limits do not establish configuration or
+    // logging coverage. Keep them explicitly unassessed instead of speculating.
+    if (claim.attribute === 'retry.count.config_scope' || claim.attribute === 'retry.logging') {
+      return finding(claim, 'INSUFFICIENT_EVIDENCE', 'NO_DECISION_FOUND', `No decision covers ${label}`,
+        `No decision record in the configured spaces constrains ${claim.attributeLabel} for ${claim.subject}.`);
+    }
     return semanticFallback(claim, servicePool, input, () =>
       finding(claim, 'INSUFFICIENT_EVIDENCE', 'NO_DECISION_FOUND', `No decision covers ${label}`, `No decision record in the configured spaces constrains ${claim.attributeLabel} for ${claim.subject}.`),
     );

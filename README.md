@@ -10,9 +10,10 @@ Built on Atlassian Forge for Codegeist 2026 (Apps for Software Teams).
 
 ```
 PAY-101  "The payment service must retry failed transactions exactly 5 times"
+         "Each retry is logged with the gateway error code."
 ADR-PAY-001 (accepted, current, supersedes ADR-PAY-000)
          "The payment service must retry failed transactions no more than 3 times."
-→ CONFLICT · 1 of 1 requirement checked · Create clarification issue
+→ CONFLICT · 1 of 2 requirements checked · Create clarification issue
 ```
 
 What makes it different from an AI ticket reviewer:
@@ -43,7 +44,7 @@ docs/                     PLAN, TEAM-SETUP, ARCHITECTURE, EVAL, SUBMISSION
 
 ```bash
 npm install            # root + static/report
-npm run check          # typecheck, 42 tests, offline eval 15/15, manifest schema, UI build
+npm run check          # typecheck, 123 tests, offline eval 30/30, manifest schema, UI build
 npm run ui:dev         # UI with mock backend at http://localhost:5174 (scenario picker at the top)
 ```
 

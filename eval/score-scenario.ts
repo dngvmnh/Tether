@@ -10,6 +10,7 @@ import { normalizeValue, unitInfo } from '../src/engine/units';
 import { goldDecisions, type GoldScenario } from './gold';
 
 const normalize = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
+const normalizeCondition = (s: string) => normalize(s).replace(/\brequests\b/g, 'request');
 const sameSet = (a: string[], b: string[], norm = normalize) => JSON.stringify([...new Set(a.map(norm))].sort()) === JSON.stringify([...new Set(b.map(norm))].sort());
 
 function overlappingQuotes(a: Claim, b: Claim): boolean {
@@ -32,13 +33,14 @@ function differingFields(expected: Claim, actual: Claim): string[] {
   if (actual.material !== expected.material) fields.push('material');
   if (normalize(actual.scope.service) !== normalize(expected.scope.service)) fields.push('service');
   if (!sameSet(actual.scope.environments, expected.scope.environments, normalizeEnv)) fields.push('environments');
-  if (!sameSet(actual.scope.conditions, expected.scope.conditions)) fields.push('conditions');
+  if (!sameSet(actual.scope.conditions, expected.scope.conditions, normalizeCondition)) fields.push('conditions');
   const e = numericFields(expected), a = numericFields(actual);
   if (a.value !== e.value) fields.push('value');
   if (a.max !== e.max) fields.push('valueMax');
   if (a.dimension !== e.dimension) fields.push('unit');
   if (a.ambiguous !== e.ambiguous || a.alternative !== e.alternative) fields.push('countingSemantics');
-  if (expected.operator === 'QUALITATIVE' && normalize(expected.textValue ?? '') !== normalize(actual.textValue ?? '')) fields.push('textValue');
+  if ((expected.operator === 'QUALITATIVE' || expected.textValue !== undefined)
+    && normalize(expected.textValue ?? '') !== normalize(actual.textValue ?? '')) fields.push('textValue');
   return fields;
 }
 
@@ -69,6 +71,10 @@ export function scoreScenario(scenario: GoldScenario, report: AnalysisReport, re
     if (!actual) { if (expected.material) missingClaims.push(expected.id); continue; }
     const fields = differingFields(expected, actual);
     const suffix = expected.id.slice(scenario.ticket.issueKey.length + 1);
+    if (scenario.expected.acceptedOperators?.[suffix]?.includes(actual.operator)) {
+      const index = fields.indexOf('operator');
+      if (index !== -1) fields.splice(index, 1);
+    }
     const expectedFinding = scenario.expected.claims[suffix];
     const findings = report.findings.filter((f) => f.claimId === actual.id);
     if (expectedFinding) {
