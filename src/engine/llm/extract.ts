@@ -56,6 +56,10 @@ function extractionSchema(sources: Record<string, string>) {
       if (c.operator === 'QUALITATIVE' && !c.textValue?.trim()) {
         issue('textValue', 'Preserve the required behaviour in textValue for qualitative constraints.');
       }
+      if (['EQ', 'LTE', 'LT', 'GTE', 'GT', 'RANGE'].includes(c.operator)
+        && unitInfo(c.unit)?.dimension === 'duration' && c.attribute.split(/[._]/).at(-1) === 'strategy') {
+        issue('attribute', 'A time duration belongs to a numeric delay/interval property, not an algorithm strategy. Use the matching delay attribute; preserve any separately stated strategy as qualitative text.');
+      }
       if (unitInfo(c.unit)?.dimension === 'count' && c.value !== undefined && (!Number.isInteger(c.value) || c.value < 0)) {
         issue('value', 'Retry/attempt counts must be non-negative integers.');
       }

@@ -32,6 +32,16 @@ function fake(...answers: unknown[]) {
 const vocab = { services: ['payment-service'], attributes: [{ key: 'retry.count', label: 'retry limit' }] };
 
 describe('extraction boundary validation (fake LLM, not a model-quality evaluation)', () => {
+  it('repairs a duration stored under a strategy key without discarding the numeric requirement', async () => {
+    const s = goldScenarios().find((s) => s.id === 'S11')!;
+    const valid = extracted(s.claims[0]!);
+    const f = fake({ constraints: [{ ...valid, attribute: 'webhook.retry.backoff_strategy' }] }, { constraints: [valid] });
+    const result = await extractTicketClaims(f.llm, s.ticket, {
+      services: ['payment-service'], attributes: [{ key: 'webhook.retry.initial_backoff', label: 'initial backoff delay' }],
+    });
+    expect(result.calls).toBe(2);
+    expect(result.claims[0]).toMatchObject({ attribute: 'webhook.retry.initial_backoff', operator: 'EQ', value: 1, unit: 's' });
+  });
   it('preserves operator, units and counting while assigning source identity in code', async () => {
     const s = goldScenarios()[12]!;
     const c = extracted(s.claims[0]!);
