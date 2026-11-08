@@ -1,7 +1,7 @@
 /**
  * In-Forge eval: runs the golden scenarios through the REAL pipeline (Forge LLMs for
  * extraction + semantic comparison) with fixture-backed ticket/decision ports, so no
- * site data is needed. Results: GET the eval web trigger (see docs/EVAL.md).
+ * site data is needed. Run from Tether settings (see docs/EVAL.md).
  */
 import { goldRawDecisions, goldScenarios } from '../../eval/gold';
 import { ForgeLlmAdapter } from '../adapters/forgeLlm';

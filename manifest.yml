@@ -42,13 +42,6 @@ modules:
       events:
         - avi:jira:updated:issue
 
-  # ---------------------------------------------------------------- eval (dev only)
-  webtrigger:
-    - key: tether-eval-runner
-      function: eval-runner
-      response:
-        type: dynamic
-
   # ---------------------------------------------------------------- Rovo / MCP
   # One set of actions, three surfaces: the Tether agent, a reusable skill, and MCP tools.
   action:
@@ -151,8 +144,6 @@ modules:
       handler: index.onDecisionUpdated
     - key: on-issue-updated
       handler: index.onIssueUpdated
-    - key: eval-runner
-      handler: index.evalHandler
     - key: action-check
       handler: index.checkIssueConsistency
     - key: action-find

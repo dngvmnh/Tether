@@ -4,6 +4,58 @@ import { ApiError, call } from '../api/client';
 
 const csv = (s: string) => s.split(',').map((x) => x.trim()).filter(Boolean);
 
+interface EvalResult {
+  ranAt: string;
+  total: number;
+  passed: number;
+  missedConflicts: number;
+  falseConflicts: number;
+  falseNoConflict: number;
+  rows: Array<{ id: string; title: string; expected: string; actual: string | null; pass: boolean }>;
+}
+
+/** Runs the golden-scenario eval with the real LLM (fixture data only; admins only). */
+function EvalPanel() {
+  const [result, setResult] = useState<EvalResult | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+  const refresh = () =>
+    call('getEval', {})
+      .then((r) => setResult(r.result as EvalResult | null))
+      .catch((e: ApiError) => setMsg(e.message));
+  useEffect(() => void refresh(), []);
+  return (
+    <section className="eval">
+      <h3>Evaluation</h3>
+      <p className="muted">Runs the golden scenarios through the live pipeline. Takes 1-3 minutes.</p>
+      <button type="button" className="btn" onClick={() => call('runEval', {}).then(() => setMsg('Queued. Refresh in a minute.')).catch((e: ApiError) => setMsg(e.message))}>
+        Run eval
+      </button>{' '}
+      <button type="button" className="btn" onClick={() => void refresh()}>
+        Refresh
+      </button>
+      {msg && <p className="muted">{msg}</p>}
+      {result && (
+        <>
+          <p>
+            <strong>
+              {result.passed}/{result.total} passed
+            </strong>{' '}
+            · missed conflicts {result.missedConflicts} · false conflicts {result.falseConflicts} · false "no conflict" {result.falseNoConflict} ·{' '}
+            {new Date(result.ranAt).toLocaleString()}
+          </p>
+          <ul className="muted">
+            {result.rows.map((r) => (
+              <li key={r.id}>
+                {r.pass ? '✓' : '✕'} {r.id} {r.title}: expected {r.expected}, got {r.actual ?? 'FAILED'}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+}
+
 export function Settings() {
   const [config, setConfig] = useState<TetherConfig | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -55,6 +107,7 @@ export function Settings() {
         Save
       </button>
       {msg && <p className="muted">{msg}</p>}
+      <EvalPanel />
     </form>
   );
 }

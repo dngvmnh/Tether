@@ -17,7 +17,7 @@ import { createFollowUpIssue, isJiraAdmin, JiraTicketAdapter } from '../adapters
 import { store } from '../adapters/storage';
 import { PortError } from '../engine/ports';
 import { buildFollowUpDraft } from '../engine/present';
-import { startAnalysisJob } from './jobs';
+import { startAnalysisJob, startEvalJob } from './jobs';
 
 export interface ForgeContext {
   accountId: string;
@@ -92,5 +92,13 @@ define('setConfig', SetConfigInput, async ({ config }) => {
   await store.setConfig(config);
   return { config };
 });
+
+define('runEval', null, async () => {
+  if (!(await isJiraAdmin())) throw new PortError('Only Jira admins can run the eval', 'FORBIDDEN', false, true);
+  await startEvalJob();
+  return { queued: true as const };
+});
+
+define('getEval', null, async () => ({ result: (await store.getEval()) ?? null }));
 
 export const handler = resolver.getDefinitions();

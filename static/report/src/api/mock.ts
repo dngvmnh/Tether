@@ -81,6 +81,10 @@ export async function mockInvoke<N extends ResolverName>(name: N, input: Resolve
     case 'setConfig':
       config = (i as { config: TetherConfig }).config;
       return ok({ config }) as Out;
+    case 'runEval':
+      return ok({ queued: true }) as Out;
+    case 'getEval':
+      return ok({ result: null }) as Out;
     default:
       return { ok: false, error: { code: 'UNKNOWN', message: `No mock for ${name}`, retryable: false } } as Out;
   }

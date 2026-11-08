@@ -19,7 +19,7 @@ and recording.
 
 - **Atlassian API tokens.** Each person creates their own (id.atlassian.com → Security → API tokens) and runs `forge login` themselves.
 - **`.env`.** Personal, only used by `npm run seed`. Gitignored.
-- **Passwords**, and **Forge variables** such as `TETHER_EVAL_TOKEN` (each dev sets their own per environment).
+- **Passwords**. Each person also logs in with their own Forge token (on WSL: `FORGE_EMAIL` + `FORGE_API_TOKEN` in a private file loaded by `~/.bashrc`, because WSL has no keychain).
 - **LLM keys.** None exist: Tether uses Forge LLMs (Atlassian-hosted Claude), so there is no OpenAI/Anthropic key anywhere.
 
 If a token is pasted in chat or committed, revoke it immediately at id.atlassian.com.
@@ -75,7 +75,7 @@ forge install -e dev-<you> --site <your-site>.atlassian.net --product confluence
 
 Seed your site with the demo decisions and tickets:
 
-1. In Jira, create a project with key `PAY` (any template).
+1. (The seed script creates the `PAY` project and `ENG` space if missing.)
 2. `cp .env.example .env` and fill in your site, email and token.
 3. `npm run seed -- --dry-run`, then `npm run seed`.
 4. In Jira → Apps → **Tether settings**, keep space `ENG`, label `tether-decision`.
@@ -84,7 +84,7 @@ Seed your site with the demo decisions and tickets:
 
 | Who | Fast loop | Forge loop |
 |---|---|---|
-| Engine | `npm run test:watch`, `npm run eval:offline` | deploy to `dev-<you>`, POST the eval web trigger (docs/EVAL.md) |
+| Engine | `npm run test:watch`, `npm run eval:offline` | deploy to `dev-<you>`, Tether settings → Run eval (docs/EVAL.md) |
 | Integration | unit tests with fake ports | `forge tunnel -e dev-<you>` + reload the issue |
 | UI | `npm run ui:dev` → http://localhost:5174 (mock backend, scenario picker) | terminal 1 `npm run ui:tunnel`, terminal 2 `forge tunnel -e dev-<you>` |
 
