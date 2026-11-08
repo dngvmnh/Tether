@@ -32,6 +32,14 @@ function fake(...answers: unknown[]) {
 const vocab = { services: ['payment-service'], attributes: [{ key: 'retry.count', label: 'retry limit' }] };
 
 describe('extraction boundary validation (fake LLM, not a model-quality evaluation)', () => {
+  it('repairs an explicit should numeric guideline promoted to a mandatory rule', async () => {
+    const d = goldDecisions().find((d) => d.decisionId === 'ADR-PAY-009')!;
+    const valid = extracted(d.constraints[0]!);
+    const f = fake({ constraints: [{ ...valid, modality: 'MUST' }] }, { constraints: [valid] });
+    const result = await extractDecisionConstraints(f.llm, d, vocab);
+    expect(result.calls).toBe(2);
+    expect(result.constraints[0]).toMatchObject({ modality: 'SHOULD', operator: 'LTE', value: 60 });
+  });
   it('repairs a required refund threshold incorrectly treated as an upper allowance', async () => {
     const s = goldScenarios().find((s) => s.id === 'S12')!;
     const valid = extracted(s.claims[0]!);

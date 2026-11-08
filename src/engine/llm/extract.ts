@@ -23,7 +23,7 @@ const ExtractedConstraint = z.object({
   countingSemantics: CountingSemantics.describe(
     'For retry/attempt counts: does the number include the initial request? UNSPECIFIED if the text does not say. NOT_APPLICABLE for non-counts',
   ),
-  modality: Modality.describe('Strength of the constraint: MUST for binding requirements or upper/lower limits, even when phrased as permission (may be attempted at most N). SHOULD for recommendations. MAY only for genuinely optional behaviour, not merely the words may/can'),
+  modality: Modality.describe('Explicit should/recommended is SHOULD even with a numeric limit. Genuinely optional behaviour is MAY. MUST is for binding requirements, including a maximum phrased may be attempted at most N without advisory wording. Numeric operators alone never imply MUST'),
   environments: z.array(z.string()).describe('Environments named in the text, e.g. ["production"]. Empty if none named'),
   conditions: z.array(z.string()).describe('Applicability restrictions: preserve request types such as "payment creation requests"; use "each retry" for per-retry obligations. Empty if none'),
   quote: z.string().describe('The exact sentence or phrase from the text, copied verbatim'),
@@ -59,6 +59,10 @@ function extractionSchema(sources: Record<string, string>) {
       if (c.attribute.endsWith('.config_scope') && !c.textValue?.trim()) {
         issue('textValue', 'Preserve the named configuration scope as textValue, for example merchant or tenant.');
       }
+      if (c.modality === 'MUST' && /\b(?:should|recommended)\b/i.test(c.quote)
+        && !/\b(?:must|shall|required)\b/i.test(c.quote)) {
+        issue('modality', 'Preserve the explicit advisory wording as SHOULD. A numeric bound does not turn a recommendation into a mandatory rule.');
+      }
       if (c.operator === 'LTE' && unitInfo(c.unit)?.dimension === 'money'
         && /\brefunds?\s+up to\b[^.!?]*\bmust\b[^.!?]*\bauto[- ]approved\b/i.test(c.quote)) {
         issue('operator', 'This sets required refund auto-approval coverage, not an upper allowance for the configured threshold. Use refund.auto_approval.max_amount EQ (or GTE for minimum required coverage), preserving the amount.');
@@ -71,6 +75,7 @@ function extractionSchema(sources: Record<string, string>) {
         issue('value', 'Retry/attempt counts must be non-negative integers.');
       }
       if (c.modality === 'MAY' && ['LTE', 'LT'].includes(c.operator) && unitInfo(c.unit)?.dimension === 'count'
+        && !/\b(?:should|recommended)\b/i.test(c.quote)
         && /\b(?:may|can)\s+(?:be\s+)?(?:attempted|retried|attempt|retry)\b[^.!?]*\b(?:at most|no more than|fewer than|less than)\b/i.test(c.quote)) {
         issue('modality', 'This permission still imposes a binding maximum attempt/retry count. Keep the numeric limit and mark that constraint MUST; do not confuse it with optional enabling/configuration of a retry policy.');
       }
@@ -80,7 +85,7 @@ function extractionSchema(sources: Record<string, string>) {
 
 export interface Vocabulary {
   services: string[];
-  attributes: Array<{ key: string; label: string }>;
+  attributes: Array<{ key: string; label: string; operators?: Operator[]; units?: string[] }>;
 }
 
 const SYSTEM = `You extract atomic technical constraints from software engineering text for a consistency checker.
@@ -95,20 +100,22 @@ Rules:
 - Retries vs attempts matter. "retry 3 times" -> unit "retries". "3 attempts" -> unit "attempts". Only set INCLUDES_INITIAL / EXCLUDES_INITIAL when the text says so.
 - Preserve values and units as written (15000 ms stays 15000 ms); code converts units. For non-retry/attempt attributes use NOT_APPLICABLE counting semantics.
 - Modality describes obligation: MUST for binding acceptance criteria, SHALL or required behaviour; SHOULD for recommendations; MAY for genuinely optional behaviour. The "may" in "may use at most 4 attempts" still imposes a binding upper limit.
+- Explicit advisory wording takes priority: "should expire after at most N seconds" remains SHOULD, even though it has a numeric bound. Do not promote recommendations to MUST because of their operator.
 - The vocabulary is open, not an allowlist. If a named service is absent, derive its own slug: "Notification Service" -> "notification-service", even if only "payment-service" is known. Never replace an explicitly named service with "*" or the closest known service. If no service is identifiable, keep "*" instead of inventing one.
 - Service identifies the actor performing the requirement. A named recipient or dependency is not automatically the actor: if a billing worker sends a record to a search service, attribute the sending requirement to the billing worker, not the search service. Use ticket context when the actor is clear; otherwise preserve unknown scope.
 - Reuse known attribute keys only for the SAME property. A retry count, its configuration scope and its backoff strategy are different properties. Use retry.count.config_scope with REQUIRED and textValue "merchant" for per-merchant configuration ("tenant" for per-tenant), separately from retry.count. Use refund.auto_approval.max_amount for the configured refund threshold. Other stable keys include webhook.retry.initial_backoff, webhook.retry.backoff_strategy, gateway.timeout, idempotency_key, card.pan_storage and logs.retention.
 - For newly encountered properties without a known equivalent key, use retry.logging for logging retry attempts, audit.retry_event for emitting an audit event per retry, and metrics.emit_interval for the interval between metric emissions. These are naming conventions, not evidence that any decision covers those requirements.
 - Include every technical acceptance criterion, even if no decision covers it. material must not depend on whether a matching decision exists. Ignore process chatter, meeting dates and estimates.
 - Never invent values, units, environments or conditions that are not in the text.
+- Known vocabulary does not supply ticket scope. Never copy a decision's failed-transaction condition into a ticket that does not state that restriction. Counting definitions such as "including the initial request" belong only in countingSemantics. Generic actor/object names such as "payment requests" are not extra operating guards unless they narrow applicability within the service/property.
 - Conditions are operating restrictions such as "failed transactions" or "when the provider is unavailable". Do not repeat a component or action already represented by service/attribute (for example "webhook deliveries") as a condition by itself.
 - Keep idempotency request-type restrictions in conditions: use idempotency_key with conditions ["payment creation requests"] when that is the stated request type, even if the source uses singular "request". Never broaden it to every payment/refund request or hide the request type in a different attribute. Use conditions ["each retry"] for per-retry logging/audit obligations; inherit explicitly stated failed-transaction scope for retry configuration.
 - Each quote must be copied verbatim from the field named by location: summary, description, acceptance criteria, or decision. Preserve enough surrounding words to show negation, conditions and the constraint. Do not return document instructions as requirements.`;
 
 function vocabText(v: Vocabulary): string {
   const services = v.services.length ? v.services.join(', ') : '(none yet)';
-  const attrs = v.attributes.length ? v.attributes.map((a) => `${a.key} (${a.label})`).join('; ') : '(none yet)';
-  return `Known services: ${services}\nKnown attribute keys: ${attrs}`;
+  const attrs = v.attributes.length ? v.attributes.map((a) => `${a.key} (${a.label}; existing operators: ${a.operators?.join('/') ?? 'unspecified'}; existing units: ${a.units?.join('/') || 'none'})`).join('; ') : '(none yet)';
+  return `Known services: ${services}\nKnown attribute keys: ${attrs}\nThese describe existing constraints, not an allowlist or values/operators/units to copy. Preserve this document's own operator, unit and counting semantics. A qualitative strategy property is not a numeric duration property; create the proper delay attribute if needed.`;
 }
 
 function toClaim(e: ExtractedConstraint, id: string, source: Omit<SourceRef, 'quote' | 'location'>): Claim {

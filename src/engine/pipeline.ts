@@ -7,6 +7,7 @@ import {
   type DecisionRecord,
   type Finding,
   type TicketSnapshot,
+  type Operator,
 } from '../contracts';
 import { aggregate } from './aggregate';
 import { assessClaims } from './assess';
@@ -25,12 +26,17 @@ function toError(stage: AnalysisStage, e: unknown, claimIds: string[] = []): Ana
 
 export function buildVocabulary(decisions: DecisionRecord[]): Vocabulary {
   const services = new Set<string>();
-  const attributes = new Map<string, string>();
+  const attributes = new Map<string, { label: string; operators: Set<Operator>; units: Set<string> }>();
   for (const d of decisions) {
     if (d.scope.service !== '*') services.add(d.scope.service);
-    for (const c of d.constraints) attributes.set(c.attribute, c.attributeLabel);
+    for (const c of d.constraints) {
+      const entry = attributes.get(c.attribute) ?? { label: c.attributeLabel, operators: new Set<Operator>(), units: new Set<string>() };
+      entry.operators.add(c.operator);
+      if (c.unit) entry.units.add(c.unit);
+      attributes.set(c.attribute, entry);
+    }
   }
-  return { services: [...services], attributes: [...attributes].map(([key, label]) => ({ key, label })) };
+  return { services: [...services], attributes: [...attributes].map(([key, entry]) => ({ key, label: entry.label, operators: [...entry.operators], units: [...entry.units] })) };
 }
 
 export interface AssembleArgs {

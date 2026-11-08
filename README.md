@@ -44,7 +44,7 @@ docs/                     PLAN, TEAM-SETUP, ARCHITECTURE, EVAL, SUBMISSION
 
 ```bash
 npm install            # root + static/report
-npm run check          # typecheck, 123 tests, offline eval 30/30, manifest schema, UI build
+npm run check          # typecheck, 124 tests, offline eval 30/30, manifest schema, UI build
 npm run ui:dev         # UI with mock backend at http://localhost:5174 (scenario picker at the top)
 ```
 
