@@ -9,8 +9,8 @@ and recording.
 
 | Thing | How | Secret? |
 |---|---|---|
-| GitHub repo `dngvmnh/Codegeist-2026` | GitHub → Settings → Collaborators → add each teammate (Write) | No |
-| Forge app (one app id) | developer.atlassian.com/console → Tether → **Contributors** → add each teammate's Atlassian email. Role: **Developer** for UI/engine, **Deployer** for whoever ships to production | No |
+| GitHub repo `dngvmnh/Tether` | GitHub → Settings → Collaborators → add each teammate (Write) | No |
+| Forge app (one app id) | developer.atlassian.com/console → Tether → **Contributors** → add each teammate's Atlassian email. Role: **Deployer** for everyone, so anyone can deploy `main` to the shared site | No |
 | App id | Committed in `manifest.yml` after `forge register` | No |
 | Shared demo site `one-atlas-dscw.atlassian.net` | admin.atlassian.com → Users → invite teammates, make them **site admins** (needed to install apps) | No |
 | Conventions: Jira project `PAY`, Confluence space `ENG`, label `tether-decision` | In the repo (`eval/`, `.env.example`) | No |
@@ -19,7 +19,7 @@ and recording.
 
 - **Atlassian API tokens.** Each person creates their own (id.atlassian.com → Security → API tokens) and runs `forge login` themselves.
 - **`.env`.** Personal, only used by `npm run seed`. Gitignored.
-- **Passwords**, and **Forge variables** such as `TETHER_EVAL_TOKEN` (each dev sets their own per environment).
+- **Passwords**. Each person also logs in with their own Forge token (on WSL: `FORGE_EMAIL` + `FORGE_API_TOKEN` in a private file loaded by `~/.bashrc`, because WSL has no keychain).
 - **LLM keys.** None exist: Tether uses Forge LLMs (Atlassian-hosted Claude), so there is no OpenAI/Anthropic key anywhere.
 
 If a token is pasted in chat or committed, revoke it immediately at id.atlassian.com.
@@ -38,7 +38,7 @@ Forge CLI is installed in WSL. Working under `/mnt/c/...` is slow and file watch
 
 ```bash
 mkdir -p ~/code && cd ~/code
-git clone https://github.com/dngvmnh/Codegeist-2026.git && cd Codegeist-2026
+git clone https://github.com/dngvmnh/Tether.git && cd Tether
 nvm install 22 && nvm use 22     # runtime is nodejs22.x
 npm install                      # also installs static/report
 npm run check                    # typecheck + tests + eval + manifest + UI build
@@ -75,7 +75,7 @@ forge install -e dev-<you> --site <your-site>.atlassian.net --product confluence
 
 Seed your site with the demo decisions and tickets:
 
-1. In Jira, create a project with key `PAY` (any template).
+1. (The seed script creates the `PAY` project and `ENG` space if missing.)
 2. `cp .env.example .env` and fill in your site, email and token.
 3. `npm run seed -- --dry-run`, then `npm run seed`.
 4. In Jira → Apps → **Tether settings**, keep space `ENG`, label `tether-decision`.
@@ -84,14 +84,39 @@ Seed your site with the demo decisions and tickets:
 
 | Who | Fast loop | Forge loop |
 |---|---|---|
-| Engine | `npm run test:watch`, `npm run eval:offline` | deploy to `dev-<you>`, POST the eval web trigger (docs/EVAL.md) |
+| Engine | `npm run test:watch`, `npm run eval:offline` | deploy to `dev-<you>`, Tether settings → Run eval (docs/EVAL.md) |
 | Integration | unit tests with fake ports | `forge tunnel -e dev-<you>` + reload the issue |
 | UI | `npm run ui:dev` → http://localhost:5174 (mock backend, scenario picker) | terminal 1 `npm run ui:tunnel`, terminal 2 `forge tunnel -e dev-<you>` |
 
 Rules that keep everyone unblocked:
 
 - **Only one tunnel per environment.** That is why everyone has their own `dev-<you>`.
-- **Never deploy to `development` or `production` from a feature branch.** `development` is the shared integration env on the shared site (owner deploys from `main`).
-- **Contracts first.** Anything in `src/contracts/` is a team decision: PR labelled `contract`, all three review, then `npm run fixtures`.
+- **Never deploy to `development` or `production` from a feature branch.** `development` is the shared integration env on the shared site: anyone with the Deployer role deploys it from `main` after merging (`npm run deploy:dev`).
+- **Contracts first.** Anything in `src/contracts/` is a team decision: PR labelled `contract`, 24 h heads-up in chat (additive optional fields can merge at once), then `npm run fixtures`. Reviews never block: no review in 24 h + green CI = merge it yourself.
 - **Branches:** `feat/<area>-<thing>`, small PRs, CI must be green. `main` is always deployable.
 - **Manifest changes** (scopes, modules) change everyone's install: announce in chat, then everyone runs `forge deploy -e dev-<you>` and `forge install --upgrade`.
+
+## Teamwork Graph: register the persisted query (once per app)
+
+Raw `cypherQuery` is closed to new apps (error: "The cypherQuery field is restricted and not
+available to this client. Use a persisted query via customQuery instead."). Tether runs a
+persisted query instead. Until one is registered, Tether falls back to Jira remote links and
+says so in the report footer.
+
+1. Open https://teamwork-graph.atlassian.com/query-builder (signed in as an app contributor), **Saved queries**.
+2. Register for app `ari:cloud:ecosystem::app/07520459-db83-4ab5-b000-09c3c8095691` the Cypher in
+   `LINKED_PAGES_CYPHER` (`src/adapters/teamworkGraph.ts`), param `workItemId` of type `ARI`, required.
+   First try the query in the builder against PAY-1: the relationship direction is inferred from the docs.
+3. Copy the returned `queryKey` into Jira settings, Apps, **Tether settings**, "Teamwork Graph linked-pages query key", and save.
+4. Enable the graph scopes in `manifest.yml` (`read:graph:issue:jira`, `read:graph:page:confluence`), deploy, `forge install --upgrade`.
+   Missing scopes return empty results, not errors.
+
+**Registered key (Bảo, 8 Nov):** `66b8902d-a241-4a00-86ad-5c5f8a461be4`, query name
+`tether-linked-remote-links`, app `07520459-…`. Finding from TWG Labs on `one-atlas-zthc`:
+`content_entity_links_entity` between a work item and a `ConfluencePage` errors in both
+directions, but the issue's web links are indexed as `JiraWorkItemRemoteLink` (via
+`jira_work_item_links_jira_work_item_remote_link`) carrying `webUrl` with the page id, which the
+adapter parses. Only issues with a web link to the ADR are matched (PAY-1 qualifies). Paste the same
+key into the shared site's Tether settings.
+
+Registered queries are immutable: to change the Cypher, register a new one and paste the new key.

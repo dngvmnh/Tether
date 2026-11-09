@@ -34,7 +34,7 @@ outside Atlassian).
 |---|---|---|
 | Best Agents | `rovo:agent` Tether + `rovo:skill` decision-consistency + reusable `action`s (GET check, GET find, CREATE follow-up) | `manifest.yml`, `src/handlers/rovo.ts`, `skills/` |
 | Best app with MCP | `rovo:mcp` exposes check + find to Claude/Cursor/etc.; `skills/decision-consistency/SKILL.md` is an open skill file for third-party agents | `manifest.yml`, `skills/` |
-| Teamwork Graph | Consumes TWG (`requestTeamworkGraph`, Cypher) for issue→page links and owner→team; reports "graph unavailable" honestly | `src/adapters/teamworkGraph.ts` |
+| Teamwork Graph | Consumes TWG (`requestTeamworkGraph`, persisted Cypher via `customQuery`) for issue→page links and owner→team; reports "graph unavailable" honestly | `src/adapters/teamworkGraph.ts` |
 | Marketplace | Separate registered app submitted for listing (installation links are disabled for listed apps, so judges get the other app) | `docs/SUBMISSION.md` |
 
 Rules check needed: the Devpost rules page blocks automated reading. **Someone must read
@@ -42,39 +42,70 @@ the official rules** and confirm (a) whether one project can win a placing prize
 bonus prizes, and (b) any requirement on repo visibility. Paste the answers into
 `docs/SUBMISSION.md`.
 
-## 3. Workstreams (no one waits on anyone)
+## 3. Status (Sun 8 Nov)
 
-The contract (`src/contracts/`) and golden data (`eval/`) are already in the repo, so each
-stream can start today against fakes, fixtures or mocks.
+Week 1 milestone is already met: on the shared site, PAY-1 (S01) shows **CONFLICT vs
+ADR-PAY-001** end to end (panel → queue worker → Forge LLM → report), with verified quotes,
+scope chips and decision history.
+
+| Done | Where |
+|---|---|
+| App registered, deployed to `development` (2.4.0, Runs on Atlassian eligible), installed on `one-atlas-dscw` (Jira + Confluence) | `manifest.yml` |
+| Shared site seeded: project `PAY` (PAY-1..15 = S01..S15), space `ENG` (9 ADRs labelled `tether-decision`) | `npm run seed` |
+| Tether Rovo agent answers PAY-1 in Rovo Chat (check action) | `src/handlers/rovo.ts` |
+| In-Forge eval runs from Tether settings → Run eval (no web trigger, keeps Runs on Atlassian) | `src/handlers/evalSuite.ts` |
+| Teamwork Graph moved to persisted queries (`customQuery`); falls back to Jira remote links until a query key is set | `src/adapters/teamworkGraph.ts` |
+
+Known gaps found in the live run:
+- PAY-1's second requirement ("each retry is logged") comes back Insufficient Evidence; extraction marks it material. Engine task (Đạt).
+- First check on a site takes ~40 s (extracts all 9 decisions); later checks hit the per-version cache.
+
+## 4. Workstreams: everyone is self-unblocking
+
+Each task below lists what you need. **Nothing needs another teammate.** You need only:
+your own Atlassian account, your own dev site + `dev-<you>` env, and **Developer** role on the
+app. The only one-time dependency: Đăng adds Đạt and Bảo as contributors with the
+**Deployer** role (developer console → Tether → Contributors) and as site admins on the
+shared site. After that nobody waits for anyone.
+
+Rules that remove waiting:
+- **Reviews are not blocking.** Ask for a review; if nobody reviews within 24 h and CI is green, merge it yourself. Contract changes (`src/contracts/`) get a 24 h heads-up in chat instead of three approvals; additive optional fields can merge immediately.
+- **Anyone may deploy `main` to `development`** (the shared site) after merging: `npm run deploy:dev`. Never deploy a branch there. Your own `dev-<you>` takes anything.
+- **Test on your own site first.** The shared site is for integration and recording only.
+- **Manifest changes** (scopes/modules): merge, deploy, post one line in chat. Others run `forge deploy -e dev-<you>` + `forge install --upgrade` when they next pull.
 
 ### Đạt: engine and evaluation (`src/engine/`, `eval/`)
-- Extraction prompts v1 (`src/engine/llm/extract.ts`): canonical attributes, counting semantics, verbatim quotes.
-- Semantic comparator for qualitative claims (`src/engine/llm/semantic.ts`).
-- Grow the golden set to ~30 (adversarial: units, "should" vs "must", environment lists, negations, multi-claim tickets).
-- In-Forge eval on `dev-dat`; report per-scenario and error-category results (missed conflicts, false conflicts, false "no conflict").
-- Fast loop needs no Forge: `npm run test:watch`.
+1. Fix extraction materiality: PAY-1 "each retry is logged" should be non-material or covered (`src/engine/llm/extract.ts`). Verify on your site: open PAY-1 → Re-run check.
+2. Baseline in-Forge eval: your site → Jira settings → Apps → Tether settings → **Run eval**. Paste the numbers in `docs/EVAL.md`.
+3. Semantic comparator for qualitative claims (`src/engine/llm/semantic.ts`).
+4. Golden set 15 → 30 (units, "should" vs "must", environment lists, negations, multi-claim). Then `npm run fixtures` and `npm run seed` on your site.
+- Needs nothing from others: `npm run test:watch`, `npm run eval:offline`, your own `dev-dat`.
 
 ### Đăng: Forge integration (`src/adapters/`, `src/handlers/`, `manifest.yml`)
-- Register app, contributors, shared demo site, seed data.
-- Real Jira/Confluence adapters end to end on the site (acceptance-criteria field, page permissions).
-- Teamwork Graph: enable scopes, verify the Cypher in GraphiQL (`/gateway/api/graphql/twg`), owner teams.
-- Rovo agent/skill/MCP working in Rovo Chat and from an external MCP client (Claude Code / Claude Desktop).
-- Drift triggers end to end; production deploy; distribution link; Marketplace app.
+1. ~~Rovo: Tether agent answers "Does PAY-1 conflict with any decision?" in Rovo Chat~~ **Done 8 Nov**: CONFLICT vs ADR-PAY-001 with both quotes and the decision link (Rovo → View all agents → Tether). Remaining: try "find decisions about retries" (find action).
+2. MCP: admin enables the app's MCP server, connect from Claude Code (`https://mcp.atlassian.com/forge/<appId>`), call check + find.
+3. Follow-up issue: preview → confirm → created as the user, linked to the issue and decision page.
+4. Drift: edit ADR-PAY-001 → PAY-1 shows the stale banner (trigger end to end).
+5. Read the Devpost official rules (multi-prize, repo visibility) and paste answers into `docs/SUBMISSION.md`.
+6. Week 3-4: production deploy, distribution link, second registered app for Marketplace.
 
-### Bảo: product experience (`static/report/`)
-- Issue panel states: idle, running (stages), report, stale, failed, partial errors.
-- Finding cards: side-by-side quotes, scope chips, decision history, actions.
-- Follow-up issue preview/confirm flow; admin settings page.
-- Light/dark themes (tokens only), accessibility, empty states, copy.
-- Stretch: Confluence decision badge ("referenced by 4 tickets, 1 conflict").
-- Fast loop needs no Forge: `npm run ui:dev` with the scenario picker.
+### Bảo: product experience (`static/report/`) **and Teamwork Graph**
+1. **Teamwork Graph query** (moved here from Đăng; self-contained, see `docs/TEAM-SETUP.md` → Teamwork Graph):
+   1. On a branch, uncomment `read:graph:issue:jira` and `read:graph:page:confluence` in `manifest.yml`, `forge deploy -e dev-bao`, `forge install -e dev-bao --upgrade`.
+   2. In TWG Labs (signed in with your own account, which is an app contributor), run `LINKED_PAGES_CYPHER` against one of your seeded issues that has a web link to an ADR (e.g. PAY-1). If it returns nothing, flip the arrow direction and try again.
+   3. Save it as a query for the app id, copy the `queryKey`, paste it in **your** Tether settings, Re-run check on PAY-1. Done when the footer says "N page(s) linked to PAY-1 in Teamwork Graph".
+   4. Put the working Cypher back into `src/adapters/teamworkGraph.ts` and the key into `docs/TEAM-SETUP.md`, merge, `npm run deploy:dev`, paste the same key into the shared site's Tether settings.
+2. Panel states: idle, running (stages), report, stale, failed, partial errors.
+3. Finding cards, follow-up modal, settings page (now has the query-key field), light/dark, a11y, copy.
+4. Stretch: Confluence decision badge.
+- Needs nothing from others: `npm run ui:dev` (mock backend, scenario picker), your own `dev-bao` on `one-atlas-zthc`.
 
-## 4. Timeline
+## 5. Timeline
 
 | Week | Dates | Milestone (demoable on the shared site) | Đạt | Đăng | Bảo |
 |---|---|---|---|---|---|
-| 0 | Sun 8 Nov | Repo scaffold (done), app registered, everyone deployed to own env | Run tests, read engine | Register, contributors, seed shared site | Run mock UI, pick component approach |
-| 1 | 9-15 Nov | **S01 shows CONFLICT on a real issue** (panel → worker → Forge LLM → report) | Extraction v1 + in-Forge eval baseline | Adapters live, permission filter, TWG scopes verified | Panel polish, all states from fixtures |
+| 0 | Sun 8 Nov | Scaffold, registration, deploy, seed, S01 live CONFLICT (all done); everyone deployed to own env | Run tests, read engine | Register, contributors, seed shared site | Run mock UI, pick component approach |
+| 1 | 9-15 Nov | **S01 fully covered (2 of 2), Teamwork Graph links pages, follow-up issue created from PAY-1** | Extraction v1 + in-Forge eval baseline | Rovo agent in Rovo Chat, follow-up creation, rules check | TWG query registered + scopes, panel polish |
 | 2 | 16-22 Nov (Build Session Tue 17 Nov 12:00 ET = Wed 01:00 SGT, watch the recording) | **All 15 scenarios correct end to end; Tether agent answers in Rovo Chat** | Extraction ≥ 13/15, semantic comparator | Rovo agent/skill/MCP live, follow-up creation | Follow-up modal, settings page, stale banner |
 | 3 | 23-29 Nov | **Drift demo: edit ADR → ticket flagged**; MCP from Claude Code | Golden set → 30, error analysis | Triggers end to end, TWG owner/team, Marketplace partner account | Decision history polish, dark mode, a11y |
 | 4 | 30 Nov-6 Dec (exam crunch, COR3301 final 1 Dec) | Feature freeze for new modules. **Marketplace app submitted** (target 6 Dec) | Bug bash | Production deploy, distribution link, security review | Confluence badge (stretch) |
@@ -82,7 +113,7 @@ stream can start today against fakes, fixtures or mocks.
 | 6 | 14-19 Dec | **Code freeze Wed 16 Dec; Devpost submitted Sat 19 Dec** | Devpost text (engine) | Devpost text (tech) | Video edit (< 5 min) |
 | buffer | 20-22 Dec | Fixes only | | | |
 
-## 5. Definition of done (MVP, end of week 2)
+## 6. Definition of done (MVP, end of week 2)
 
 - Opening any seeded issue and clicking **Check implementation context** shows the expected outcome for all 15 scenarios.
 - Failures (permission, LLM, retrieval) never show as "No conflict found".
@@ -90,7 +121,7 @@ stream can start today against fakes, fixtures or mocks.
 - Follow-up issue is created only after preview + confirm, linked to the issue and decision pages.
 - The Tether agent answers "Does PAY-101 conflict with any decision?" with quotes and links.
 
-## 6. Risks
+## 7. Risks
 
 | Risk | Mitigation |
 |---|---|

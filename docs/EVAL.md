@@ -8,7 +8,7 @@ One golden dataset, four uses:
 | Offline eval table | `npm run eval:offline` | No |
 | UI fixtures | `npm run fixtures` | No |
 | Demo data on a site | `npm run seed` | Your site + token |
-| End-to-end eval with real LLM extraction | eval web trigger | Your dev env |
+| End-to-end eval with real LLM extraction | Tether settings → Run eval | Your dev env |
 
 Files: `eval/decisions.json` (decision library + gold constraints),
 `eval/scenarios.json` (tickets + gold claims + expected outcomes), `eval/gold.ts` (loader).
@@ -39,13 +39,10 @@ outcome; run `npm test` and `npm run fixtures`; if it needs a new decision, add 
 
 ## End-to-end eval in Forge
 
-```bash
-forge variables set --encrypt -e dev-<you> TETHER_EVAL_TOKEN <random-string>
-forge deploy -e dev-<you>
-forge webtrigger -e dev-<you>          # pick tether-eval-runner, copy the URL
-curl -X POST -H "x-tether-eval-token: <random-string>" <url>   # queue a run
-curl -H "x-tether-eval-token: <random-string>" <url>           # results (after ~1-3 min)
-```
+Deploy to your environment, then in Jira go to **Apps → Tether settings → Evaluation → Run eval**
+(Jira admins only), wait 1-3 minutes and press **Refresh**. It uses fixture data only, never
+site data. There is deliberately no web trigger: a web trigger counts as egress and makes the
+app ineligible for Runs on Atlassian.
 
 Report per run: passed/total, missed conflicts, false conflicts, false "no conflict",
 extraction count vs gold, LLM calls, duration, model. Record each run in the table below.

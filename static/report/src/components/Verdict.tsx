@@ -16,7 +16,7 @@ export function CoverageMeter({ report }: { report: AnalysisReport }) {
   const pct = total ? Math.round((checked / total) * 100) : 0;
   return (
     <div className="coverage" title={report.coverage.summary}>
-      <div className="coverage__bar" role="progressbar" aria-valuenow={checked} aria-valuemin={0} aria-valuemax={total}>
+      <div className="coverage__bar" role="progressbar" aria-valuenow={checked} aria-valuemin={0} aria-valuemax={total} aria-valuetext={report.coverage.summary} aria-label="Requirements checked">
         <div className="coverage__fill" style={{ width: `${pct}%` }} />
       </div>
       <span className="coverage__text">{report.coverage.summary}</span>

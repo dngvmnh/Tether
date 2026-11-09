@@ -36,12 +36,14 @@ export async function call<N extends ResolverName>(name: N, input: ResolverApi[N
 export interface ModuleContext {
   moduleKey: string;
   issueKey?: string;
+  /** Decision id for the Confluence badge (mock: ?decision=ADR-PAY-001). */
+  decisionId?: string;
 }
 
 export async function getModuleContext(): Promise<ModuleContext> {
   if (MOCK) {
     const params = new URLSearchParams(window.location.search);
-    return { moduleKey: params.get('module') ?? 'tether-issue-panel', issueKey: 'PAY-101' };
+    return { moduleKey: params.get('module') ?? 'tether-issue-panel', issueKey: 'PAY-101', decisionId: params.get('decision') ?? 'ADR-PAY-001' };
   }
   const ctx = (await (await bridge()).view.getContext()) as { moduleKey: string; extension?: { issue?: { key?: string } } };
   return { moduleKey: ctx.moduleKey, issueKey: ctx.extension?.issue?.key };

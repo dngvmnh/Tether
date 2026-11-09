@@ -380,6 +380,11 @@ export const TetherConfig = z.object({
   /** Tried in order; the first available one is used. */
   models: z.array(z.string()).default(['claude-sonnet-5', 'claude-sonnet-4-6', 'claude-haiku-4-5-20251001']),
   useTeamworkGraph: z.boolean().default(true),
+  /**
+   * Key of the persisted Cypher query (registered in TWG Labs) that returns the Confluence
+   * pages linked to a work item. Raw cypherQuery is closed to new apps. See docs/TEAM-SETUP.md.
+   */
+  twgLinkedPagesQueryKey: z.string().optional(),
   /** Re-run the check automatically when a linked decision changes. */
   autoRecheckOnDecisionChange: z.boolean().default(false),
 });

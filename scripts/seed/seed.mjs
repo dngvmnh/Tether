@@ -60,6 +60,21 @@ async function ensureSpace() {
   console.log(`created space ${SPACE}`);
 }
 
+async function ensureProject() {
+  const p = await api('GET', `/rest/api/3/project/${PROJECT}`);
+  if (p) return console.log(`project ${PROJECT} exists`);
+  const me = await api('GET', '/rest/api/3/myself');
+  await api('POST', '/rest/api/3/project', {
+    key: PROJECT,
+    name: 'Payments',
+    projectTypeKey: 'software',
+    projectTemplateKey: 'com.pyxis.greenhopper.jira:gh-simplified-kanban-classic',
+    leadAccountId: me?.accountId,
+    assigneeType: 'UNASSIGNED',
+  });
+  console.log(`created project ${PROJECT}`);
+}
+
 async function ensureDecision(d) {
   const title = decisionTitle(d);
   const found = await api('GET', `/wiki/rest/api/content?spaceKey=${SPACE}&title=${encodeURIComponent(title)}&type=page`);
@@ -108,6 +123,7 @@ async function ensureIssue(s, pageIds) {
 
 async function main() {
   console.log(`${DRY ? '[dry-run] ' : ''}seeding ${SITE}: space ${SPACE}, project ${PROJECT}`);
+  await ensureProject();
   await ensureSpace();
   const pageIds = {};
   for (const d of decisions) pageIds[d.decisionId] = await ensureDecision(d);

@@ -50,6 +50,10 @@ export interface ResolverApi {
   };
   getConfig: { input: Record<string, never>; output: { config: TetherConfig } };
   setConfig: { input: z.infer<typeof SetConfigInput>; output: { config: TetherConfig } };
+  /** Admins only: queue the golden-scenario eval with the real LLM (fixture data only). */
+  runEval: { input: Record<string, never>; output: { queued: true } };
+  /** Latest eval result, or null. */
+  getEval: { input: Record<string, never>; output: { result: unknown } };
 }
 
 export type ResolverName = keyof ResolverApi;

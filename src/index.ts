@@ -6,4 +6,3 @@ export { handler as resolverHandler } from './handlers/resolver';
 export { handler as workerHandler } from './handlers/worker';
 export { onDecisionUpdated, onIssueUpdated } from './handlers/triggers';
 export { checkIssueConsistency, findDecisions, createFollowUp } from './handlers/rovo';
-export { handler as evalHandler } from './handlers/evalTrigger';

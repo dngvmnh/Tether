@@ -31,7 +31,7 @@ manifest.yml              Forge modules: issue panel, admin page, queue, trigger
 src/contracts/            Data contracts (zod). The team's single source of truth.
 src/engine/               Analysis engine. Pure TypeScript, no @forge imports, fully unit-tested.
 src/adapters/             Jira, Confluence, Teamwork Graph, Forge LLM, KVS
-src/handlers/             Resolvers, queue worker, triggers, Rovo actions, eval web trigger
+src/handlers/             Resolvers, queue worker, triggers, Rovo actions
 static/report/            Custom UI (React + Vite). `npm run ui:dev` runs it with a mock backend.
 skills/                   rovo:skill (also usable as an open SKILL.md for MCP clients)
 prompts/                  Rovo agent prompt

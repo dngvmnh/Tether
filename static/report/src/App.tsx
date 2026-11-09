@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getModuleContext, MOCK, type ModuleContext } from './api/client';
 import { DevToolbar } from './DevToolbar';
+import { DecisionBadge } from './views/DecisionBadge';
 import { IssuePanel } from './views/IssuePanel';
 import { Settings } from './views/Settings';
 
@@ -15,7 +16,13 @@ export function App() {
   return (
     <>
       {MOCK && <DevToolbar onChange={() => setNonce((n) => n + 1)} />}
-      {ctx.moduleKey === 'tether-admin' ? <Settings /> : <IssuePanel key={nonce} issueKey={ctx.issueKey ?? ''} />}
+      {ctx.moduleKey === 'tether-admin' ? (
+        <Settings />
+      ) : ctx.moduleKey === 'tether-decision-badge' ? (
+        <DecisionBadge decisionId={ctx.decisionId ?? ''} />
+      ) : (
+        <IssuePanel key={nonce} issueKey={ctx.issueKey ?? ''} />
+      )}
     </>
   );
 }

@@ -77,4 +77,4 @@ no outcome.
 - Issue key comes from module context, not from the UI payload, whenever available.
 - Action inputs come from an LLM: never used for authorization; account id read from context.
 - Follow-up issues are created **as the user**, after explicit confirmation.
-- Eval web trigger requires a per-environment secret and only touches fixture data.
+- Eval runs from the admin page (Jira admins only) on fixture data; no web trigger, so no egress.
