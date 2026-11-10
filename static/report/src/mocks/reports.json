@@ -51,9 +51,11 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "each retry"
+      ]
      },
-     "material": false,
+     "material": true,
      "source": {
       "kind": "JIRA_ISSUE",
       "id": "PAY-101",
@@ -321,10 +323,15 @@
    ],
    "coverage": {
     "totalClaims": 2,
-    "materialClaims": 1,
+    "materialClaims": 2,
     "checkedMaterialClaims": 1,
-    "unchecked": [],
-    "summary": "1 of 1 requirement checked."
+    "unchecked": [
+     {
+      "claimId": "PAY-101-C2",
+      "reason": "NO_DECISION_FOUND"
+     }
+    ],
+    "summary": "1 of 2 requirements checked. 1 has insufficient evidence."
    },
    "errors": [],
    "context": {
@@ -358,8 +365,8 @@
    "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
    "generatedAt": "2026-11-08T09:00:00.000Z",
    "status": "COMPLETE",
-   "overallOutcome": "NO_CONFLICT_FOUND",
-   "headline": "No conflict found across 1 requirement",
+   "overallOutcome": "INSUFFICIENT_EVIDENCE",
+   "headline": "1 of 2 requirements could not be checked",
    "claims": [
     {
      "id": "PAY-102-C1",
@@ -386,6 +393,33 @@
       "url": "https://example.atlassian.net/browse/PAY-102",
       "location": "acceptance criteria",
       "quote": "Retry failed transactions up to 5 times"
+     },
+     "confidence": 1
+    },
+    {
+     "id": "PAY-102-C2",
+     "subject": "Payment Service",
+     "attribute": "retry.count.config_scope",
+     "attributeLabel": "retry configuration scope",
+     "operator": "REQUIRED",
+     "textValue": "merchant",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-102",
+      "title": "Make payment retries configurable",
+      "url": "https://example.atlassian.net/browse/PAY-102",
+      "location": "acceptance criteria",
+      "quote": "configurable per merchant"
      },
      "confidence": 1
     }
@@ -594,14 +628,56 @@
        "label": "Note the ADR-PAY-001 limit in the acceptance criteria"
       }
      ]
+    },
+    {
+     "id": "F-PAY-102-C2",
+     "claimId": "PAY-102-C2",
+     "outcome": "INSUFFICIENT_EVIDENCE",
+     "reason": "NO_DECISION_FOUND",
+     "headline": "No decision covers Payment Service retry configuration scope",
+     "explanation": "No decision record in the configured spaces constrains retry configuration scope for Payment Service.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-102",
+      "title": "Make payment retries configurable",
+      "url": "https://example.atlassian.net/browse/PAY-102",
+      "location": "acceptance criteria",
+      "quote": "configurable per merchant"
+     },
+     "decisionEvidence": [],
+     "decisionIds": [],
+     "history": [],
+     "scopeCheck": {
+      "service": "UNKNOWN",
+      "environment": "UNKNOWN",
+      "conditions": "UNKNOWN",
+      "counting": "UNKNOWN"
+     },
+     "method": "NONE",
+     "confidence": 1,
+     "suggestedActions": [
+      {
+       "kind": "DOCUMENT_DECISION",
+       "label": "Record a decision for Payment Service: retry configuration scope"
+      },
+      {
+       "kind": "LINK_DECISION",
+       "label": "Link an existing decision page to this ticket"
+      }
+     ]
     }
    ],
    "coverage": {
-    "totalClaims": 1,
-    "materialClaims": 1,
+    "totalClaims": 2,
+    "materialClaims": 2,
     "checkedMaterialClaims": 1,
-    "unchecked": [],
-    "summary": "1 of 1 requirement checked."
+    "unchecked": [
+     {
+      "claimId": "PAY-102-C2",
+      "reason": "NO_DECISION_FOUND"
+     }
+    ],
+    "summary": "1 of 2 requirements checked. 1 has insufficient evidence."
    },
    "errors": [],
    "context": {
@@ -1495,7 +1571,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "material": true,
      "source": {
@@ -1683,7 +1761,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "owner": {
       "displayName": "Priya Raman"
@@ -1718,7 +1798,9 @@
        "scope": {
         "service": "payment-service",
         "environments": [],
-        "conditions": []
+        "conditions": [
+         "payment creation requests"
+        ]
        },
        "material": true,
        "source": {
@@ -2312,7 +2394,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "material": true,
      "source": {
@@ -2336,7 +2420,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "each retry"
+      ]
      },
      "material": true,
      "source": {
@@ -2496,7 +2582,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "owner": {
       "displayName": "Priya Raman"
@@ -2531,7 +2619,9 @@
        "scope": {
         "service": "payment-service",
         "environments": [],
-        "conditions": []
+        "conditions": [
+         "payment creation requests"
+        ]
        },
        "material": true,
        "source": {
@@ -3834,6 +3924,3453 @@
    }
   }
  },
+ "S16": {
+  "title": "Equivalent timeout units are consistent",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S16",
+   "issueKey": "PAY-116",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-116",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "NO_CONFLICT_FOUND",
+   "headline": "No conflict found across 1 requirement",
+   "claims": [
+    {
+     "id": "PAY-116-C1",
+     "subject": "Payment Service",
+     "attribute": "gateway.timeout",
+     "attributeLabel": "gateway timeout",
+     "operator": "EQ",
+     "value": 10000,
+     "unit": "ms",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-116",
+      "title": "Equivalent timeout units are consistent",
+      "url": "https://example.atlassian.net/browse/PAY-116",
+      "location": "acceptance criteria",
+      "quote": "Set the payment gateway timeout to 10000 ms."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-004",
+     "title": "Payment gateway timeout",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "owner": {
+      "displayName": "Marco Silva"
+     },
+     "statement": "Calls from the payment service to the payment gateway must time out after at most 10 seconds.",
+     "rationale": "Checkout UX budget is 15 seconds end to end.",
+     "supersedes": [],
+     "supersededBy": [],
+     "effectiveDate": "2026-01-12",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232241",
+      "title": "ADR-PAY-004: Payment gateway timeout",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+      "version": 1,
+      "location": "Decision",
+      "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-004-K1",
+       "subject": "Payment Service",
+       "attribute": "gateway.timeout",
+       "attributeLabel": "gateway timeout",
+       "operator": "LTE",
+       "value": 10,
+       "unit": "s",
+       "countingSemantics": "NOT_APPLICABLE",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": []
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232241",
+        "title": "ADR-PAY-004: Payment gateway timeout",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+        "version": 1,
+        "location": "Decision",
+        "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-116-C1",
+     "claimId": "PAY-116-C1",
+     "outcome": "NO_CONFLICT_FOUND",
+     "reason": "CONSISTENT",
+     "headline": "Consistent with ADR-PAY-004",
+     "explanation": "Ticket requires exactly 10000 ms; decision allows at most 10 s.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-116",
+      "title": "Equivalent timeout units are consistent",
+      "url": "https://example.atlassian.net/browse/PAY-116",
+      "location": "acceptance criteria",
+      "quote": "Set the payment gateway timeout to 10000 ms."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232241",
+       "title": "ADR-PAY-004: Payment gateway timeout",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+       "version": 1,
+       "location": "Decision",
+       "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-004"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-004",
+       "title": "Payment gateway timeout",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": []
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 1,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-116 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S17": {
+  "title": "Strict lower bound cannot meet the timeout limit",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S17",
+   "issueKey": "PAY-117",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-117",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "CONFLICT",
+   "headline": "1 requirement contradicts ADR-PAY-004",
+   "claims": [
+    {
+     "id": "PAY-117-C1",
+     "subject": "Payment Service",
+     "attribute": "gateway.timeout",
+     "attributeLabel": "gateway timeout",
+     "operator": "GT",
+     "value": 10,
+     "unit": "s",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-117",
+      "title": "Strict lower bound cannot meet the timeout limit",
+      "url": "https://example.atlassian.net/browse/PAY-117",
+      "location": "acceptance criteria",
+      "quote": "The payment gateway timeout must exceed 10 seconds."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-004",
+     "title": "Payment gateway timeout",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "owner": {
+      "displayName": "Marco Silva"
+     },
+     "statement": "Calls from the payment service to the payment gateway must time out after at most 10 seconds.",
+     "rationale": "Checkout UX budget is 15 seconds end to end.",
+     "supersedes": [],
+     "supersededBy": [],
+     "effectiveDate": "2026-01-12",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232241",
+      "title": "ADR-PAY-004: Payment gateway timeout",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+      "version": 1,
+      "location": "Decision",
+      "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-004-K1",
+       "subject": "Payment Service",
+       "attribute": "gateway.timeout",
+       "attributeLabel": "gateway timeout",
+       "operator": "LTE",
+       "value": 10,
+       "unit": "s",
+       "countingSemantics": "NOT_APPLICABLE",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": []
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232241",
+        "title": "ADR-PAY-004: Payment gateway timeout",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+        "version": 1,
+        "location": "Decision",
+        "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-117-C1",
+     "claimId": "PAY-117-C1",
+     "outcome": "CONFLICT",
+     "reason": "VALUE_CONTRADICTION",
+     "headline": "Contradicts ADR-PAY-004",
+     "explanation": "Ticket requires more than 10 s; decision allows at most 10 s. ADR-PAY-004 is accepted and current for payment-service.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-117",
+      "title": "Strict lower bound cannot meet the timeout limit",
+      "url": "https://example.atlassian.net/browse/PAY-117",
+      "location": "acceptance criteria",
+      "quote": "The payment gateway timeout must exceed 10 seconds."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232241",
+       "title": "ADR-PAY-004: Payment gateway timeout",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+       "version": 1,
+       "location": "Decision",
+       "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-004"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-004",
+       "title": "Payment gateway timeout",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": [
+      {
+       "kind": "CLARIFY_TICKET",
+       "label": "Clarify the gateway timeout requirement in this ticket"
+      },
+      {
+       "kind": "ASK_DECISION_OWNER",
+       "label": "Ask Marco Silva whether ADR-PAY-004 should change",
+       "owner": {
+        "displayName": "Marco Silva"
+       }
+      },
+      {
+       "kind": "CREATE_FOLLOW_UP",
+       "label": "Create a clarification issue"
+      }
+     ]
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 1,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-117 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S18": {
+  "title": "Strict upper bound stays within the timeout limit",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S18",
+   "issueKey": "PAY-118",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-118",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "NO_CONFLICT_FOUND",
+   "headline": "No conflict found across 1 requirement",
+   "claims": [
+    {
+     "id": "PAY-118-C1",
+     "subject": "Payment Service",
+     "attribute": "gateway.timeout",
+     "attributeLabel": "gateway timeout",
+     "operator": "LT",
+     "value": 10,
+     "unit": "s",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-118",
+      "title": "Strict upper bound stays within the timeout limit",
+      "url": "https://example.atlassian.net/browse/PAY-118",
+      "location": "acceptance criteria",
+      "quote": "The payment gateway timeout must be less than 10 seconds."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-004",
+     "title": "Payment gateway timeout",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "owner": {
+      "displayName": "Marco Silva"
+     },
+     "statement": "Calls from the payment service to the payment gateway must time out after at most 10 seconds.",
+     "rationale": "Checkout UX budget is 15 seconds end to end.",
+     "supersedes": [],
+     "supersededBy": [],
+     "effectiveDate": "2026-01-12",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232241",
+      "title": "ADR-PAY-004: Payment gateway timeout",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+      "version": 1,
+      "location": "Decision",
+      "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-004-K1",
+       "subject": "Payment Service",
+       "attribute": "gateway.timeout",
+       "attributeLabel": "gateway timeout",
+       "operator": "LTE",
+       "value": 10,
+       "unit": "s",
+       "countingSemantics": "NOT_APPLICABLE",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": []
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232241",
+        "title": "ADR-PAY-004: Payment gateway timeout",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+        "version": 1,
+        "location": "Decision",
+        "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-118-C1",
+     "claimId": "PAY-118-C1",
+     "outcome": "NO_CONFLICT_FOUND",
+     "reason": "CONSISTENT",
+     "headline": "Consistent with ADR-PAY-004",
+     "explanation": "Ticket requires fewer than 10 s; decision allows at most 10 s.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-118",
+      "title": "Strict upper bound stays within the timeout limit",
+      "url": "https://example.atlassian.net/browse/PAY-118",
+      "location": "acceptance criteria",
+      "quote": "The payment gateway timeout must be less than 10 seconds."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232241",
+       "title": "ADR-PAY-004: Payment gateway timeout",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+       "version": 1,
+       "location": "Decision",
+       "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-004"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-004",
+       "title": "Payment gateway timeout",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": []
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 1,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-118 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S19": {
+  "title": "An overlapping timeout range requires the tighter limit",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S19",
+   "issueKey": "PAY-119",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-119",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "NO_CONFLICT_FOUND",
+   "headline": "No conflict found across 1 requirement",
+   "claims": [
+    {
+     "id": "PAY-119-C1",
+     "subject": "Payment Service",
+     "attribute": "gateway.timeout",
+     "attributeLabel": "gateway timeout",
+     "operator": "RANGE",
+     "value": 8,
+     "valueMax": 12,
+     "unit": "s",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-119",
+      "title": "An overlapping timeout range requires the tighter limit",
+      "url": "https://example.atlassian.net/browse/PAY-119",
+      "location": "acceptance criteria",
+      "quote": "Set the payment gateway timeout between 8 and 12 seconds."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-004",
+     "title": "Payment gateway timeout",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "owner": {
+      "displayName": "Marco Silva"
+     },
+     "statement": "Calls from the payment service to the payment gateway must time out after at most 10 seconds.",
+     "rationale": "Checkout UX budget is 15 seconds end to end.",
+     "supersedes": [],
+     "supersededBy": [],
+     "effectiveDate": "2026-01-12",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232241",
+      "title": "ADR-PAY-004: Payment gateway timeout",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+      "version": 1,
+      "location": "Decision",
+      "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-004-K1",
+       "subject": "Payment Service",
+       "attribute": "gateway.timeout",
+       "attributeLabel": "gateway timeout",
+       "operator": "LTE",
+       "value": 10,
+       "unit": "s",
+       "countingSemantics": "NOT_APPLICABLE",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": []
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232241",
+        "title": "ADR-PAY-004: Payment gateway timeout",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+        "version": 1,
+        "location": "Decision",
+        "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-119-C1",
+     "claimId": "PAY-119-C1",
+     "outcome": "NO_CONFLICT_FOUND",
+     "reason": "CONSISTENT_IF_TIGHTER",
+     "headline": "Compatible with ADR-PAY-004 if kept within its limit",
+     "explanation": "Ticket allows between 8 and 12 s; decision allows at most 10 s. Compatible if the implementation stays within the decision.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-119",
+      "title": "An overlapping timeout range requires the tighter limit",
+      "url": "https://example.atlassian.net/browse/PAY-119",
+      "location": "acceptance criteria",
+      "quote": "Set the payment gateway timeout between 8 and 12 seconds."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232241",
+       "title": "ADR-PAY-004: Payment gateway timeout",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+       "version": 1,
+       "location": "Decision",
+       "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-004"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-004",
+       "title": "Payment gateway timeout",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": [
+      {
+       "kind": "CLARIFY_TICKET",
+       "label": "Note the ADR-PAY-004 limit in the acceptance criteria"
+      }
+     ]
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 1,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-119 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S20": {
+  "title": "A disjoint timeout range conflicts",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S20",
+   "issueKey": "PAY-120",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-120",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "CONFLICT",
+   "headline": "1 requirement contradicts ADR-PAY-004",
+   "claims": [
+    {
+     "id": "PAY-120-C1",
+     "subject": "Payment Service",
+     "attribute": "gateway.timeout",
+     "attributeLabel": "gateway timeout",
+     "operator": "RANGE",
+     "value": 11,
+     "valueMax": 15,
+     "unit": "s",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-120",
+      "title": "A disjoint timeout range conflicts",
+      "url": "https://example.atlassian.net/browse/PAY-120",
+      "location": "acceptance criteria",
+      "quote": "Set the payment gateway timeout between 11 and 15 seconds."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-004",
+     "title": "Payment gateway timeout",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "owner": {
+      "displayName": "Marco Silva"
+     },
+     "statement": "Calls from the payment service to the payment gateway must time out after at most 10 seconds.",
+     "rationale": "Checkout UX budget is 15 seconds end to end.",
+     "supersedes": [],
+     "supersededBy": [],
+     "effectiveDate": "2026-01-12",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232241",
+      "title": "ADR-PAY-004: Payment gateway timeout",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+      "version": 1,
+      "location": "Decision",
+      "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-004-K1",
+       "subject": "Payment Service",
+       "attribute": "gateway.timeout",
+       "attributeLabel": "gateway timeout",
+       "operator": "LTE",
+       "value": 10,
+       "unit": "s",
+       "countingSemantics": "NOT_APPLICABLE",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": []
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232241",
+        "title": "ADR-PAY-004: Payment gateway timeout",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+        "version": 1,
+        "location": "Decision",
+        "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-120-C1",
+     "claimId": "PAY-120-C1",
+     "outcome": "CONFLICT",
+     "reason": "VALUE_CONTRADICTION",
+     "headline": "Contradicts ADR-PAY-004",
+     "explanation": "Ticket requires between 11 and 15 s; decision allows at most 10 s. ADR-PAY-004 is accepted and current for payment-service.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-120",
+      "title": "A disjoint timeout range conflicts",
+      "url": "https://example.atlassian.net/browse/PAY-120",
+      "location": "acceptance criteria",
+      "quote": "Set the payment gateway timeout between 11 and 15 seconds."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232241",
+       "title": "ADR-PAY-004: Payment gateway timeout",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241",
+       "version": 1,
+       "location": "Decision",
+       "quote": "Calls from the payment service to the payment gateway must time out after at most 10 seconds."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-004"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-004",
+       "title": "Payment gateway timeout",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232241"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": [
+      {
+       "kind": "CLARIFY_TICKET",
+       "label": "Clarify the gateway timeout requirement in this ticket"
+      },
+      {
+       "kind": "ASK_DECISION_OWNER",
+       "label": "Ask Marco Silva whether ADR-PAY-004 should change",
+       "owner": {
+        "displayName": "Marco Silva"
+       }
+      },
+      {
+       "kind": "CREATE_FOLLOW_UP",
+       "label": "Create a clarification issue"
+      }
+     ]
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 1,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-120 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S21": {
+  "title": "An accepted recommendation is not a binding constraint",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S21",
+   "issueKey": "PAY-121",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-121",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "NEEDS_REVIEW",
+   "headline": "1 requirement needs human review",
+   "claims": [
+    {
+     "id": "PAY-121-C1",
+     "subject": "Payment Service",
+     "attribute": "cache.ttl",
+     "attributeLabel": "cache TTL",
+     "operator": "EQ",
+     "value": 120,
+     "unit": "s",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-121",
+      "title": "An accepted recommendation is not a binding constraint",
+      "url": "https://example.atlassian.net/browse/PAY-121",
+      "location": "acceptance criteria",
+      "quote": "Payment cache entries must expire after exactly 120 seconds."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-009",
+     "title": "Payment cache TTL recommendation",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "owner": {
+      "displayName": "Priya Raman"
+     },
+     "statement": "Payment cache entries should expire after at most 60 seconds.",
+     "rationale": "A freshness guideline, not a binding service limit.",
+     "supersedes": [],
+     "supersededBy": [],
+     "effectiveDate": "2026-06-01",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232246",
+      "title": "ADR-PAY-009: Payment cache TTL recommendation",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232246",
+      "version": 1,
+      "location": "Decision",
+      "quote": "Payment cache entries should expire after at most 60 seconds."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-009-K1",
+       "subject": "Payment Service",
+       "attribute": "cache.ttl",
+       "attributeLabel": "cache TTL",
+       "operator": "LTE",
+       "value": 60,
+       "unit": "s",
+       "countingSemantics": "NOT_APPLICABLE",
+       "modality": "SHOULD",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": []
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232246",
+        "title": "ADR-PAY-009: Payment cache TTL recommendation",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232246",
+        "version": 1,
+        "location": "Decision",
+        "quote": "Payment cache entries should expire after at most 60 seconds."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-121-C1",
+     "claimId": "PAY-121-C1",
+     "outcome": "NEEDS_REVIEW",
+     "reason": "GUIDELINE_ONLY",
+     "headline": "Clarify the requirement against ADR-PAY-009",
+     "explanation": "Ticket requires exactly 120 s; decision allows at most 60 s. At least one side is advisory or optional, rather than two binding requirements.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-121",
+      "title": "An accepted recommendation is not a binding constraint",
+      "url": "https://example.atlassian.net/browse/PAY-121",
+      "location": "acceptance criteria",
+      "quote": "Payment cache entries must expire after exactly 120 seconds."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232246",
+       "title": "ADR-PAY-009: Payment cache TTL recommendation",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232246",
+       "version": 1,
+       "location": "Decision",
+       "quote": "Payment cache entries should expire after at most 60 seconds."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-009"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-009",
+       "title": "Payment cache TTL recommendation",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232246"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": [
+      {
+       "kind": "ASK_DECISION_OWNER",
+       "label": "Confirm the intent with Priya Raman",
+       "owner": {
+        "displayName": "Priya Raman"
+       }
+      },
+      {
+       "kind": "CREATE_FOLLOW_UP",
+       "label": "Create a clarification issue"
+      }
+     ]
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 1,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-121 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S22": {
+  "title": "Matching prohibitions are consistent",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S22",
+   "issueKey": "PAY-122",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-122",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "NO_CONFLICT_FOUND",
+   "headline": "No conflict found across 1 requirement",
+   "claims": [
+    {
+     "id": "PAY-122-C1",
+     "subject": "Payment Service",
+     "attribute": "card.pan_storage",
+     "attributeLabel": "card pan_storage",
+     "operator": "PROHIBITED",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-122",
+      "title": "Matching prohibitions are consistent",
+      "url": "https://example.atlassian.net/browse/PAY-122",
+      "location": "acceptance criteria",
+      "quote": "The payment service must never store full card numbers."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-003",
+     "title": "Card data storage",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "owner": {
+      "displayName": "Aiko Tanaka"
+     },
+     "statement": "The payment service must not persist full card numbers (PAN). Only the gateway token and the last four digits may be stored.",
+     "rationale": "Keeps the service out of PCI DSS storage scope.",
+     "supersedes": [],
+     "supersededBy": [],
+     "effectiveDate": "2025-08-01",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232240",
+      "title": "ADR-PAY-003: Card data storage",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232240",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service must not persist full card numbers (PAN). Only the gateway token and the last four digits may be stored."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-003-K1",
+       "subject": "Payment Service",
+       "attribute": "card.pan_storage",
+       "attributeLabel": "full card number storage",
+       "operator": "PROHIBITED",
+       "countingSemantics": "NOT_APPLICABLE",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": []
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232240",
+        "title": "ADR-PAY-003: Card data storage",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232240",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service must not persist full card numbers (PAN)."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-122-C1",
+     "claimId": "PAY-122-C1",
+     "outcome": "NO_CONFLICT_FOUND",
+     "reason": "CONSISTENT",
+     "headline": "Consistent with ADR-PAY-003",
+     "explanation": "Both make card pan_storage prohibited.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-122",
+      "title": "Matching prohibitions are consistent",
+      "url": "https://example.atlassian.net/browse/PAY-122",
+      "location": "acceptance criteria",
+      "quote": "The payment service must never store full card numbers."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232240",
+       "title": "ADR-PAY-003: Card data storage",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232240",
+       "version": 1,
+       "location": "Decision",
+       "quote": "The payment service must not persist full card numbers (PAN)."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-003"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-003",
+       "title": "Card data storage",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232240"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": []
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 1,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-122 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S23": {
+  "title": "A ticket recommendation is not a mandatory contradiction",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S23",
+   "issueKey": "PAY-123",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-123",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "NEEDS_REVIEW",
+   "headline": "1 requirement needs human review",
+   "claims": [
+    {
+     "id": "PAY-123-C1",
+     "subject": "Payment Service",
+     "attribute": "retry.count",
+     "attributeLabel": "retry limit",
+     "operator": "EQ",
+     "value": 5,
+     "unit": "retries",
+     "countingSemantics": "UNSPECIFIED",
+     "modality": "SHOULD",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-123",
+      "title": "A ticket recommendation is not a mandatory contradiction",
+      "url": "https://example.atlassian.net/browse/PAY-123",
+      "location": "acceptance criteria",
+      "quote": "The payment service should retry failed transactions exactly 5 times."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-000",
+     "title": "Payment retry policy (2024)",
+     "status": "SUPERSEDED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Marco Silva"
+     },
+     "statement": "The payment service retries failed transactions up to 5 times before marking them as failed.",
+     "rationale": "Early gateway integration was flaky; generous retries kept the success rate acceptable.",
+     "supersedes": [],
+     "supersededBy": [
+      "ADR-PAY-001"
+     ],
+     "effectiveDate": "2024-05-14",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232237",
+      "title": "ADR-PAY-000: Payment retry policy (2024)",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service retries failed transactions up to 5 times before marking them as failed."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-000-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 5,
+       "unit": "retries",
+       "countingSemantics": "UNSPECIFIED",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232237",
+        "title": "ADR-PAY-000: Payment retry policy (2024)",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service retries failed transactions up to 5 times"
+       },
+       "confidence": 1
+      }
+     ]
+    },
+    {
+     "decisionId": "ADR-PAY-001",
+     "title": "Payment retry policy",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [
+       "production",
+       "staging"
+      ],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Priya Raman"
+     },
+     "statement": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff.",
+     "rationale": "Retry storms during the March 2026 gateway incident doubled upstream load. Three retries recover almost all transient failures.",
+     "supersedes": [
+      "ADR-PAY-000"
+     ],
+     "supersededBy": [],
+     "effectiveDate": "2026-03-02",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232238",
+      "title": "ADR-PAY-001: Payment retry policy",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-001-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 3,
+       "unit": "retries",
+       "countingSemantics": "EXCLUDES_INITIAL",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [
+         "production",
+         "staging"
+        ],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232238",
+        "title": "ADR-PAY-001: Payment retry policy",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service must retry failed transactions no more than 3 times."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-123-C1",
+     "claimId": "PAY-123-C1",
+     "outcome": "NEEDS_REVIEW",
+     "reason": "GUIDELINE_ONLY",
+     "headline": "Clarify the requirement against ADR-PAY-001",
+     "explanation": "Ticket requires exactly 5 retries; decision allows at most 3 retries. At least one side is advisory or optional, rather than two binding requirements.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-123",
+      "title": "A ticket recommendation is not a mandatory contradiction",
+      "url": "https://example.atlassian.net/browse/PAY-123",
+      "location": "acceptance criteria",
+      "quote": "The payment service should retry failed transactions exactly 5 times."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232238",
+       "title": "ADR-PAY-001: Payment retry policy",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+       "version": 1,
+       "location": "Decision",
+       "quote": "The payment service must retry failed transactions no more than 3 times."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-001"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-001",
+       "title": "Payment retry policy",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238"
+      },
+      {
+       "decisionId": "ADR-PAY-000",
+       "title": "Payment retry policy (2024)",
+       "status": "SUPERSEDED",
+       "current": false,
+       "supersededBy": [
+        "ADR-PAY-001"
+       ],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": [
+      {
+       "kind": "ASK_DECISION_OWNER",
+       "label": "Confirm the intent with Priya Raman",
+       "owner": {
+        "displayName": "Priya Raman"
+       }
+      },
+      {
+       "kind": "CREATE_FOLLOW_UP",
+       "label": "Create a clarification issue"
+      }
+     ]
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 2,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-123 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S24": {
+  "title": "Decision covers every named environment",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S24",
+   "issueKey": "PAY-124",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-124",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "NO_CONFLICT_FOUND",
+   "headline": "No conflict found across 1 requirement",
+   "claims": [
+    {
+     "id": "PAY-124-C1",
+     "subject": "Payment Service",
+     "attribute": "retry.count",
+     "attributeLabel": "retry limit",
+     "operator": "LTE",
+     "value": 2,
+     "unit": "retries",
+     "countingSemantics": "UNSPECIFIED",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [
+       "production",
+       "staging"
+      ],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-124",
+      "title": "Decision covers every named environment",
+      "url": "https://example.atlassian.net/browse/PAY-124",
+      "location": "acceptance criteria",
+      "quote": "In production and staging, retry failed transactions at most 2 times."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-000",
+     "title": "Payment retry policy (2024)",
+     "status": "SUPERSEDED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Marco Silva"
+     },
+     "statement": "The payment service retries failed transactions up to 5 times before marking them as failed.",
+     "rationale": "Early gateway integration was flaky; generous retries kept the success rate acceptable.",
+     "supersedes": [],
+     "supersededBy": [
+      "ADR-PAY-001"
+     ],
+     "effectiveDate": "2024-05-14",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232237",
+      "title": "ADR-PAY-000: Payment retry policy (2024)",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service retries failed transactions up to 5 times before marking them as failed."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-000-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 5,
+       "unit": "retries",
+       "countingSemantics": "UNSPECIFIED",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232237",
+        "title": "ADR-PAY-000: Payment retry policy (2024)",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service retries failed transactions up to 5 times"
+       },
+       "confidence": 1
+      }
+     ]
+    },
+    {
+     "decisionId": "ADR-PAY-001",
+     "title": "Payment retry policy",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [
+       "production",
+       "staging"
+      ],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Priya Raman"
+     },
+     "statement": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff.",
+     "rationale": "Retry storms during the March 2026 gateway incident doubled upstream load. Three retries recover almost all transient failures.",
+     "supersedes": [
+      "ADR-PAY-000"
+     ],
+     "supersededBy": [],
+     "effectiveDate": "2026-03-02",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232238",
+      "title": "ADR-PAY-001: Payment retry policy",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-001-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 3,
+       "unit": "retries",
+       "countingSemantics": "EXCLUDES_INITIAL",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [
+         "production",
+         "staging"
+        ],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232238",
+        "title": "ADR-PAY-001: Payment retry policy",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service must retry failed transactions no more than 3 times."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-124-C1",
+     "claimId": "PAY-124-C1",
+     "outcome": "NO_CONFLICT_FOUND",
+     "reason": "CONSISTENT",
+     "headline": "Consistent with ADR-PAY-001",
+     "explanation": "Ticket requires at most 2 retries; decision allows at most 3 retries.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-124",
+      "title": "Decision covers every named environment",
+      "url": "https://example.atlassian.net/browse/PAY-124",
+      "location": "acceptance criteria",
+      "quote": "In production and staging, retry failed transactions at most 2 times."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232238",
+       "title": "ADR-PAY-001: Payment retry policy",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+       "version": 1,
+       "location": "Decision",
+       "quote": "The payment service must retry failed transactions no more than 3 times."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-001"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-001",
+       "title": "Payment retry policy",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238"
+      },
+      {
+       "decisionId": "ADR-PAY-000",
+       "title": "Payment retry policy (2024)",
+       "status": "SUPERSEDED",
+       "current": false,
+       "supersededBy": [
+        "ADR-PAY-001"
+       ],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": []
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 2,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-124 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S25": {
+  "title": "A partial environment match needs review",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S25",
+   "issueKey": "PAY-125",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-125",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "NEEDS_REVIEW",
+   "headline": "1 requirement needs human review",
+   "claims": [
+    {
+     "id": "PAY-125-C1",
+     "subject": "Payment Service",
+     "attribute": "retry.count",
+     "attributeLabel": "retry limit",
+     "operator": "LTE",
+     "value": 2,
+     "unit": "retries",
+     "countingSemantics": "UNSPECIFIED",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [
+       "production",
+       "development"
+      ],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-125",
+      "title": "A partial environment match needs review",
+      "url": "https://example.atlassian.net/browse/PAY-125",
+      "location": "acceptance criteria",
+      "quote": "In production and development, retry failed transactions at most 2 times."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-000",
+     "title": "Payment retry policy (2024)",
+     "status": "SUPERSEDED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Marco Silva"
+     },
+     "statement": "The payment service retries failed transactions up to 5 times before marking them as failed.",
+     "rationale": "Early gateway integration was flaky; generous retries kept the success rate acceptable.",
+     "supersedes": [],
+     "supersededBy": [
+      "ADR-PAY-001"
+     ],
+     "effectiveDate": "2024-05-14",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232237",
+      "title": "ADR-PAY-000: Payment retry policy (2024)",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service retries failed transactions up to 5 times before marking them as failed."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-000-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 5,
+       "unit": "retries",
+       "countingSemantics": "UNSPECIFIED",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232237",
+        "title": "ADR-PAY-000: Payment retry policy (2024)",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service retries failed transactions up to 5 times"
+       },
+       "confidence": 1
+      }
+     ]
+    },
+    {
+     "decisionId": "ADR-PAY-001",
+     "title": "Payment retry policy",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [
+       "production",
+       "staging"
+      ],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Priya Raman"
+     },
+     "statement": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff.",
+     "rationale": "Retry storms during the March 2026 gateway incident doubled upstream load. Three retries recover almost all transient failures.",
+     "supersedes": [
+      "ADR-PAY-000"
+     ],
+     "supersededBy": [],
+     "effectiveDate": "2026-03-02",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232238",
+      "title": "ADR-PAY-001: Payment retry policy",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-001-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 3,
+       "unit": "retries",
+       "countingSemantics": "EXCLUDES_INITIAL",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [
+         "production",
+         "staging"
+        ],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232238",
+        "title": "ADR-PAY-001: Payment retry policy",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service must retry failed transactions no more than 3 times."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-125-C1",
+     "claimId": "PAY-125-C1",
+     "outcome": "NEEDS_REVIEW",
+     "reason": "AMBIGUOUS_SCOPE",
+     "headline": "Confirm the scope of ADR-PAY-001",
+     "explanation": "The requirement and decision may apply to different services, environments or operating conditions. The comparison does not establish full coverage.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-125",
+      "title": "A partial environment match needs review",
+      "url": "https://example.atlassian.net/browse/PAY-125",
+      "location": "acceptance criteria",
+      "quote": "In production and development, retry failed transactions at most 2 times."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232238",
+       "title": "ADR-PAY-001: Payment retry policy",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+       "version": 1,
+       "location": "Decision",
+       "quote": "The payment service must retry failed transactions no more than 3 times."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-001"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-001",
+       "title": "Payment retry policy",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238"
+      },
+      {
+       "decisionId": "ADR-PAY-000",
+       "title": "Payment retry policy (2024)",
+       "status": "SUPERSEDED",
+       "current": false,
+       "supersededBy": [
+        "ADR-PAY-001"
+       ],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "UNKNOWN",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": [
+      {
+       "kind": "ASK_DECISION_OWNER",
+       "label": "Confirm the intent with Priya Raman",
+       "owner": {
+        "displayName": "Priya Raman"
+       }
+      },
+      {
+       "kind": "CREATE_FOLLOW_UP",
+       "label": "Create a clarification issue"
+      }
+     ]
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 2,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-125 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S26": {
+  "title": "Different operating conditions cannot establish a clean pass",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S26",
+   "issueKey": "PAY-126",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-126",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "NEEDS_REVIEW",
+   "headline": "1 requirement needs human review",
+   "claims": [
+    {
+     "id": "PAY-126-C1",
+     "subject": "Payment Service",
+     "attribute": "retry.count",
+     "attributeLabel": "retry limit",
+     "operator": "LTE",
+     "value": 2,
+     "unit": "retries",
+     "countingSemantics": "UNSPECIFIED",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "validation errors"
+      ]
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-126",
+      "title": "Different operating conditions cannot establish a clean pass",
+      "url": "https://example.atlassian.net/browse/PAY-126",
+      "location": "acceptance criteria",
+      "quote": "For validation errors, the payment service must retry at most 2 times."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-000",
+     "title": "Payment retry policy (2024)",
+     "status": "SUPERSEDED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Marco Silva"
+     },
+     "statement": "The payment service retries failed transactions up to 5 times before marking them as failed.",
+     "rationale": "Early gateway integration was flaky; generous retries kept the success rate acceptable.",
+     "supersedes": [],
+     "supersededBy": [
+      "ADR-PAY-001"
+     ],
+     "effectiveDate": "2024-05-14",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232237",
+      "title": "ADR-PAY-000: Payment retry policy (2024)",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service retries failed transactions up to 5 times before marking them as failed."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-000-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 5,
+       "unit": "retries",
+       "countingSemantics": "UNSPECIFIED",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232237",
+        "title": "ADR-PAY-000: Payment retry policy (2024)",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service retries failed transactions up to 5 times"
+       },
+       "confidence": 1
+      }
+     ]
+    },
+    {
+     "decisionId": "ADR-PAY-001",
+     "title": "Payment retry policy",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [
+       "production",
+       "staging"
+      ],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Priya Raman"
+     },
+     "statement": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff.",
+     "rationale": "Retry storms during the March 2026 gateway incident doubled upstream load. Three retries recover almost all transient failures.",
+     "supersedes": [
+      "ADR-PAY-000"
+     ],
+     "supersededBy": [],
+     "effectiveDate": "2026-03-02",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232238",
+      "title": "ADR-PAY-001: Payment retry policy",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-001-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 3,
+       "unit": "retries",
+       "countingSemantics": "EXCLUDES_INITIAL",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [
+         "production",
+         "staging"
+        ],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232238",
+        "title": "ADR-PAY-001: Payment retry policy",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service must retry failed transactions no more than 3 times."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-126-C1",
+     "claimId": "PAY-126-C1",
+     "outcome": "NEEDS_REVIEW",
+     "reason": "AMBIGUOUS_SCOPE",
+     "headline": "Confirm the scope of ADR-PAY-001",
+     "explanation": "The requirement and decision may apply to different services, environments or operating conditions. The comparison does not establish full coverage.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-126",
+      "title": "Different operating conditions cannot establish a clean pass",
+      "url": "https://example.atlassian.net/browse/PAY-126",
+      "location": "acceptance criteria",
+      "quote": "For validation errors, the payment service must retry at most 2 times."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232238",
+       "title": "ADR-PAY-001: Payment retry policy",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+       "version": 1,
+       "location": "Decision",
+       "quote": "The payment service must retry failed transactions no more than 3 times."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-001"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-001",
+       "title": "Payment retry policy",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238"
+      },
+      {
+       "decisionId": "ADR-PAY-000",
+       "title": "Payment retry policy (2024)",
+       "status": "SUPERSEDED",
+       "current": false,
+       "supersededBy": [
+        "ADR-PAY-001"
+       ],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "UNKNOWN",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": [
+      {
+       "kind": "ASK_DECISION_OWNER",
+       "label": "Confirm the intent with Priya Raman",
+       "owner": {
+        "displayName": "Priya Raman"
+       }
+      },
+      {
+       "kind": "CREATE_FOLLOW_UP",
+       "label": "Create a clarification issue"
+      }
+     ]
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 2,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-126 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S27": {
+  "title": "Prohibiting required idempotency keys conflicts",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S27",
+   "issueKey": "PAY-127",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-127",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "CONFLICT",
+   "headline": "1 requirement contradicts ADR-PAY-002",
+   "claims": [
+    {
+     "id": "PAY-127-C1",
+     "subject": "Payment Service",
+     "attribute": "idempotency_key",
+     "attributeLabel": "idempotency_key",
+     "operator": "PROHIBITED",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "payment creation requests"
+      ]
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-127",
+      "title": "Prohibiting required idempotency keys conflicts",
+      "url": "https://example.atlassian.net/browse/PAY-127",
+      "location": "acceptance criteria",
+      "quote": "Payment creation requests must not include an idempotency key."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-002",
+     "title": "Idempotency keys for payment creation",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "payment creation requests"
+      ]
+     },
+     "owner": {
+      "displayName": "Priya Raman"
+     },
+     "statement": "Every payment creation request must include an idempotency key so that retries never create duplicate charges.",
+     "rationale": "Duplicate charges are the most expensive support issue we have.",
+     "supersedes": [],
+     "supersededBy": [],
+     "effectiveDate": "2025-11-20",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232239",
+      "title": "ADR-PAY-002: Idempotency keys for payment creation",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232239",
+      "version": 1,
+      "location": "Decision",
+      "quote": "Every payment creation request must include an idempotency key so that retries never create duplicate charges."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-002-K1",
+       "subject": "Payment Service",
+       "attribute": "idempotency_key",
+       "attributeLabel": "idempotency key",
+       "operator": "REQUIRED",
+       "countingSemantics": "NOT_APPLICABLE",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": [
+         "payment creation requests"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232239",
+        "title": "ADR-PAY-002: Idempotency keys for payment creation",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232239",
+        "version": 1,
+        "location": "Decision",
+        "quote": "Every payment creation request must include an idempotency key"
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-127-C1",
+     "claimId": "PAY-127-C1",
+     "outcome": "CONFLICT",
+     "reason": "PROHIBITION_VIOLATED",
+     "headline": "Contradicts ADR-PAY-002",
+     "explanation": "Ticket makes idempotency_key prohibited; the decision makes it required. ADR-PAY-002 is accepted and current for payment-service.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-127",
+      "title": "Prohibiting required idempotency keys conflicts",
+      "url": "https://example.atlassian.net/browse/PAY-127",
+      "location": "acceptance criteria",
+      "quote": "Payment creation requests must not include an idempotency key."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232239",
+       "title": "ADR-PAY-002: Idempotency keys for payment creation",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232239",
+       "version": 1,
+       "location": "Decision",
+       "quote": "Every payment creation request must include an idempotency key"
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-002"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-002",
+       "title": "Idempotency keys for payment creation",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232239"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": [
+      {
+       "kind": "CLARIFY_TICKET",
+       "label": "Clarify the idempotency_key requirement in this ticket"
+      },
+      {
+       "kind": "ASK_DECISION_OWNER",
+       "label": "Ask Priya Raman whether ADR-PAY-002 should change",
+       "owner": {
+        "displayName": "Priya Raman"
+       }
+      },
+      {
+       "kind": "CREATE_FOLLOW_UP",
+       "label": "Create a clarification issue"
+      }
+     ]
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 1,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-127 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S28": {
+  "title": "A covered requirement does not hide a missing decision",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S28",
+   "issueKey": "PAY-128",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-128",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "INSUFFICIENT_EVIDENCE",
+   "headline": "1 of 2 requirements could not be checked",
+   "claims": [
+    {
+     "id": "PAY-128-C1",
+     "subject": "Payment Service",
+     "attribute": "idempotency_key",
+     "attributeLabel": "idempotency_key",
+     "operator": "REQUIRED",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "payment creation requests"
+      ]
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-128",
+      "title": "A covered requirement does not hide a missing decision",
+      "url": "https://example.atlassian.net/browse/PAY-128",
+      "location": "acceptance criteria",
+      "quote": "Payment creation requests must include an idempotency key."
+     },
+     "confidence": 1
+    },
+    {
+     "id": "PAY-128-C2",
+     "subject": "Payment Service",
+     "attribute": "metrics.emit_interval",
+     "attributeLabel": "metrics emit interval",
+     "operator": "EQ",
+     "value": 10,
+     "unit": "s",
+     "countingSemantics": "NOT_APPLICABLE",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": []
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-128",
+      "title": "A covered requirement does not hide a missing decision",
+      "url": "https://example.atlassian.net/browse/PAY-128",
+      "location": "acceptance criteria",
+      "quote": "Emit payment latency metrics every 10 seconds."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-002",
+     "title": "Idempotency keys for payment creation",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "payment creation requests"
+      ]
+     },
+     "owner": {
+      "displayName": "Priya Raman"
+     },
+     "statement": "Every payment creation request must include an idempotency key so that retries never create duplicate charges.",
+     "rationale": "Duplicate charges are the most expensive support issue we have.",
+     "supersedes": [],
+     "supersededBy": [],
+     "effectiveDate": "2025-11-20",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232239",
+      "title": "ADR-PAY-002: Idempotency keys for payment creation",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232239",
+      "version": 1,
+      "location": "Decision",
+      "quote": "Every payment creation request must include an idempotency key so that retries never create duplicate charges."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-002-K1",
+       "subject": "Payment Service",
+       "attribute": "idempotency_key",
+       "attributeLabel": "idempotency key",
+       "operator": "REQUIRED",
+       "countingSemantics": "NOT_APPLICABLE",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": [
+         "payment creation requests"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232239",
+        "title": "ADR-PAY-002: Idempotency keys for payment creation",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232239",
+        "version": 1,
+        "location": "Decision",
+        "quote": "Every payment creation request must include an idempotency key"
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-128-C1",
+     "claimId": "PAY-128-C1",
+     "outcome": "NO_CONFLICT_FOUND",
+     "reason": "CONSISTENT",
+     "headline": "Consistent with ADR-PAY-002",
+     "explanation": "Both make idempotency_key required.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-128",
+      "title": "A covered requirement does not hide a missing decision",
+      "url": "https://example.atlassian.net/browse/PAY-128",
+      "location": "acceptance criteria",
+      "quote": "Payment creation requests must include an idempotency key."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232239",
+       "title": "ADR-PAY-002: Idempotency keys for payment creation",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232239",
+       "version": 1,
+       "location": "Decision",
+       "quote": "Every payment creation request must include an idempotency key"
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-002"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-002",
+       "title": "Idempotency keys for payment creation",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232239"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": []
+    },
+    {
+     "id": "F-PAY-128-C2",
+     "claimId": "PAY-128-C2",
+     "outcome": "INSUFFICIENT_EVIDENCE",
+     "reason": "NO_DECISION_FOUND",
+     "headline": "No decision covers Payment Service metrics emit interval",
+     "explanation": "No decision record in the configured spaces constrains metrics emit interval for Payment Service.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-128",
+      "title": "A covered requirement does not hide a missing decision",
+      "url": "https://example.atlassian.net/browse/PAY-128",
+      "location": "acceptance criteria",
+      "quote": "Emit payment latency metrics every 10 seconds."
+     },
+     "decisionEvidence": [],
+     "decisionIds": [],
+     "history": [],
+     "scopeCheck": {
+      "service": "UNKNOWN",
+      "environment": "UNKNOWN",
+      "conditions": "UNKNOWN",
+      "counting": "UNKNOWN"
+     },
+     "method": "NONE",
+     "confidence": 1,
+     "suggestedActions": [
+      {
+       "kind": "DOCUMENT_DECISION",
+       "label": "Record a decision for Payment Service: metrics emit interval"
+      },
+      {
+       "kind": "LINK_DECISION",
+       "label": "Link an existing decision page to this ticket"
+      }
+     ]
+    }
+   ],
+   "coverage": {
+    "totalClaims": 2,
+    "materialClaims": 2,
+    "checkedMaterialClaims": 1,
+    "unchecked": [
+     {
+      "claimId": "PAY-128-C2",
+      "reason": "NO_DECISION_FOUND"
+     }
+    ],
+    "summary": "1 of 2 requirements checked. 1 has insufficient evidence."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 1,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-128 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S29": {
+  "title": "The current retry limit wins over a superseded limit",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S29",
+   "issueKey": "PAY-129",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-129",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "NO_CONFLICT_FOUND",
+   "headline": "No conflict found across 1 requirement",
+   "claims": [
+    {
+     "id": "PAY-129-C1",
+     "subject": "Payment Service",
+     "attribute": "retry.count",
+     "attributeLabel": "retry limit",
+     "operator": "EQ",
+     "value": 3,
+     "unit": "retries",
+     "countingSemantics": "UNSPECIFIED",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-129",
+      "title": "The current retry limit wins over a superseded limit",
+      "url": "https://example.atlassian.net/browse/PAY-129",
+      "location": "acceptance criteria",
+      "quote": "The payment service must retry failed transactions exactly 3 times."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-000",
+     "title": "Payment retry policy (2024)",
+     "status": "SUPERSEDED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Marco Silva"
+     },
+     "statement": "The payment service retries failed transactions up to 5 times before marking them as failed.",
+     "rationale": "Early gateway integration was flaky; generous retries kept the success rate acceptable.",
+     "supersedes": [],
+     "supersededBy": [
+      "ADR-PAY-001"
+     ],
+     "effectiveDate": "2024-05-14",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232237",
+      "title": "ADR-PAY-000: Payment retry policy (2024)",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service retries failed transactions up to 5 times before marking them as failed."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-000-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 5,
+       "unit": "retries",
+       "countingSemantics": "UNSPECIFIED",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232237",
+        "title": "ADR-PAY-000: Payment retry policy (2024)",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service retries failed transactions up to 5 times"
+       },
+       "confidence": 1
+      }
+     ]
+    },
+    {
+     "decisionId": "ADR-PAY-001",
+     "title": "Payment retry policy",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [
+       "production",
+       "staging"
+      ],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Priya Raman"
+     },
+     "statement": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff.",
+     "rationale": "Retry storms during the March 2026 gateway incident doubled upstream load. Three retries recover almost all transient failures.",
+     "supersedes": [
+      "ADR-PAY-000"
+     ],
+     "supersededBy": [],
+     "effectiveDate": "2026-03-02",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232238",
+      "title": "ADR-PAY-001: Payment retry policy",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-001-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 3,
+       "unit": "retries",
+       "countingSemantics": "EXCLUDES_INITIAL",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [
+         "production",
+         "staging"
+        ],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232238",
+        "title": "ADR-PAY-001: Payment retry policy",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service must retry failed transactions no more than 3 times."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-129-C1",
+     "claimId": "PAY-129-C1",
+     "outcome": "NO_CONFLICT_FOUND",
+     "reason": "CONSISTENT",
+     "headline": "Consistent with ADR-PAY-001",
+     "explanation": "Ticket requires exactly 3 retries; decision allows at most 3 retries.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-129",
+      "title": "The current retry limit wins over a superseded limit",
+      "url": "https://example.atlassian.net/browse/PAY-129",
+      "location": "acceptance criteria",
+      "quote": "The payment service must retry failed transactions exactly 3 times."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232238",
+       "title": "ADR-PAY-001: Payment retry policy",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+       "version": 1,
+       "location": "Decision",
+       "quote": "The payment service must retry failed transactions no more than 3 times."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-001"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-001",
+       "title": "Payment retry policy",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238"
+      },
+      {
+       "decisionId": "ADR-PAY-000",
+       "title": "Payment retry policy (2024)",
+       "status": "SUPERSEDED",
+       "current": false,
+       "supersededBy": [
+        "ADR-PAY-001"
+       ],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": []
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 2,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-129 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
+ "S30": {
+  "title": "Numeric negation expresses an upper bound",
+  "report": {
+   "schemaVersion": "1.0",
+   "reportId": "R-S30",
+   "issueKey": "PAY-130",
+   "issueUrl": "https://example.atlassian.net/browse/PAY-130",
+   "ticketUpdatedAt": "2026-11-08T09:00:00.000Z",
+   "generatedAt": "2026-11-08T09:00:00.000Z",
+   "status": "COMPLETE",
+   "overallOutcome": "NO_CONFLICT_FOUND",
+   "headline": "No conflict found across 1 requirement",
+   "claims": [
+    {
+     "id": "PAY-130-C1",
+     "subject": "Payment Service",
+     "attribute": "retry.count",
+     "attributeLabel": "retry limit",
+     "operator": "LTE",
+     "value": 3,
+     "unit": "retries",
+     "countingSemantics": "UNSPECIFIED",
+     "modality": "MUST",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "material": true,
+     "source": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-130",
+      "title": "Numeric negation expresses an upper bound",
+      "url": "https://example.atlassian.net/browse/PAY-130",
+      "location": "acceptance criteria",
+      "quote": "The payment service must not retry failed transactions more than 3 times."
+     },
+     "confidence": 1
+    }
+   ],
+   "decisions": [
+    {
+     "decisionId": "ADR-PAY-000",
+     "title": "Payment retry policy (2024)",
+     "status": "SUPERSEDED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Marco Silva"
+     },
+     "statement": "The payment service retries failed transactions up to 5 times before marking them as failed.",
+     "rationale": "Early gateway integration was flaky; generous retries kept the success rate acceptable.",
+     "supersedes": [],
+     "supersededBy": [
+      "ADR-PAY-001"
+     ],
+     "effectiveDate": "2024-05-14",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232237",
+      "title": "ADR-PAY-000: Payment retry policy (2024)",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service retries failed transactions up to 5 times before marking them as failed."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-000-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 5,
+       "unit": "retries",
+       "countingSemantics": "UNSPECIFIED",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232237",
+        "title": "ADR-PAY-000: Payment retry policy (2024)",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service retries failed transactions up to 5 times"
+       },
+       "confidence": 1
+      }
+     ]
+    },
+    {
+     "decisionId": "ADR-PAY-001",
+     "title": "Payment retry policy",
+     "status": "ACCEPTED",
+     "scope": {
+      "service": "payment-service",
+      "environments": [
+       "production",
+       "staging"
+      ],
+      "conditions": [
+       "failed transactions"
+      ]
+     },
+     "owner": {
+      "displayName": "Priya Raman"
+     },
+     "statement": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff.",
+     "rationale": "Retry storms during the March 2026 gateway incident doubled upstream load. Three retries recover almost all transient failures.",
+     "supersedes": [
+      "ADR-PAY-000"
+     ],
+     "supersededBy": [],
+     "effectiveDate": "2026-03-02",
+     "source": {
+      "kind": "CONFLUENCE_PAGE",
+      "id": "232238",
+      "title": "ADR-PAY-001: Payment retry policy",
+      "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+      "version": 1,
+      "location": "Decision",
+      "quote": "The payment service must retry failed transactions no more than 3 times. A retry is any request after the initial attempt; the initial attempt is not counted. Retries use exponential backoff."
+     },
+     "parse": {
+      "method": "FIXTURE",
+      "warnings": []
+     },
+     "constraints": [
+      {
+       "id": "ADR-PAY-001-K1",
+       "subject": "Payment Service",
+       "attribute": "retry.count",
+       "attributeLabel": "retry limit",
+       "operator": "LTE",
+       "value": 3,
+       "unit": "retries",
+       "countingSemantics": "EXCLUDES_INITIAL",
+       "modality": "MUST",
+       "scope": {
+        "service": "payment-service",
+        "environments": [
+         "production",
+         "staging"
+        ],
+        "conditions": [
+         "failed transactions"
+        ]
+       },
+       "material": true,
+       "source": {
+        "kind": "CONFLUENCE_PAGE",
+        "id": "232238",
+        "title": "ADR-PAY-001: Payment retry policy",
+        "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+        "version": 1,
+        "location": "Decision",
+        "quote": "The payment service must retry failed transactions no more than 3 times."
+       },
+       "confidence": 1
+      }
+     ]
+    }
+   ],
+   "findings": [
+    {
+     "id": "F-PAY-130-C1",
+     "claimId": "PAY-130-C1",
+     "outcome": "NO_CONFLICT_FOUND",
+     "reason": "CONSISTENT",
+     "headline": "Consistent with ADR-PAY-001",
+     "explanation": "Ticket requires at most 3 retries; decision allows at most 3 retries.",
+     "ticketEvidence": {
+      "kind": "JIRA_ISSUE",
+      "id": "PAY-130",
+      "title": "Numeric negation expresses an upper bound",
+      "url": "https://example.atlassian.net/browse/PAY-130",
+      "location": "acceptance criteria",
+      "quote": "The payment service must not retry failed transactions more than 3 times."
+     },
+     "decisionEvidence": [
+      {
+       "kind": "CONFLUENCE_PAGE",
+       "id": "232238",
+       "title": "ADR-PAY-001: Payment retry policy",
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238",
+       "version": 1,
+       "location": "Decision",
+       "quote": "The payment service must retry failed transactions no more than 3 times."
+      }
+     ],
+     "decisionIds": [
+      "ADR-PAY-001"
+     ],
+     "history": [
+      {
+       "decisionId": "ADR-PAY-001",
+       "title": "Payment retry policy",
+       "status": "ACCEPTED",
+       "current": true,
+       "supersededBy": [],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232238"
+      },
+      {
+       "decisionId": "ADR-PAY-000",
+       "title": "Payment retry policy (2024)",
+       "status": "SUPERSEDED",
+       "current": false,
+       "supersededBy": [
+        "ADR-PAY-001"
+       ],
+       "url": "https://example.atlassian.net/wiki/spaces/ENG/pages/232237"
+      }
+     ],
+     "scopeCheck": {
+      "service": "MATCH",
+      "environment": "MATCH",
+      "conditions": "MATCH",
+      "counting": "MATCH"
+     },
+     "method": "DETERMINISTIC",
+     "confidence": 1,
+     "suggestedActions": []
+    }
+   ],
+   "coverage": {
+    "totalClaims": 1,
+    "materialClaims": 1,
+    "checkedMaterialClaims": 1,
+    "unchecked": [],
+    "summary": "1 of 1 requirement checked."
+   },
+   "errors": [],
+   "context": {
+    "spacesSearched": [
+     "ENG"
+    ],
+    "decisionLabel": "tether-decision",
+    "decisionsConsidered": 2,
+    "graph": {
+     "used": true,
+     "linkedPages": 1,
+     "note": "1 page linked to PAY-130 in Teamwork Graph"
+    }
+   },
+   "run": {
+    "durationMs": 8400,
+    "llmCalls": 3,
+    "models": [
+     "claude-sonnet-5"
+    ]
+   }
+  }
+ },
  "E_PARTIAL": {
   "title": "Partial: graph + one decision failed",
   "report": {
@@ -3886,7 +7423,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "material": true,
      "source": {
@@ -3910,7 +7449,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "each retry"
+      ]
      },
      "material": true,
      "source": {
@@ -4070,7 +7611,9 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "payment creation requests"
+      ]
      },
      "owner": {
       "displayName": "Priya Raman"
@@ -4105,7 +7648,9 @@
        "scope": {
         "service": "payment-service",
         "environments": [],
-        "conditions": []
+        "conditions": [
+         "payment creation requests"
+        ]
        },
        "material": true,
        "source": {
@@ -4438,9 +7983,11 @@
      "scope": {
       "service": "payment-service",
       "environments": [],
-      "conditions": []
+      "conditions": [
+       "each retry"
+      ]
      },
-     "material": false,
+     "material": true,
      "source": {
       "kind": "JIRA_ISSUE",
       "id": "PAY-101",
@@ -4708,10 +8255,15 @@
    ],
    "coverage": {
     "totalClaims": 2,
-    "materialClaims": 1,
+    "materialClaims": 2,
     "checkedMaterialClaims": 1,
-    "unchecked": [],
-    "summary": "1 of 1 requirement checked."
+    "unchecked": [
+     {
+      "claimId": "PAY-101-C2",
+      "reason": "NO_DECISION_FOUND"
+     }
+    ],
+    "summary": "1 of 2 requirements checked. 1 has insufficient evidence."
    },
    "errors": [],
    "context": {

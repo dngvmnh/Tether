@@ -1,0 +1,946 @@
+{
+  "appId": "07520459-db83-4ab5-b000-09c3c8095691",
+  "environment": "dev-dat",
+  "site": "one-atlas-wnve.atlassian.net",
+  "codeCommit": "80c986e",
+  "appVersion": "2.1.0",
+  "pipelineLlmCalls": 45.0,
+  "result": {
+    "complete": true,
+    "durationMs": 118779,
+    "evaluated": 30,
+    "falseConflicts": 0,
+    "falseNoConflict": 0,
+    "missedConflicts": 0,
+    "models": [
+      "claude-sonnet-5"
+    ],
+    "passed": 19,
+    "ranAt": "2026-11-08T04:49:58.399Z",
+    "requestedAt": "2026-11-08T04:47:58.398Z",
+    "rows": [
+      {
+        "actual": "CONFLICT",
+        "claimErrors": [
+          {
+            "actualClaimId": "PAY-101-C2",
+            "expectedClaimId": "PAY-101-C2",
+            "fields": [
+              "attribute",
+              "material",
+              "conditions"
+            ]
+          }
+        ],
+        "coverage": "2/2",
+        "coverageError": false,
+        "durationMs": 32839,
+        "evidenceErrors": [],
+        "expected": "CONFLICT",
+        "extractedClaims": 2,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 2,
+        "id": "S01",
+        "llmCalls": 11,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": false,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Exact retry count contradicts current ADR",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NEEDS_REVIEW",
+        "claimErrors": [],
+        "coverage": "2/2",
+        "coverageError": false,
+        "durationMs": 6896,
+        "evidenceErrors": [],
+        "expected": "NO_CONFLICT_FOUND",
+        "extractedClaims": 2,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S02",
+        "llmCalls": 2,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": false,
+        "pass": false,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Upper bound looser than ADR is not a conflict",
+        "unexpectedClaims": [
+          "PAY-102-C2"
+        ]
+      },
+      {
+        "actual": "NEEDS_REVIEW",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2408,
+        "evidenceErrors": [],
+        "expected": "NEEDS_REVIEW",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S03",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Attempts vs retries is ambiguous",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "CONFLICT",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2146,
+        "evidenceErrors": [],
+        "expected": "CONFLICT",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S04",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Ticket cites a superseded ADR",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NEEDS_REVIEW",
+        "claimErrors": [
+          {
+            "actualClaimId": "PAY-105-C1",
+            "expectedClaimId": "PAY-105-C1",
+            "fields": [
+              "service",
+              "outcome",
+              "reason"
+            ]
+          }
+        ],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2429,
+        "evidenceErrors": [],
+        "expected": "INSUFFICIENT_EVIDENCE",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S05",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": false,
+        "pass": false,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Payment ADR retrieved but ticket is about notifications",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NO_CONFLICT_FOUND",
+        "claimErrors": [
+          {
+            "actualClaimId": "PAY-106-C1",
+            "expectedClaimId": "PAY-106-C1",
+            "fields": [
+              "conditions"
+            ]
+          }
+        ],
+        "coverage": "2/2",
+        "coverageError": false,
+        "durationMs": 3597,
+        "evidenceErrors": [],
+        "expected": "NO_CONFLICT_FOUND",
+        "extractedClaims": 2,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 2,
+        "id": "S06",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": false,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Fully covered and consistent",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "INSUFFICIENT_EVIDENCE",
+        "claimErrors": [],
+        "coverage": "0/1",
+        "coverageError": false,
+        "durationMs": 4741,
+        "evidenceErrors": [],
+        "expected": "INSUFFICIENT_EVIDENCE",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S07",
+        "llmCalls": 2,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "No decision exists for the requirement",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NEEDS_REVIEW",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2030,
+        "evidenceErrors": [],
+        "expected": "NEEDS_REVIEW",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S08",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Two current decisions contradict each other",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "CONFLICT",
+        "claimErrors": [
+          {
+            "actualClaimId": "PAY-109-C2",
+            "expectedClaimId": "PAY-109-C2",
+            "fields": [
+              "conditions"
+            ]
+          },
+          {
+            "actualClaimId": "PAY-109-C3",
+            "expectedClaimId": "PAY-109-C3",
+            "fields": [
+              "attribute",
+              "operator",
+              "service",
+              "conditions",
+              "outcome",
+              "reason"
+            ]
+          }
+        ],
+        "coverage": "3/3",
+        "coverageError": true,
+        "durationMs": 4168,
+        "evidenceErrors": [],
+        "expected": "CONFLICT",
+        "extractedClaims": 3,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 3,
+        "id": "S09",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": false,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Conflict shown despite partial coverage",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "CONFLICT",
+        "claimErrors": [
+          {
+            "actualClaimId": "PAY-110-C1",
+            "expectedClaimId": "PAY-110-C1",
+            "fields": [
+              "conditions"
+            ]
+          }
+        ],
+        "coverage": "2/2",
+        "coverageError": false,
+        "durationMs": 5996,
+        "evidenceErrors": [],
+        "expected": "CONFLICT",
+        "extractedClaims": 2,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S10",
+        "llmCalls": 2,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": false,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Ticket requires what a decision prohibits",
+        "unexpectedClaims": [
+          "PAY-110-C2"
+        ]
+      },
+      {
+        "actual": "INSUFFICIENT_EVIDENCE",
+        "claimErrors": [
+          {
+            "actualClaimId": "PAY-111-C1",
+            "expectedClaimId": "PAY-111-C1",
+            "fields": [
+              "attribute",
+              "operator",
+              "service",
+              "conditions",
+              "value",
+              "unit",
+              "outcome",
+              "reason"
+            ]
+          }
+        ],
+        "coverage": "0/1",
+        "coverageError": false,
+        "durationMs": 5346,
+        "evidenceErrors": [],
+        "expected": "NEEDS_REVIEW",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S11",
+        "llmCalls": 2,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": false,
+        "pass": false,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Only a proposed decision disagrees",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "INSUFFICIENT_EVIDENCE",
+        "claimErrors": [
+          {
+            "actualClaimId": "PAY-112-C1",
+            "expectedClaimId": "PAY-112-C1",
+            "fields": [
+              "attribute",
+              "operator"
+            ]
+          }
+        ],
+        "coverage": "0/1",
+        "coverageError": false,
+        "durationMs": 2476,
+        "evidenceErrors": [],
+        "expected": "INSUFFICIENT_EVIDENCE",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S12",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": false,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Decision scoped to another environment",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NO_CONFLICT_FOUND",
+        "claimErrors": [
+          {
+            "actualClaimId": "PAY-113-C1",
+            "expectedClaimId": "PAY-113-C1",
+            "fields": [
+              "modality"
+            ]
+          }
+        ],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2263,
+        "evidenceErrors": [],
+        "expected": "NO_CONFLICT_FOUND",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S13",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": false,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Equivalent limits with explicit counting",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "CONFLICT",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2102,
+        "evidenceErrors": [],
+        "expected": "CONFLICT",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S14",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Unit conversion reveals a conflict",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "INSUFFICIENT_EVIDENCE",
+        "claimErrors": [],
+        "coverage": "0/0",
+        "coverageError": false,
+        "durationMs": 1055,
+        "evidenceErrors": [],
+        "expected": "INSUFFICIENT_EVIDENCE",
+        "extractedClaims": 0,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 0,
+        "id": "S15",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Non-technical ticket",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NO_CONFLICT_FOUND",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2366,
+        "evidenceErrors": [],
+        "expected": "NO_CONFLICT_FOUND",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S16",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Equivalent timeout units are consistent",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "CONFLICT",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2348,
+        "evidenceErrors": [],
+        "expected": "CONFLICT",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S17",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Strict lower bound cannot meet the timeout limit",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NO_CONFLICT_FOUND",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2401,
+        "evidenceErrors": [],
+        "expected": "NO_CONFLICT_FOUND",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S18",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Strict upper bound stays within the timeout limit",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NO_CONFLICT_FOUND",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2224,
+        "evidenceErrors": [],
+        "expected": "NO_CONFLICT_FOUND",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S19",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "An overlapping timeout range requires the tighter limit",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "CONFLICT",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2247,
+        "evidenceErrors": [],
+        "expected": "CONFLICT",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S20",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "A disjoint timeout range conflicts",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NEEDS_REVIEW",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2170,
+        "evidenceErrors": [],
+        "expected": "NEEDS_REVIEW",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S21",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "An accepted recommendation is not a binding constraint",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NO_CONFLICT_FOUND",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2254,
+        "evidenceErrors": [],
+        "expected": "NO_CONFLICT_FOUND",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S22",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Matching prohibitions are consistent",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NEEDS_REVIEW",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2318,
+        "evidenceErrors": [],
+        "expected": "NEEDS_REVIEW",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S23",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "A ticket recommendation is not a mandatory contradiction",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NO_CONFLICT_FOUND",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2268,
+        "evidenceErrors": [],
+        "expected": "NO_CONFLICT_FOUND",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S24",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Decision covers every named environment",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NEEDS_REVIEW",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2297,
+        "evidenceErrors": [],
+        "expected": "NEEDS_REVIEW",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S25",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "A partial environment match needs review",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NEEDS_REVIEW",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2352,
+        "evidenceErrors": [],
+        "expected": "NEEDS_REVIEW",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S26",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Different operating conditions cannot establish a clean pass",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "CONFLICT",
+        "claimErrors": [
+          {
+            "actualClaimId": "PAY-127-C1",
+            "expectedClaimId": "PAY-127-C1",
+            "fields": [
+              "conditions"
+            ]
+          }
+        ],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2244,
+        "evidenceErrors": [],
+        "expected": "CONFLICT",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S27",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": false,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Prohibiting required idempotency keys conflicts",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "INSUFFICIENT_EVIDENCE",
+        "claimErrors": [
+          {
+            "actualClaimId": "PAY-128-C1",
+            "expectedClaimId": "PAY-128-C1",
+            "fields": [
+              "conditions"
+            ]
+          }
+        ],
+        "coverage": "1/2",
+        "coverageError": false,
+        "durationMs": 6201,
+        "evidenceErrors": [],
+        "expected": "INSUFFICIENT_EVIDENCE",
+        "extractedClaims": 2,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 2,
+        "id": "S28",
+        "llmCalls": 2,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": false,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "A covered requirement does not hide a missing decision",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NO_CONFLICT_FOUND",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2413,
+        "evidenceErrors": [],
+        "expected": "NO_CONFLICT_FOUND",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S29",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "The current retry limit wins over a superseded limit",
+        "unexpectedClaims": []
+      },
+      {
+        "actual": "NO_CONFLICT_FOUND",
+        "claimErrors": [],
+        "coverage": "1/1",
+        "coverageError": false,
+        "durationMs": 2168,
+        "evidenceErrors": [],
+        "expected": "NO_CONFLICT_FOUND",
+        "extractedClaims": 1,
+        "falseConflict": false,
+        "falseNoConflict": false,
+        "goldClaims": 1,
+        "id": "S30",
+        "llmCalls": 1,
+        "missedConflict": false,
+        "missingClaims": [],
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "operationalErrors": [],
+        "outcomeMatch": true,
+        "pass": true,
+        "status": "COMPLETE",
+        "structuralErrors": [],
+        "title": "Numeric negation expresses an upper bound",
+        "unexpectedClaims": []
+      }
+    ],
+    "skippedIds": [],
+    "stoppedReason": null,
+    "total": 30,
+    "verdictPassed": 27
+  }
+}

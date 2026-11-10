@@ -35,6 +35,8 @@ export interface AssessInput {
   /** Claims whose quote could not be verified in the ticket text. */
   unverifiedClaimIds?: ReadonlySet<string>;
   semantic?: SemanticComparator;
+  /** Pipeline records claim-specific operational errors without discarding other findings. */
+  onError?: (claim: Claim, error: unknown) => void;
 }
 
 interface Candidate {
@@ -45,6 +47,14 @@ interface Candidate {
 }
 
 const UNKNOWN_SCOPE: ScopeCheck = { service: 'UNKNOWN', environment: 'UNKNOWN', conditions: 'UNKNOWN', counting: 'UNKNOWN' };
+
+function verifiedConstraint(c: Candidate): boolean {
+  return c.constraint.source.id === c.decision.source.id && verifyQuote(c.constraint.source.quote, c.decision.statement);
+}
+
+function uncertainScope(c: Candidate): boolean {
+  return c.scope.service === 'UNKNOWN' || c.scope.environment === 'UNKNOWN' || c.scope.conditions === 'UNKNOWN';
+}
 
 function ownerOf(d: DecisionRecord | undefined) {
   return d?.owner;
@@ -112,7 +122,10 @@ function finding(
     headline,
     explanation,
     ticketEvidence: claim.source,
-    decisionEvidence: opts.decisionEvidence ?? drivers.map((c) => c.constraint.source),
+    // Never publish an invented extracted quote, even on a Needs Review finding.
+    decisionEvidence: opts.decisionEvidence ?? drivers.map((c) => verifiedConstraint(c)
+      ? c.constraint.source
+      : { ...c.decision.source, quote: c.decision.statement }),
     decisionIds: [...new Set(drivers.map((c) => c.decision.decisionId))],
     history,
     scopeCheck: opts.scopeCheck ?? UNKNOWN_SCOPE,
@@ -136,14 +149,26 @@ async function semanticFallback(
   const decisions = [...new Map(pool.map((c) => [c.decision.decisionId, c.decision])).values()];
   const r = await input.semantic.compare(claim, decisions);
   if (!r || r.verdict === 'NOT_RELATED') return fallback();
-  const cand = pool.find((c) => c.decision.decisionId === r.decisionId) ?? pool[0]!;
+  const cand = pool.find((c) => c.decision.decisionId === r.decisionId);
+  if (!cand) {
+    return finding(claim, 'NEEDS_REVIEW', 'UNVERIFIED_EVIDENCE', 'Semantic result has no verified decision',
+      'The comparison did not identify a decision from the supplied candidates. Its conclusion cannot be verified.',
+      { history: pool, method: 'SEMANTIC', confidence: 0 });
+  }
   const quoteOk = !!r.decisionQuote && verifyQuote(r.decisionQuote, cand.decision.statement);
   const evidence: SourceRef[] = quoteOk ? [{ ...cand.decision.source, quote: r.decisionQuote! }] : [cand.decision.source];
   const base = { drivers: [cand], method: 'SEMANTIC' as const, scopeCheck: scopeCheckOf(cand), decisionEvidence: evidence, confidence: r.confidence };
-  if (!quoteOk && r.verdict !== 'CONSISTENT') {
-    return finding(claim, 'NEEDS_REVIEW', 'UNVERIFIED_EVIDENCE', `Possible issue with ${cand.decision.decisionId}, evidence unverified`, r.explanation, base);
+  if (!quoteOk) {
+    return finding(claim, 'NEEDS_REVIEW', 'UNVERIFIED_EVIDENCE', `Comparison with ${cand.decision.decisionId} needs evidence`,
+      'The comparison did not supply a quote verified against this decision. Neither a conflict nor a clean pass is established.', base);
+  }
+  if (uncertainScope(cand)) {
+    return finding(claim, 'NEEDS_REVIEW', 'AMBIGUOUS_SCOPE', `Confirm the scope of ${cand.decision.decisionId}`, r.explanation, base);
   }
   if (r.verdict === 'CONFLICT') {
+    if (cand.constraint.modality !== 'MUST' || claim.modality !== 'MUST') {
+      return finding(claim, 'NEEDS_REVIEW', 'GUIDELINE_ONLY', `Clarify the requirement against ${cand.decision.decisionId}`, r.explanation, base);
+    }
     return cand.validity.authoritative
       ? finding(claim, 'CONFLICT', 'SEMANTIC_CONTRADICTION', `Contradicts ${cand.decision.decisionId}`, r.explanation, base)
       : finding(claim, 'NEEDS_REVIEW', 'NON_AUTHORITATIVE_DECISION_DISAGREES', `${cand.decision.decisionId} (${cand.decision.status.toLowerCase()}) disagrees`, r.explanation, base);
@@ -161,6 +186,10 @@ async function assessClaim(claim: Claim, input: AssessInput, validity: Map<strin
   if (input.retrievalFailedClaimIds?.has(claim.id)) {
     return finding(claim, 'INSUFFICIENT_EVIDENCE', 'RETRIEVAL_FAILED', `Could not check ${label}`, 'Decision retrieval failed for this requirement, so it was not checked. This is not a "no conflict" result.');
   }
+  if (input.unverifiedClaimIds?.has(claim.id)) {
+    return finding(claim, 'NEEDS_REVIEW', 'UNVERIFIED_EVIDENCE', `Verify the source of ${label}`,
+      'The extracted ticket statement was not found in the ticket text. It cannot support a conflict or a clean pass.');
+  }
 
   const all: Candidate[] = [];
   for (const d of input.decisions) {
@@ -170,9 +199,17 @@ async function assessClaim(claim: Claim, input: AssessInput, validity: Map<strin
     }
   }
   const sameAttr = all.filter((c) => c.constraint.attribute === claim.attribute);
-  const servicePool = all.filter((c) => c.scope.applicable && !c.validity.supersededBy.length);
+  const servicePool = all.filter((c) => c.scope.applicable && !c.validity.inCycle
+    && (c.validity.authoritative || c.validity.advisory) && verifiedConstraint(c));
 
   if (sameAttr.length === 0) {
+    // These independent feature obligations require their own decision constraint;
+    // sibling retry-count/log-retention limits do not establish configuration or
+    // logging coverage. Keep them explicitly unassessed instead of speculating.
+    if (claim.attribute === 'retry.count.config_scope' || claim.attribute === 'retry.logging') {
+      return finding(claim, 'INSUFFICIENT_EVIDENCE', 'NO_DECISION_FOUND', `No decision covers ${label}`,
+        `No decision record in the configured spaces constrains ${claim.attributeLabel} for ${claim.subject}.`);
+    }
     return semanticFallback(claim, servicePool, input, () =>
       finding(claim, 'INSUFFICIENT_EVIDENCE', 'NO_DECISION_FOUND', `No decision covers ${label}`, `No decision record in the configured spaces constrains ${claim.attributeLabel} for ${claim.subject}.`),
     );
@@ -198,6 +235,13 @@ async function assessClaim(claim: Claim, input: AssessInput, validity: Map<strin
 
   const auth = applicable.filter((c) => c.validity.authoritative);
   const advisory = applicable.filter((c) => c.validity.advisory);
+
+  const unverified = [...auth, ...advisory].filter((c) => !verifiedConstraint(c));
+  if (unverified.length) {
+    return finding(claim, 'NEEDS_REVIEW', 'UNVERIFIED_EVIDENCE', `Verify the decision evidence for ${label}`,
+      'At least one extracted constraint could not be verified against its decision statement. Review the original decision before relying on this comparison.',
+      { drivers: unverified, history: sameAttr });
+  }
 
   if (auth.length === 0) {
     const disagreeing = advisory
@@ -230,7 +274,10 @@ async function assessClaim(claim: Claim, input: AssessInput, validity: Map<strin
       const a = auth[i]!;
       const b = auth[j]!;
       if (a.decision.decisionId === b.decision.decisionId) continue;
-      if (compareConstraint(a.constraint, b.constraint).verdict === 'CONFLICT') {
+      const pairScope = checkScope(a.constraint.scope, b.constraint.scope);
+      if (a.constraint.modality === 'MUST' && b.constraint.modality === 'MUST'
+        && pairScope.applicable && pairScope.conditions !== 'UNKNOWN'
+        && compareConstraint(a.constraint, b.constraint).verdict === 'CONFLICT') {
         return finding(
           claim,
           'NEEDS_REVIEW',
@@ -248,15 +295,11 @@ async function assessClaim(claim: Claim, input: AssessInput, validity: Map<strin
   if (conflict) {
     const { c, v } = conflict;
     const sc = scopeCheckOf(c, v);
-    const unverified = input.unverifiedClaimIds?.has(claim.id);
-    if (unverified) {
-      return finding(claim, 'NEEDS_REVIEW', 'UNVERIFIED_EVIDENCE', `Possible conflict with ${c.decision.decisionId}`, `${v.detail} The ticket statement could not be verified verbatim, so this needs a human check.`, { drivers: [c], history: sameAttr, scopeCheck: sc });
+    if (uncertainScope(c)) {
+      return finding(claim, 'NEEDS_REVIEW', 'AMBIGUOUS_SCOPE', `May conflict with ${c.decision.decisionId}`, `${v.detail} The service, environment coverage or operating conditions are not fully matched, so applicability needs confirmation.`, { drivers: [c], history: sameAttr, scopeCheck: sc });
     }
-    if (c.scope.conditions === 'UNKNOWN') {
-      return finding(claim, 'NEEDS_REVIEW', 'AMBIGUOUS_SCOPE', `May conflict with ${c.decision.decisionId}`, `${v.detail} The operating conditions differ (${claim.scope.conditions.join(', ')} vs ${c.constraint.scope.conditions.join(', ')}), so the decision may not apply.`, { drivers: [c], history: sameAttr, scopeCheck: sc });
-    }
-    if (c.constraint.modality === 'SHOULD') {
-      return finding(claim, 'NEEDS_REVIEW', 'GUIDELINE_ONLY', `Deviates from guideline ${c.decision.decisionId}`, `${v.detail} The decision is a recommendation (should), not a requirement.`, { drivers: [c], history: sameAttr, scopeCheck: sc });
+    if (c.constraint.modality !== 'MUST' || claim.modality !== 'MUST') {
+      return finding(claim, 'NEEDS_REVIEW', 'GUIDELINE_ONLY', `Clarify the requirement against ${c.decision.decisionId}`, `${v.detail} At least one side is advisory or optional, rather than two binding requirements.`, { drivers: [c], history: sameAttr, scopeCheck: sc });
     }
     return finding(claim, 'CONFLICT', v.reason, `Contradicts ${c.decision.decisionId}`, `${v.detail} ${c.decision.decisionId} is accepted and current for ${c.decision.scope.service}.`, { drivers: [c], history: sameAttr, scopeCheck: sc });
   }
@@ -276,6 +319,11 @@ async function assessClaim(claim: Claim, input: AssessInput, validity: Map<strin
 
   const tighter = comparable.find(({ v }) => v.verdict === 'COMPATIBLE_IF_TIGHTER');
   const { c, v } = tighter ?? comparable[0]!;
+  if (comparable.some((x) => uncertainScope(x.c))) {
+    return finding(claim, 'NEEDS_REVIEW', 'AMBIGUOUS_SCOPE', `Confirm the scope of ${c.decision.decisionId}`,
+      'The requirement and decision may apply to different services, environments or operating conditions. The comparison does not establish full coverage.',
+      { drivers: comparable.map((x) => x.c), history: sameAttr, scopeCheck: scopeCheckOf(c, v) });
+  }
   return finding(
     claim,
     'NO_CONFLICT_FOUND',
@@ -290,6 +338,15 @@ async function assessClaim(claim: Claim, input: AssessInput, validity: Map<strin
 export async function assessClaims(input: AssessInput): Promise<Finding[]> {
   const validity = computeValidity(input.decisions);
   const out: Finding[] = [];
-  for (const claim of input.claims) out.push(await assessClaim(claim, input, validity));
+  for (const claim of input.claims) {
+    try {
+      out.push(await assessClaim(claim, input, validity));
+    } catch (error) {
+      if (!input.onError) throw error;
+      input.onError(claim, error);
+      out.push(finding(claim, 'INSUFFICIENT_EVIDENCE', 'INCOMPARABLE', 'Comparison could not be completed',
+        'The comparison failed for this requirement. Other supported findings remain available; inspect the separate operational error.'));
+    }
+  }
   return out;
 }
