@@ -9,7 +9,7 @@
 Forge docs: apps submitted for Marketplace listing **cannot be shared by installation
 link**. So:
 1. **Tether** (judging app, id in `manifest.yml`): deploy to production, Distribution → Sharing → installation link for Jira **and** Confluence. This link goes on Devpost.
-2. **Tether for Marketplace**: owner runs `forge register "Tether for Marketplace"` on a copy, records both ids in `scripts/apps.json`, then `node scripts/use-app.mjs marketplace && forge deploy -e production`, submits the listing, and switches back with `node scripts/use-app.mjs judging`. Only the app owner can submit to Marketplace. Needs a Marketplace partner profile, privacy policy, EULA/terms, logo and screenshots.
+2. **Tether for Marketplace**: owner runs `forge register "Tether for Marketplace"` on a copy, records both ids in `scripts/apps.json`, then `node scripts/use-app.mjs marketplace && forge deploy -e production`, submits the listing, and switches back with `node scripts/use-app.mjs judging`. Only the app owner can submit to Marketplace. Needs a Marketplace partner profile, privacy policy, EULA/terms, logo and screenshots. Drafts: `docs/marketplace/` (PRIVACY, TERMS, LISTING with security-questionnaire answers).
 
 ## Required
 - [ ] Installation link tested on a **clean** site (not the dev site) for both Jira and Confluence
@@ -22,7 +22,7 @@ link**. So:
 
 ## Bonus evidence
 - Best Agents: screenshot/video of the Tether agent in Rovo Chat; list of actions + skill.
-- MCP: video of an external MCP client (Claude Code / Claude Desktop) calling `check-issue-consistency` via `https://mcp.atlassian.com/forge/<appId>`; admin must enable "Expose tools via external MCP endpoint" for the app (admin.atlassian.com → Apps → Sites → Connected apps). Link `skills/decision-consistency/SKILL.md`.
+- MCP: video of an external MCP client (Claude Code / Claude Desktop) calling `check-issue-consistency` via `https://mcp.atlassian.com/forge/07520459-db83-4ab5-b000-09c3c8095691` (not the general `mcp.atlassian.com/v2/mcp` server); admin must enable "Expose tools via external MCP endpoint" for the app (admin.atlassian.com → Apps → Sites → Connected apps). Link `skills/decision-consistency/SKILL.md`.
 - Teamwork Graph: show a decision found only through the issue→page link, and the Cypher used.
 - Marketplace: listing link or Marketplace review ticket link.
 
