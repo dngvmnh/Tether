@@ -52,3 +52,60 @@ real-world precision or recall.
 | Date | Model | Passed | Missed conflicts | False conflicts | False "no conflict" | Notes |
 |---|---|---|---|---|---|---|
 | 2026-11-08 (UTC+8) | claude-sonnet-5 | 30/30 strict and overall | 0 | 0 | 0 | dev-dat 2.9.0; team-approved labels; 115,942 ms; see eval/team-approved-final-2026-11-08.json |
+
+## Shared-site checks on 13 November 2026
+
+Đạt ran the checks through the Jira issue panel on
+`one-atlas-dscw.atlassian.net` and supplied screenshots of all 15 reports.
+The reports were generated on 13 November, between the displayed times 12.20 PM
+and 12.42 PM. Each screenshot showed 10 decisions retrieved from `ENG`.
+
+Fourteen displayed overall outcomes matched the scenario expectations. PAY-8
+returned CONFLICT where S08 expects NEEDS_REVIEW. The table records visible
+outcomes and coverage. Collapsed finding cards were not individually inspected,
+and this run does not establish strict extraction scores. Model, exact deployed
+commit, full report JSON and decision-cache contents were not captured.
+
+| Ticket | Expected overall outcome | Displayed overall outcome | Displayed coverage | Observation |
+|---|---|---|---|---|
+| PAY-1 | CONFLICT | CONFLICT | 1/2 | Exactly 5 retries conflicts with ADR-PAY-001 max 3. Logging remains uncovered. |
+| PAY-2 | INSUFFICIENT_EVIDENCE | INSUFFICIENT_EVIDENCE | 1/2 | Merchant configuration is uncovered. Retry bound is compatible if kept within the ADR limit. |
+| PAY-3 | NEEDS_REVIEW | NEEDS_REVIEW | 1/1 | Four attempts vs three retries requires counting clarification. |
+| PAY-4 | CONFLICT | CONFLICT | 1/1 | Uses current ADR-PAY-001 and shows ADR-PAY-000 as superseded. |
+| PAY-5 | INSUFFICIENT_EVIDENCE | INSUFFICIENT_EVIDENCE | 0/1 | Retrieved decisions do not apply to Notification Service. |
+| PAY-6 | NO_CONFLICT_FOUND | NO_CONFLICT_FOUND | 2/2 | Report lists consistency with ADR-PAY-002 and ADR-PAY-001. |
+| PAY-7 | INSUFFICIENT_EVIDENCE | INSUFFICIENT_EVIDENCE | 0/1 | No decision covers the latency metrics emission interval. |
+| PAY-8 | NEEDS_REVIEW | CONFLICT | 1/1 | Reports 60 days vs ADR-PAY-008's 90 days. Competing ADR-SEC-003 is absent from the displayed finding. Pending investigation. |
+| PAY-9 | CONFLICT | CONFLICT | 2/3 | Retry conflict remains visible alongside partial coverage. |
+| PAY-10 | CONFLICT | CONFLICT | 1/1 | Required PAN persistence contradicts ADR-PAY-003's prohibition. |
+| PAY-11 | NEEDS_REVIEW | NEEDS_REVIEW | 1/1 | ADR-PAY-005 is identified as proposed and non-authoritative. |
+| PAY-12 | INSUFFICIENT_EVIDENCE | INSUFFICIENT_EVIDENCE | 0/1 | Quotes the staging requirement and identifies ADR-PAY-006 as outside the applicable service or environment. |
+| PAY-13 | NO_CONFLICT_FOUND | NO_CONFLICT_FOUND | 1/1 | Report lists consistency with ADR-PAY-001. |
+| PAY-14 | CONFLICT | CONFLICT | 1/1 | 15,000 ms conflicts with ADR-PAY-004's maximum of 10 seconds. |
+| PAY-15 | INSUFFICIENT_EVIDENCE | INSUFFICIENT_EVIDENCE | No technical requirements | Report explicitly states that no technical requirements were found. |
+
+Teamwork Graph reported one linked page for PAY-1, PAY-4 and PAY-8. The other
+screenshots reported no linked pages.
+
+### PAY-8 investigation and handoff
+
+The source text Đạt supplied for ADR-SEC-003 matches `eval/decisions.json`.
+Its status is ACCEPTED, service is `*`, and its statement limits logs containing
+customer data to at most 30 days. Its metadata has empty environments and
+conditions, with no supersession relation. The customer-data restriction is
+present in the statement and must be considered when reviewing applicability.
+
+A local diagnostic on the unchanged engine returned NEEDS_REVIEW /
+COMPETING_DECISIONS for S08 using gold claims and both gold decision constraints.
+Adding the customer-data condition to the security constraint also returned
+NEEDS_REVIEW. Removing ADR-SEC-003 from that diagnostic returned CONFLICT /
+VALUE_CONTRADICTION, matching the displayed overall outcome. This reproduction
+does not prove the security decision was missing in the live run.
+
+The Developer Console storage view was checked for Development and
+`one-atlas-dscw.atlassian.net`, including a refresh and a search for `report:PAY-8`.
+It displayed no stored data. The actual report and cache could not be read there.
+The root cause remains unconfirmed. Before changing engine logic or S08 labels,
+the integration owner should obtain `report:PAY-8` and the
+`dcache:<pageId>:<version>` entries for ADR-PAY-008 and ADR-SEC-003, and compare
+attribute keys, extracted constraints, scope, source versions and report errors.
