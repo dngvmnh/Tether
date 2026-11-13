@@ -18,6 +18,23 @@ https://github.com/dngvmnh/Tether/issues, privacy policy and terms from `docs/ma
 Redeploy production (`forge deploy -e production`) before recording and before submitting so
 judges get the final code; the link stays valid across deploys.
 
+### Clean-site test (13 Nov 2026, tether-judge-test.atlassian.net, fresh free site)
+What a judge goes through, and what happened:
+1. Open the link, **Get app**, choose the site, keep Jira + Confluence ticked, **Install**.
+   Confluence installed first time. **Jira failed once** ("Installation failed. Try again or
+   contact app owner") and installed on the second click of Install. Tell judges to press
+   Install again if one product fails.
+2. The fresh site only has a `KAN` project, so create a Jira project with key `PAY`
+   (company-managed Kanban works), then run the seed against the site:
+   `ATLASSIAN_SITE=<site> ATLASSIAN_EMAIL=<email> ATLASSIAN_API_TOKEN=<own token> node scripts/seed/seed.mjs`.
+   It created space `ENG`, the decision pages, and PAY-1..PAY-30. Default settings
+   (space `ENG`, label `tether-decision`) already match, so no settings step was needed.
+3. PAY-1, issue apps button, **Tether decision check**, **Check implementation context**.
+   About 60 s on a cold cache. Result: **CONFLICT, contradicts ADR-PAY-001** (5 retries vs no
+   more than 3), "1 of 2 requirements checked, 1 has insufficient evidence", same as on the
+   dev site.
+Not tested on the clean site yet: Rovo agent, MCP, drift, Teamwork Graph.
+
 ## Two registered apps (needed for the Marketplace bonus)
 Forge docs: apps submitted for Marketplace listing **cannot be shared by installation
 link**. So:
@@ -25,7 +42,7 @@ link**. So:
 2. **Tether for Marketplace**: owner runs `forge register "Tether for Marketplace"` on a copy, records both ids in `scripts/apps.json`, then `node scripts/use-app.mjs marketplace && forge deploy -e production`, submits the listing, and switches back with `node scripts/use-app.mjs judging`. Only the app owner can submit to Marketplace. Needs a Marketplace partner profile, privacy policy, EULA/terms, logo and screenshots. Drafts: `docs/marketplace/` (PRIVACY, TERMS, LISTING with security-questionnaire answers).
 
 ## Required
-- [ ] Installation link (created, see above) tested on a **clean** site (not the dev site) for both Jira and Confluence
+- [x] Installation link (created, see above) tested on a **clean** site (not the dev site) for both Jira and Confluence (13 Nov, panel check; see "Clean-site test")
 - [ ] Judge instructions: install link, create project + space or run our seed, sample issue keys, expected outcomes
 - [ ] Demo video < 5 min, public on YouTube
 - [ ] Category: Apps for Software Teams
