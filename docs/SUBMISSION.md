@@ -68,7 +68,10 @@ Same-day findings that matter for judging:
   judges to paste this key** (settings default is empty, which falls back to remote links).
 - MCP on the clean site: enabled at admin.atlassian.com > (site) > Connected apps > Tether
   (Jira) > Details > Tools > "Expose tools to MCP-compatible apps" > Enable tools. Calling it
-  still needs an MCP client signed in to that site; not done yet.
+  from Claude Code was not verified: after clearing the `tether` sign-in and re-authenticating
+  with tether-judge-test picked, a brand-new session still got only the `_development` tools
+  and dev-site (one-atlas-dscw) URLs. Record the MCP prize video on the dev site, where MCP is
+  verified end to end.
 
 ## Two registered apps (needed for the Marketplace bonus)
 Forge docs: apps submitted for Marketplace listing **cannot be shared by installation
