@@ -1,4 +1,5 @@
 /** UI resolvers (25 s limit): fast operations only; analysis runs in the queue worker. */
+import api, { route } from '@forge/api';
 import Resolver from '@forge/resolver';
 import type { z } from 'zod';
 import {
@@ -6,6 +7,7 @@ import {
   GetJobInput,
   GetLatestReportInput,
   PreviewFollowUpInput,
+  SeedDemoInput,
   SetConfigInput,
   StartAnalysisInput,
   type ResolverApi,
@@ -18,6 +20,7 @@ import { store } from '../adapters/storage';
 import { PortError } from '../engine/ports';
 import { buildFollowUpDraft } from '../engine/present';
 import { decisionStaleness } from './drift';
+import { runSeedStep } from './seed';
 import { startAnalysisJob, startEvalJob } from './jobs';
 
 export interface ForgeContext {
@@ -52,7 +55,7 @@ const siteOf = (ctx: ForgeContext) => (ctx.siteUrl ?? '').replace(/\/$/, '');
 const issueOf = (ctx: ForgeContext, fallback: string) => ctx.extension?.issue?.key ?? fallback;
 
 define('startAnalysis', StartAnalysisInput, async ({ issueKey }, ctx) => {
-  const job = await startAnalysisJob({ issueKey: issueOf(ctx, issueKey), accountId: ctx.accountId, cloudId: ctx.cloudId, siteUrl: siteOf(ctx) });
+  const job = await startAnalysisJob({ issueKey: issueOf(ctx, issueKey), accountId: ctx.accountId, cloudId: ctx.cloudId, siteUrl: siteOf(ctx), via: 'panel' });
   return { jobId: job.jobId };
 });
 
@@ -101,5 +104,17 @@ define('runEval', null, async () => {
 });
 
 define('getEval', null, async () => ({ result: (await store.getEval()) ?? null }));
+
+define('seedDemo', SeedDemoInput, async ({ step }, ctx) => {
+  if (!(await isJiraAdmin())) throw new PortError('Only Jira admins can load demo data', 'FORBIDDEN', false, true);
+  let site = siteOf(ctx);
+  if (!site) {
+    const res = await api.asUser().requestJira(route`/rest/api/3/serverInfo`);
+    site = ((await res.json()) as { baseUrl: string }).baseUrl.replace(/\/$/, '');
+  }
+  const result = await runSeedStep(step, ctx.accountId, site);
+  console.log(`[tether] demo data step ${step + 1}/${result.total} (${result.title}): ${result.lines.length} item(s)`);
+  return result;
+});
 
 export const handler = resolver.getDefinitions();

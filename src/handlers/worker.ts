@@ -42,6 +42,11 @@ async function runAnalysis(body: AnalysisJobBody) {
     `${x.attribute} ${x.operator} ${JSON.stringify(x.value)}${x.unit ? ' ' + x.unit : ''} [${x.modality ?? ''}] scope=${JSON.stringify(x.scope ?? {})} cond=${JSON.stringify(x.conditions ?? [])}`;
   console.log(
     `[tether] diag ${body.issueKey} ${JSON.stringify({
+      via: body.via ?? 'unknown',
+      jobId: body.jobId,
+      reportId: report.reportId,
+      generatedAt: report.generatedAt,
+      graph: body.graph ? { pages: body.graph.linkedPageIds.length, error: body.graph.error ?? null } : null,
       outcome: report.overallOutcome,
       status: report.status,
       claims: report.claims.map((x) => `${x.id}: ${c(x as never)}`),

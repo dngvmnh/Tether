@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import type { TetherConfig } from '../../../../src/contracts';
+import type { SeedDemoStep, TetherConfig } from '../../../../src/contracts';
+import { DEFAULT_TWG_LINKED_PAGES_QUERY_KEY } from '../../../../src/contracts/schema';
 import { ApiError, call } from '../api/client';
 
 /** Comma-separated text, deduplicated and trimmed. */
@@ -31,7 +32,8 @@ const toConfig = (f: Form): TetherConfig => ({
   models: csv(f.models),
   useTeamworkGraph: f.graph,
   autoRecheckOnDecisionChange: f.auto,
-  twgLinkedPagesQueryKey: f.twgKey.trim() || undefined,
+  // Empty means "use the team's registered query"; switch Teamwork Graph off with the checkbox instead.
+  twgLinkedPagesQueryKey: f.twgKey.trim() || DEFAULT_TWG_LINKED_PAGES_QUERY_KEY,
 });
 
 type Errors = Partial<Record<'spaces' | 'label' | 'models', string>>;
@@ -95,6 +97,71 @@ function EvalPanel() {
             ))}
           </ul>
         </>
+      )}
+    </section>
+  );
+}
+
+/**
+ * Creates the demo project, decision space, decision pages and issues as the current admin,
+ * one short step at a time, so judges can try Tether without a terminal or API token.
+ */
+function DemoDataPanel({ onConfigChanged }: { onConfigChanged: () => void }) {
+  const [running, setRunning] = useState(false);
+  const [progress, setProgress] = useState<{ step: number; total: number } | null>(null);
+  const [log, setLog] = useState<string[]>([]);
+  const [result, setResult] = useState<Status>(null);
+
+  async function load() {
+    if (running) return;
+    setRunning(true);
+    setResult(null);
+    setLog([]);
+    let step: number | null = 0;
+    try {
+      while (step !== null) {
+        const r: SeedDemoStep = await call('seedDemo', { step });
+        setProgress({ step: r.step + 1, total: r.total });
+        setLog((l) => [...l, `${r.title}: ${r.lines.join(' · ')}`]);
+        step = r.next;
+      }
+      setResult({ kind: 'ok', text: 'Demo data ready. Open PAY-1 and click "Check implementation context" in the Tether panel.' });
+      onConfigChanged();
+    } catch (e) {
+      const err = e as ApiError;
+      setResult({
+        kind: 'error',
+        text:
+          err.code === 'FORBIDDEN'
+            ? 'Only Jira admins can load demo data.'
+            : `Stopped: ${err.message} Running it again continues where it stopped; nothing is created twice.`,
+      });
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  return (
+    <section className="eval">
+      <h3>Demo data</h3>
+      <p className="muted">
+        Creates Jira project PAY (30 demo issues) and Confluence space ENG (10 decision records), as you. Safe to run again: existing items are
+        reused. Takes about a minute.
+      </p>
+      <button type="button" className="btn" disabled={running} onClick={() => void load()}>
+        {running ? `Loading demo data… ${progress ? `${progress.step}/${progress.total}` : ''}` : 'Load demo data'}
+      </button>
+      {result && (
+        <p className={result.kind === 'error' ? 'field-error' : 'muted'} role={result.kind === 'error' ? 'alert' : 'status'}>
+          {result.text}
+        </p>
+      )}
+      {log.length > 0 && (
+        <ul className="muted" aria-live="polite">
+          {log.map((line, i) => (
+            <li key={i}>{line}</li>
+          ))}
+        </ul>
       )}
     </section>
   );
@@ -258,7 +325,7 @@ export function Settings() {
         <input
           value={form.twgKey}
           readOnly={saving}
-          placeholder="Not registered: Jira remote links are used"
+          placeholder="Empty: the team's registered query is used"
           onChange={(e) => edit({ twgKey: e.target.value })}
         />
       </label>
@@ -277,6 +344,7 @@ export function Settings() {
           {status.text}
         </p>
       )}
+      <DemoDataPanel onConfigChanged={load} />
       <EvalPanel />
     </form>
   );

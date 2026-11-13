@@ -17,6 +17,8 @@ export interface AnalysisJobBody {
   accountId: string;
   /** Precomputed in user context (Teamwork Graph is asUser-only). */
   graph: (GraphContext & { error?: string }) | null;
+  /** Which surface started the run: the Jira panel, or the Rovo/MCP check action. Logged in `diag`. */
+  via?: 'panel' | 'agent';
   [k: string]: unknown;
 }
 
@@ -49,13 +51,13 @@ export async function graphContextAsUser(cloudId: string, issueKey: string, site
  * Must be called from a user-invoked function (resolver / Rovo action). Verifies the
  * user can see the issue (getTicket asUser throws otherwise) before queueing.
  */
-export async function startAnalysisJob(args: { issueKey: string; accountId: string; cloudId: string; siteUrl: string }): Promise<Job> {
+export async function startAnalysisJob(args: { issueKey: string; accountId: string; cloudId: string; siteUrl: string; via?: 'panel' | 'agent' }): Promise<Job> {
   const config = await store.getConfig();
   const graph = await graphContextAsUser(args.cloudId, args.issueKey, args.siteUrl, config.useTeamworkGraph, config.twgLinkedPagesQueryKey);
   const now = new Date().toISOString();
   const job: Job = { jobId: globalThis.crypto.randomUUID(), issueKey: args.issueKey, status: 'QUEUED', stage: 'QUEUED', createdAt: now, updatedAt: now };
   await store.putJob(job);
-  const body: AnalysisJobBody = { kind: 'analysis', jobId: job.jobId, issueKey: args.issueKey, siteUrl: args.siteUrl, accountId: args.accountId, graph };
+  const body: AnalysisJobBody = { kind: 'analysis', jobId: job.jobId, issueKey: args.issueKey, siteUrl: args.siteUrl, accountId: args.accountId, graph, via: args.via };
   await queue.push({ body });
   return job;
 }

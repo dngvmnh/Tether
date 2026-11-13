@@ -374,6 +374,9 @@ export type TicketSnapshot = z.infer<typeof TicketSnapshot>;
 
 /* ------------------------------------------------------------------ config */
 
+/** Bảo's persisted "linked pages" query, registered for this app in TWG Labs. */
+export const DEFAULT_TWG_LINKED_PAGES_QUERY_KEY = '66b8902d-a241-4a00-86ad-5c5f8a461be4';
+
 export const TetherConfig = z.object({
   spaceKeys: z.array(z.string()).default(['ENG']),
   decisionLabel: z.string().default('tether-decision'),
@@ -383,8 +386,10 @@ export const TetherConfig = z.object({
   /**
    * Key of the persisted Cypher query (registered in TWG Labs) that returns the Confluence
    * pages linked to a work item. Raw cypherQuery is closed to new apps. See docs/TEAM-SETUP.md.
+   * Defaults to the team's registered query (verified on more than one site), so judges and
+   * new installs get Teamwork Graph without a settings step.
    */
-  twgLinkedPagesQueryKey: z.string().optional(),
+  twgLinkedPagesQueryKey: z.string().optional().default(DEFAULT_TWG_LINKED_PAGES_QUERY_KEY),
   /** Re-run the check automatically when a linked decision changes. */
   autoRecheckOnDecisionChange: z.boolean().default(false),
 });

@@ -4,6 +4,7 @@
  * dev toolbar or ?scenario=S01 in the URL.
  */
 import type { AnalysisReport, Job, ResolverApi, ResolverName, ResolverResult, StaleInfo, TetherConfig } from '../../../../src/contracts';
+import { DEFAULT_TWG_LINKED_PAGES_QUERY_KEY } from '../../../../src/contracts/schema';
 import { buildFollowUpDraft } from '../../../../src/engine/present';
 import fixtures from '../mocks/reports.json';
 
@@ -34,6 +35,7 @@ let config: TetherConfig = {
   decisionLabel: 'tether-decision',
   models: ['claude-sonnet-5', 'claude-sonnet-4-6', 'claude-haiku-4-5-20251001'],
   useTeamworkGraph: true,
+  twgLinkedPagesQueryKey: DEFAULT_TWG_LINKED_PAGES_QUERY_KEY,
   autoRecheckOnDecisionChange: false,
 };
 
@@ -152,6 +154,14 @@ export async function mockInvoke<N extends ResolverName>(name: N, input: Resolve
       return ok({ queued: true }) as Out;
     case 'getEval':
       return ok({ result: null }) as Out;
+    case 'seedDemo': {
+      // Same step layout as src/seed/plan.ts: project, space, 2 decision steps, 5 issue steps.
+      await delay(500);
+      const step = (i as { step: number }).step;
+      const titles = ['Jira project PAY', 'Confluence space ENG', 'Decision pages 1-5 of 10', 'Decision pages 6-10 of 10',
+        ...[0, 1, 2, 3, 4].map((b) => `Demo issues ${b * 6 + 1}-${b * 6 + 6} of 30`)];
+      return ok({ step, total: titles.length, title: titles[step] ?? '?', lines: ['Created (mock)'], next: step + 1 < titles.length ? step + 1 : null }) as Out;
+    }
     default:
       return { ok: false, error: { code: 'UNKNOWN', message: `No mock for ${name}`, retryable: false } } as Out;
   }

@@ -66,6 +66,7 @@ export async function checkIssueConsistency(payload: ActionPayload, context: Act
     accountId: accountOf(context),
     cloudId: payload.context?.cloudId ?? context.cloudId ?? '',
     siteUrl: await siteUrl(payload),
+    via: 'agent',
   });
   if (report && stale) {
     const summary = summarizeForAgent(report);

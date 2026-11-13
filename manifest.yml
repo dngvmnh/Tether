@@ -170,6 +170,11 @@ permissions:
     - read:confluence-space.summary
     - read:confluence-content.permission
     - search:confluence
+    # "Load demo data" (Tether settings, Jira admins only) creates the PAY project, ENG space,
+    # decision pages and demo issues as the clicking admin.
+    - manage:jira-project
+    - write:confluence-content
+    - write:confluence-space
     # Teamwork Graph (Preview). Week-1 task for integration: uncomment, deploy to YOUR
     # environment, confirm deploy + queries work, then commit. Missing scopes make graph
     # queries return EMPTY (not errors); Tether reports that as "graph unavailable".

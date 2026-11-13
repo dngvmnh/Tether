@@ -24,6 +24,18 @@ export const PreviewFollowUpInput = z.object({
 });
 export const CreateFollowUpInput = z.object({ draft: FollowUpDraftSchema });
 export const SetConfigInput = z.object({ config: TetherConfigSchema });
+export const SeedDemoInput = z.object({ step: z.number().int().min(0) });
+
+/** One step of "Load demo data". Call step 0, then `next`, until `next` is null. */
+export interface SeedDemoStep {
+  step: number;
+  total: number;
+  /** What this step covered, e.g. "Decision pages 1-5 of 10". */
+  title: string;
+  /** One line per thing created or found. */
+  lines: string[];
+  next: number | null;
+}
 
 export interface ResolverApi {
   /** Queues an analysis for the issue. Returns immediately. */
@@ -54,6 +66,8 @@ export interface ResolverApi {
   runEval: { input: Record<string, never>; output: { queued: true } };
   /** Latest eval result, or null. */
   getEval: { input: Record<string, never>; output: { result: unknown } };
+  /** Jira admins only: one step of creating the demo project, space, decisions and issues as the user. */
+  seedDemo: { input: z.infer<typeof SeedDemoInput>; output: SeedDemoStep };
 }
 
 export type ResolverName = keyof ResolverApi;
