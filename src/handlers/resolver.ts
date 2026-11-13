@@ -17,6 +17,7 @@ import { createFollowUpIssue, isJiraAdmin, JiraTicketAdapter } from '../adapters
 import { store } from '../adapters/storage';
 import { PortError } from '../engine/ports';
 import { buildFollowUpDraft } from '../engine/present';
+import { decisionStaleness } from './drift';
 import { startAnalysisJob, startEvalJob } from './jobs';
 
 export interface ForgeContext {
@@ -66,7 +67,7 @@ define('getLatestReport', GetLatestReportInput, async ({ issueKey }, ctx) => {
   const key = issueOf(ctx, issueKey);
   const report = (await store.getReport(key)) ?? null;
   if (!report) return { report: null, stale: null };
-  let stale: StaleInfo | null = (await store.getStale(key)) ?? null;
+  let stale: StaleInfo | null = await decisionStaleness(report, 'user');
   if (!stale) {
     const updated = await new JiraTicketAdapter(siteOf(ctx), 'user').getUpdatedAt(key);
     if (updated && report.ticketUpdatedAt && updated !== report.ticketUpdatedAt) {

@@ -8,6 +8,7 @@ import { ConfluenceDecisionAdapter } from '../adapters/confluence';
 import { createFollowUpIssue } from '../adapters/jira';
 import { store } from '../adapters/storage';
 import { buildFollowUpDraft, summarizeForAgent } from '../engine/present';
+import { decisionStaleness } from './drift';
 import { startAnalysisJob, waitForJob } from './jobs';
 
 interface ActionPayload {
@@ -56,7 +57,8 @@ const CHECK_WAIT_MS = 15_000;
 /** GET check-issue-consistency. */
 export async function checkIssueConsistency(payload: ActionPayload, context: ActionContext) {
   const issueKey = issueKeyFrom(payload);
-  const [report, stale] = await Promise.all([store.getReport(issueKey), store.getStale(issueKey)]);
+  const report = await store.getReport(issueKey);
+  const stale = report ? await decisionStaleness(report, 'app') : null;
   if (report && !stale) return summarizeForAgent(report);
 
   const job = await startAnalysisJob({

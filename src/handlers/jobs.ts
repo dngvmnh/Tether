@@ -33,8 +33,11 @@ export async function graphContextAsUser(cloudId: string, issueKey: string, site
   }
   if (useGraph && queryKey) {
     try {
-      return await new TeamworkGraphAdapter(cloudId, queryKey).contextFor(ticket);
+      const ctx = await new TeamworkGraphAdapter(cloudId, queryKey).contextFor(ticket);
+      console.log(`[tether] graph ${issueKey}: Teamwork Graph returned ${ctx.linkedPageIds.length} linked page(s)`);
+      return ctx;
     } catch (e) {
+      console.warn(`[tether] graph ${issueKey}: Teamwork Graph failed, using remote links: ${(e as Error).message.slice(0, 200)}`);
       const ids = await linkedPagesFromRemoteLinks(issueKey);
       return { linkedPageIds: ids, ownerTeams: {}, note: 'Teamwork Graph unavailable; used Jira remote links.', error: (e as Error).message };
     }

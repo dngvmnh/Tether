@@ -33,7 +33,29 @@ What a judge goes through, and what happened:
    About 60 s on a cold cache. Result: **CONFLICT, contradicts ADR-PAY-001** (5 retries vs no
    more than 3), "1 of 2 requirements checked, 1 has insufficient evidence", same as on the
    dev site.
-Not tested on the clean site yet: Rovo agent, MCP, drift, Teamwork Graph.
+4. Drift: edited ADR-PAY-001 (v1 to v2). The Confluence page trigger marked **0** issues stale.
+   Cause: without `app.compatibility` in the manifest, Jira and Confluence are separate
+   installations with separate storage, so the Confluence trigger cannot see the index the
+   Jira panel's check wrote. Fixed with pull-based staleness (prod 2.5.0): reading a report
+   compares each decision page's stored version with the current one (one CQL search). Log
+   after the fix: `drift PAY-1 as=user read 10/10 pages; changed: ADR-PAY-001`.
+
+Same-day findings that matter for judging:
+- Panel checks (Jira installation) and Rovo/MCP checks (where the page trigger *does* find
+  their index, so likely the Confluence installation) keep **separate** reports and settings.
+  Settings saved in the Jira admin page, including the Teamwork Graph query key, are not seen
+  by Rovo/MCP checks, which fall back to Jira remote links. Pull-based staleness covers drift
+  for both. One shared store would need the multi-product migration (after submission).
+- Confluence v1 `GET /wiki/rest/api/content/{id}` answers **410 Gone**. Linked pages without
+  the decision label (Teamwork Graph / remote links) were silently dropped; now fetched with
+  one CQL `id in (...)` search.
+- MCP on the dev site (development 3.6.0): after an ADR edit, `check-issue-consistency`
+  returned the stored CONFLICT with the "may be out of date" note and started a re-check;
+  asking again ~20 s later returned the fresh CONFLICT.
+
+Still to test on the clean site: Rovo agent and MCP (needs "Expose tools via external MCP
+endpoint" on that site and an MCP sign-in for it), and Teamwork Graph from the panel with the
+query key set in settings.
 
 ## Two registered apps (needed for the Marketplace bonus)
 Forge docs: apps submitted for Marketplace listing **cannot be shared by installation

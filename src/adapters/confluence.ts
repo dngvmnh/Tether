@@ -18,6 +18,34 @@ interface ContentResult {
   _links?: { webui?: string };
 }
 
+/**
+ * Current version number of each page, for pull-based drift checks, in one CQL search.
+ * (v1 GET /content/{id} answers 410 Gone; v2 /pages would need a new granular scope.)
+ * Pages the actor cannot see, and any lookup failure, are simply missing from the result.
+ */
+export async function currentPageVersions(pageIds: string[], as: Actor): Promise<Map<string, number>> {
+  const out = new Map<string, number>();
+  const ids = pageIds.filter((id) => /^\d+$/.test(id));
+  if (ids.length === 0) return out;
+  const cql = `id in (${ids.join(',')})`;
+  try {
+    const res = await actor(as).requestConfluence(
+      route`/wiki/rest/api/content/search?cql=${cql}&limit=${ids.length}&expand=version`,
+    );
+    if (!res.ok) {
+      console.warn(`[tether] page version lookup as ${as}: HTTP ${res.status}`);
+      return out;
+    }
+    for (const r of ((await res.json()) as { results?: ContentResult[] }).results ?? []) {
+      if (typeof r.version?.number === 'number') out.set(String(r.id), r.version.number);
+    }
+  } catch (e) {
+    // A failed lookup must not break reading the report.
+    console.warn(`[tether] page version lookup as ${as} threw: ${(e as Error).message}`);
+  }
+  return out;
+}
+
 const ENTITIES: Record<string, string> = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp;': ' ' };
 
 function text(html: string): string {
@@ -125,9 +153,16 @@ export class ConfluenceDecisionAdapter implements DecisionPort {
 
     // Pages linked to the ticket (Teamwork Graph / remote links) count even without the label.
     const have = new Set(pages.map((p) => p.id));
-    for (const id of q.linkedPageIds.filter((x) => !have.has(x)).slice(0, 10)) {
-      const r = await actor(this.as).requestConfluence(route`/wiki/rest/api/content/${id}?expand=body.storage,version,metadata.labels`);
-      if (r.ok) pages.push((await r.json()) as ContentResult);
+    // One CQL lookup: v1 GET /content/{id} answers 410 Gone.
+    const extra = q.linkedPageIds.filter((x) => !have.has(x) && /^\d+$/.test(x)).slice(0, 10);
+    if (extra.length > 0) {
+      const idCql = `type=page AND id in (${extra.join(',')})`;
+      const r = await actor(this.as).requestConfluence(
+        route`/wiki/rest/api/content/search?cql=${idCql}&limit=10&expand=body.storage,version,metadata.labels`,
+        { headers: { Accept: 'application/json' } },
+      );
+      if (r.ok) pages.push(...(((await r.json()) as { results?: ContentResult[] }).results ?? []));
+      else console.warn(`[tether] linked page lookup failed: HTTP ${r.status}`);
     }
 
     const readable = await this.filterReadable(pages);
