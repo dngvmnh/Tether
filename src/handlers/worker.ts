@@ -36,6 +36,7 @@ async function runAnalysis(body: AnalysisJobBody) {
   await store.clearStale(body.issueKey);
   const pages = report.decisions.map((d) => ({ pageId: d.source.id, decisionId: d.decisionId }));
   await store.indexDecisions(body.issueKey, pages);
+  console.log(`[tether] indexed ${body.issueKey} against ${pages.map((p) => `${p.pageId}(${p.decisionId})`).join(', ') || 'no pages'}`);
   await store.patchJob(body.jobId, {
     status: report.status === 'FAILED' ? 'FAILED' : 'DONE',
     stage: 'DONE',
