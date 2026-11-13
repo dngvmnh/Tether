@@ -1,5 +1,5 @@
 /** Queue consumer (900 s limit): runs analyses and eval suites. */
-import type { AsyncEvent } from '@forge/events';
+import { Queue, type AsyncEvent } from '@forge/events';
 import type { JobProgressStage } from '../contracts';
 import { ConfluenceDecisionAdapter } from '../adapters/confluence';
 import { ForgeLlmAdapter } from '../adapters/forgeLlm';
@@ -36,6 +36,20 @@ async function runAnalysis(body: AnalysisJobBody) {
   await store.clearStale(body.issueKey);
   const pages = report.decisions.map((d) => ({ pageId: d.source.id, decisionId: d.decisionId }));
   await store.indexDecisions(body.issueKey, pages);
+  console.log(`[tether] indexed ${body.issueKey} against ${pages.map((p) => `${p.pageId}(${p.decisionId})`).join(', ') || 'no pages'}`);
+  // Compact diagnosis (no full text): lets the team compare a live run with gold without reading KVS.
+  const c = (x: { attribute?: string; operator?: string; value?: unknown; unit?: string; modality?: string; scope?: unknown; conditions?: unknown }) =>
+    `${x.attribute} ${x.operator} ${JSON.stringify(x.value)}${x.unit ? ' ' + x.unit : ''} [${x.modality ?? ''}] scope=${JSON.stringify(x.scope ?? {})} cond=${JSON.stringify(x.conditions ?? [])}`;
+  console.log(
+    `[tether] diag ${body.issueKey} ${JSON.stringify({
+      outcome: report.overallOutcome,
+      status: report.status,
+      claims: report.claims.map((x) => `${x.id}: ${c(x as never)}`),
+      decisions: report.decisions.map((d) => ({ id: d.decisionId, status: d.status, v: d.source.version, constraints: d.constraints.map((x) => c(x as never)) })),
+      findings: report.findings.map((f) => `${f.outcome}/${f.reason} ${f.decisionIds.join(',')}`),
+      errors: report.errors.map((e) => `${e.stage}:${e.code}`),
+    }).slice(0, 7000)}`,
+  );
   await store.patchJob(body.jobId, {
     status: report.status === 'FAILED' ? 'FAILED' : 'DONE',
     stage: 'DONE',
@@ -47,7 +61,24 @@ async function runAnalysis(body: AnalysisJobBody) {
 export async function handler(event: AsyncEvent) {
   const body = event.body as unknown as AnalysisJobBody | EvalJobBody;
   if (body.kind === 'eval') {
-    await store.putEval(await runEvalSuite());
+    // An eval batch is an explicit experiment, not a retryable user analysis.
+    // In particular, never re-run all LLM calls after a 900-second timeout.
+    if (event.retryContext) {
+      await new Queue({ key: event.queueName }).getJob(event.jobId).cancel();
+      console.warn('[tether] cancelled eval retry', event.jobId);
+      return;
+    }
+    try {
+      await store.putEval({ ...await runEvalSuite(), requestedAt: body.requestedAt });
+    } catch (e) {
+      console.error('[tether] eval worker failed', e);
+      await new Queue({ key: event.queueName }).getJob(event.jobId).cancel();
+      await store.putEval({
+        ranAt: new Date().toISOString(), requestedAt: body.requestedAt,
+        complete: false, stoppedReason: 'EVAL_WORKER_FAILURE',
+        message: 'Evaluation failed; inspect worker logs before starting another run.',
+      });
+    }
     return;
   }
   try {

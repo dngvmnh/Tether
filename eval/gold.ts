@@ -27,6 +27,7 @@ interface GoldConstraint {
   op: string;
   value?: number;
   valueMax?: number;
+  textValue?: string;
   unit?: string;
   counting?: string;
   modality: string;
@@ -56,7 +57,7 @@ export interface GoldScenario {
   title: string;
   ticket: TicketSnapshot;
   claims: Claim[];
-  expected: { overall: Outcome; coverage?: string; claims: Record<string, [Outcome, ReasonCode]> };
+  expected: { overall: Outcome; coverage?: string; claims: Record<string, [Outcome, ReasonCode]>; acceptedOperators?: Record<string, Operator[]> };
 }
 
 export const DEMO_SITE = 'https://example.atlassian.net';
@@ -78,6 +79,7 @@ function toClaim(g: GoldConstraint, id: string, source: Claim['source'], fallbac
     operator: g.op as Operator,
     value: g.value,
     valueMax: g.valueMax,
+    textValue: g.textValue,
     unit: g.unit,
     countingSemantics: (g.counting ?? 'NOT_APPLICABLE') as CountingSemantics,
     modality: g.modality as Modality,

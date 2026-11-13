@@ -42,7 +42,7 @@
       "status": "ACCEPTED",
       "service": "payment-service",
       "environments": [],
-      "conditions": [],
+      "conditions": ["payment creation requests"],
       "owner": "Priya Raman",
       "effectiveDate": "2025-11-20",
       "supersedes": [],
@@ -153,6 +153,31 @@
       "rationale": "Data minimisation requirement from the privacy review.",
       "constraints": [
         { "attr": "logs.retention", "label": "log retention", "op": "LTE", "value": 30, "unit": "days", "modality": "MUST", "quote": "Logs that contain customer data must be retained for no more than 30 days" }
+      ]
+    },
+    {
+      "decisionId": "ADR-PAY-009",
+      "title": "Payment cache TTL recommendation",
+      "status": "ACCEPTED",
+      "service": "payment-service",
+      "environments": [],
+      "conditions": [],
+      "owner": "Priya Raman",
+      "effectiveDate": "2026-06-01",
+      "supersedes": [],
+      "supersededBy": [],
+      "statement": "Payment cache entries should expire after at most 60 seconds.",
+      "rationale": "A freshness guideline, not a binding service limit.",
+      "constraints": [
+        {
+          "attr": "cache.ttl",
+          "label": "cache TTL",
+          "op": "LTE",
+          "value": 60,
+          "unit": "s",
+          "modality": "SHOULD",
+          "quote": "Payment cache entries should expire after at most 60 seconds."
+        }
       ]
     }
   ]

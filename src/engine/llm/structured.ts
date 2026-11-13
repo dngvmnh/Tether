@@ -3,7 +3,7 @@ import type { LlmPort } from '../ports';
 
 export class StructuredOutputError extends Error {
   constructor(message: string, readonly issues: string) {
-    super(message);
+    super(`${message}: ${issues}`);
     this.name = 'StructuredOutputError';
   }
 }

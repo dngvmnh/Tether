@@ -42,7 +42,7 @@ the official rules** and confirm (a) whether one project can win a placing prize
 bonus prizes, and (b) any requirement on repo visibility. Paste the answers into
 `docs/SUBMISSION.md`.
 
-## 3. Status (Sun 8 Nov)
+## 3. Status (Tue 10 Nov)
 
 Week 1 milestone is already met: on the shared site, PAY-1 (S01) shows **CONFLICT vs
 ADR-PAY-001** end to end (panel → queue worker → Forge LLM → report), with verified quotes,
@@ -53,6 +53,8 @@ scope chips and decision history.
 | App registered, deployed to `development` (2.4.0, Runs on Atlassian eligible), installed on `one-atlas-dscw` (Jira + Confluence) | `manifest.yml` |
 | Shared site seeded: project `PAY` (PAY-1..15 = S01..S15), space `ENG` (9 ADRs labelled `tether-decision`) | `npm run seed` |
 | Tether Rovo agent answers PAY-1 in Rovo Chat (check action) | `src/handlers/rovo.ts` |
+| Đạt's engine merged (`2adfdc3`): 30 scenarios, 129 tests, 30/30 offline, 30/30 live on dev-dat; deployed to `development` 3.1.0; shared site seeded PAY-1..30 | `eval/`, `src/engine/` |
+| Bảo's UI + Teamwork Graph persisted query; graph scopes approved; **verified 13 Nov on shared site: PAY-1 footer "1 page(s) linked to PAY-1 in Teamwork Graph"** | `static/report/`, `src/adapters/teamworkGraph.ts` |
 | In-Forge eval runs from Tether settings → Run eval (no web trigger, keeps Runs on Atlassian) | `src/handlers/evalSuite.ts` |
 | Teamwork Graph moved to persisted queries (`customQuery`); falls back to Jira remote links until a query key is set | `src/adapters/teamworkGraph.ts` |
 
@@ -83,11 +85,11 @@ Rules that remove waiting:
 
 ### Đăng: Forge integration (`src/adapters/`, `src/handlers/`, `manifest.yml`)
 1. ~~Rovo: Tether agent answers "Does PAY-1 conflict with any decision?" in Rovo Chat~~ **Done 8 Nov**: CONFLICT vs ADR-PAY-001 with both quotes and the decision link (Rovo → View all agents → Tether). Remaining: try "find decisions about retries" (find action).
-2. MCP: admin enables the app's MCP server, connect from Claude Code (`https://mcp.atlassian.com/forge/<appId>`), call check + find.
+2. MCP: **admin toggle done 10 Nov**; client entry added (`claude mcp add --transport http tether https://mcp.atlassian.com/forge/07520459-db83-4ab5-b000-09c3c8095691`). Remaining: `/mcp` OAuth in Claude Code, then call check + find and record it.
 3. Follow-up issue: preview → confirm → created as the user, linked to the issue and decision page.
 4. Drift: edit ADR-PAY-001 → PAY-1 shows the stale banner (trigger end to end).
 5. Read the Devpost official rules (multi-prize, repo visibility) and paste answers into `docs/SUBMISSION.md`.
-6. Week 3-4: production deploy, distribution link, second registered app for Marketplace.
+6. Production: **deployed 10 Nov** (2.0.0, Runs on Atlassian eligible). Remaining: installation link (dev console → Distribution), clean-site install test, Marketplace partner profile + listing (drafts in `docs/marketplace/`). **Second app registered 13 Nov**: Tether for Marketplace `9cca0b82-9b9f-42f8-9049-5db82c3a263e` (developer space Tether), production deployed; ids in `scripts/apps.json`.
 
 ### Bảo: product experience (`static/report/`) **and Teamwork Graph**
 1. **Teamwork Graph query** (moved here from Đăng; self-contained, see `docs/TEAM-SETUP.md` → Teamwork Graph):

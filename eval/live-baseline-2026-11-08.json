@@ -1,0 +1,52 @@
+{
+  "appId": "07520459-db83-4ab5-b000-09c3c8095691",
+  "environment": "dev-dat",
+  "site": "one-atlas-wnve.atlassian.net",
+  "codeCommit": "80f6fb8",
+  "runner": "existing src/handlers/evalSuite.ts without decision-extraction caching",
+  "queuedAt": "2026-11-08T04:16:05.4060153Z",
+  "lastObservedAt": "2026-11-08T04:47:07.515Z",
+  "status": "CANCELLED_AFTER_TIMEOUT_RETRY",
+  "cancelledAt": "2026-11-08T04:47:07.515Z",
+  "cancellationWorkerCommit": "80c986e",
+  "cancellationAppVersion": "2.1.0",
+  "expectedScenarios": 30,
+  "completedScenarios": null,
+  "passed": null,
+  "missedConflicts": null,
+  "falseConflicts": null,
+  "falseNoConflict": null,
+  "configuredModels": ["claude-sonnet-5", "claude-sonnet-4-6", "claude-haiku-4-5-20251001"],
+  "successfulModels": null,
+  "observedErrors": [
+    {
+      "at": "2026-11-08T04:24:41.835Z",
+      "code": "FORGE_LLMS_TOKEN_LIMIT_EXCEEDED",
+      "httpStatus": 429,
+      "model": "claude-sonnet-5",
+      "limitInRuntimeMessage": 500000
+    },
+    {
+      "at": "2026-11-08T04:31:05.337Z",
+      "code": "FUNCTION_TIMEOUT",
+      "message": "Function timed out. Limit of 900.00 seconds"
+    },
+    {
+      "at": "2026-11-08T04:46:23.751Z",
+      "code": "FUNCTION_TIMEOUT_ON_RETRY",
+      "message": "Function timed out. Limit of 900.00 seconds"
+    }
+  ],
+  "evidence": [
+    "Authenticated evaluation POST returned 202 with queued: true.",
+    "Authenticated GET still returned No eval run yet after the timeout.",
+    "Forge dev-dat logs contained the token-limit warnings and function timeouts.",
+    "After deployment of 2.1.0, logs confirmed cancelled eval retry at 04:47:07.515Z."
+  ],
+  "limitations": [
+    "No accuracy metrics are available; unknown results are not recorded as zero failures or passes.",
+    "No per-scenario reports were persisted by the existing runner before timeout.",
+    "Fallback success and exact token consumption cannot be inferred from these warnings.",
+    "The original runner did not expose cancellation; its job was subsequently cancelled by the new retry guard."
+  ]
+}

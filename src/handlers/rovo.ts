@@ -46,7 +46,14 @@ function accountOf(ctx: ActionContext): string {
   return id;
 }
 
-/** GET check-issue-consistency: uses a fresh stored report or runs a new check (waits ~40 s). */
+/**
+ * External MCP clients give up well before the 55 s action limit, so this never blocks long:
+ * a stored report is returned at once (a stale one with a note, plus a background re-check);
+ * with no report it starts a check and waits at most CHECK_WAIT_MS.
+ */
+const CHECK_WAIT_MS = 15_000;
+
+/** GET check-issue-consistency. */
 export async function checkIssueConsistency(payload: ActionPayload, context: ActionContext) {
   const issueKey = issueKeyFrom(payload);
   const [report, stale] = await Promise.all([store.getReport(issueKey), store.getStale(issueKey)]);
@@ -58,7 +65,13 @@ export async function checkIssueConsistency(payload: ActionPayload, context: Act
     cloudId: payload.context?.cloudId ?? context.cloudId ?? '',
     siteUrl: await siteUrl(payload),
   });
-  const done = await waitForJob(job.jobId, 40_000);
+  if (report && stale) {
+    const summary = summarizeForAgent(report);
+    const why = stale.reason === 'DECISION_UPDATED' ? `a decision it used changed (${stale.decisionIds.join(', ')})` : 'the ticket changed';
+    const note = `This result is from ${report.generatedAt} and may be out of date because ${why}. A re-check has started; ask again in about a minute.`;
+    return { ...summary, stale: true, markdown: `${note}\n\n${summary.markdown}` };
+  }
+  const done = await waitForJob(job.jobId, CHECK_WAIT_MS);
   const fresh = await store.getReport(issueKey);
   if (done?.status === 'DONE' && fresh) return summarizeForAgent(fresh);
   if (done?.status === 'FAILED') return { issueKey, overallOutcome: null, markdown: `The check failed: ${done.error?.message ?? 'unknown error'}. This is not a "no conflict" result.` };

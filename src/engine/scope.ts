@@ -45,7 +45,8 @@ export function checkScope(ticket: Scope, decision: Scope): ScopeResult {
   let environment: ScopeCheckValue = 'MATCH';
   if (ticket.environments.length > 0 && decision.environments.length > 0) {
     const d = new Set(decision.environments.map(normalizeEnv));
-    environment = ticket.environments.map(normalizeEnv).some((e) => d.has(e)) ? 'MATCH' : 'MISMATCH';
+    const covered = ticket.environments.map(normalizeEnv).filter((e) => d.has(e)).length;
+    environment = covered === ticket.environments.length ? 'MATCH' : covered > 0 ? 'UNKNOWN' : 'MISMATCH';
   }
 
   let conditions: ScopeCheckValue = 'MATCH';
