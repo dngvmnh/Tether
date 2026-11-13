@@ -189,3 +189,48 @@ action.
 **Also:** the in-Forge eval on the shared site (Tether settings, Run eval) shows
 **30/30 passed**, 0 missed conflicts, 0 false conflicts, 0 false "no conflict"
 (13 Nov, 2:44 PM site time).
+
+### PAY-8 panel reproduction (Đạt, 14 November 2026)
+
+The screenshot supplied by Đạt shows `one-atlas-dscw.atlassian.net/browse/PAY-8`
+and a report generated at 00:26:18 on 14 November (UTC+8). A matching Development
+log confirms this was a shared-site panel run, with the following identity:
+
+- `via`: `panel`
+- `jobId`: `24fb6903-cb90-4e0d-98d6-9641e7c49f57`
+- `reportId`: `ea9a5d00-d1bb-4afc-945f-54d3d0dcfd90`
+- `generatedAt`: `2026-11-13T16:26:18.950Z`
+- Invocation: `6bde8eee-c0ec-4026-9b4e-c076e4f12f72`
+- Overall: `CONFLICT`; finding: `CONFLICT/VALUE_CONTRADICTION ADR-PAY-008`
+- Graph: one linked page, no graph error. Report status COMPLETE, errors empty.
+
+The claim was `logs.retention EQ 60 days [MUST]`, service `payment-service`,
+empty environments and conditions. ADR-PAY-008 version 1 had
+`logs.retention EQ 90 days [MUST]`, service `payment-service`, empty conditions.
+ADR-SEC-003 was present, ACCEPTED and version 1, but its constraint used
+`log.retention.duration LTE 30 days [MUST]`, service `*`, with condition
+`logs that contain customer data`.
+
+The different attribute keys prevent the competing-decisions comparison. The
+earlier 10:06 UTC run of Đăng used `logs.retention` for both decision constraints.
+Equal source versions across those runs do not establish equal cache contents:
+panel and agent installations keep separate storage. The earlier hypothesis that
+Đạt ran on `dev-dat`, and the exclusion of differing cached decision extraction,
+were not established. This new run confirms the key mismatch on Development;
+the earlier screenshots still lack their own matching diagnostic logs.
+
+The focused engine fix canonicalizes the equivalent duration keys
+`log.retention`, `log.retention.duration`, and `logs.retention.duration` to
+`logs.retention` during extraction and when reading existing cached constraints.
+It also reinforces that key in the extraction prompt. Other attributes, evidence,
+scope and applicability conditions are preserved. Existing cache entries are
+normalized in memory, without a storage migration or a page edit.
+
+Regression checks cover fresh ticket/decision extraction, all three cached
+aliases, preservation of the customer-data condition and evidence, and keeping
+other log properties separate. Shared-site five-run verification remains pending
+deployment of the fix. This is one diagnosed panel run, not five successful runs.
+
+Local validation passed 143 tests, 30/30 offline scenarios, backend/UI type checks,
+manifest checks and the production UI build. The shared-site fix has not yet been
+deployed or verified with five new live runs.
