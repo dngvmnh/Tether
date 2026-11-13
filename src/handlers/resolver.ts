@@ -1,5 +1,5 @@
 /** UI resolvers (25 s limit): fast operations only; analysis runs in the queue worker. */
-import api, { route } from '@forge/api';
+import api, { NeedsAuthenticationError, route } from '@forge/api';
 import Resolver from '@forge/resolver';
 import type { z } from 'zod';
 import {
@@ -43,6 +43,9 @@ function define<N extends ResolverName>(
       const input = schema ? schema.parse(req.payload ?? {}) : ({} as ResolverApi[N]['input']);
       return { ok: true, data: await fn(input, req.context as unknown as ForgeContext) };
     } catch (e) {
+      // Must propagate: Forge then shows the user its "Allow access" consent prompt (needed
+      // after an upgrade adds scopes used asUser). Wrapping it would hide the prompt.
+      if (e instanceof NeedsAuthenticationError) throw e;
       console.error(`[tether] resolver ${name} failed`, e);
       if (e instanceof PortError) return { ok: false, error: { code: e.code, message: e.message, retryable: e.retryable } };
       return { ok: false, error: { code: 'INTERNAL', message: e instanceof Error ? e.message : String(e), retryable: false } };
