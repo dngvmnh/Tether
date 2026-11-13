@@ -175,6 +175,11 @@ permissions:
     - manage:jira-project
     - write:confluence-content
     - write:confluence-space
+    # Through Forge, Confluence v1 GETs and v1 page create answer 410 Gone: the demo data
+    # uses v2 (spaces lookup, pages lookup, page create).
+    - read:space:confluence
+    - read:page:confluence
+    - write:page:confluence
     # Teamwork Graph (Preview). Week-1 task for integration: uncomment, deploy to YOUR
     # environment, confirm deploy + queries work, then commit. Missing scopes make graph
     # queries return EMPTY (not errors); Tether reports that as "graph unavailable".

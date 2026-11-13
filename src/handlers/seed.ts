@@ -47,10 +47,9 @@ async function ensureProject(accountId: string): Promise<string> {
 }
 
 async function ensureSpace(): Promise<string> {
-  // List endpoint: single-item v1 GETs can answer 410/404 even when the item exists.
-  const got = await user().requestConfluence(route`/wiki/rest/api/space?spaceKey=${DEMO.spaceKey}&limit=1`);
-  const exists = got.ok && (((await got.json()) as { results?: unknown[] }).results?.length ?? 0) > 0;
-  if (!got.ok) console.warn(`[tether] demo data: space lookup HTTP ${got.status}`);
+  // Through Forge, Confluence v1 GETs (and v1 page create) answer 410 Gone; v2 is used for
+  // lookups and pages. v1 space create still works and says "already exists" when it does.
+  const exists = (await spaceId()) !== null;
   let line = `Confluence space ${DEMO.spaceKey} already exists.`;
   if (!exists) {
     const res = await user().requestConfluence(route`/wiki/rest/api/space`, {
@@ -78,8 +77,17 @@ async function ensureSpace(): Promise<string> {
   return line;
 }
 
-async function findPage(title: string): Promise<string | null> {
-  const res = await user().requestConfluence(route`/wiki/rest/api/content?spaceKey=${DEMO.spaceKey}&title=${title}&type=page`);
+async function spaceId(): Promise<string | null> {
+  const res = await user().requestConfluence(route`/wiki/api/v2/spaces?keys=${DEMO.spaceKey}&limit=1`);
+  if (!res.ok) {
+    console.warn(`[tether] demo data: space lookup HTTP ${res.status}`);
+    return null;
+  }
+  return ((await res.json()) as { results?: Array<{ id: string }> }).results?.[0]?.id ?? null;
+}
+
+async function findPage(space: string, title: string): Promise<string | null> {
+  const res = await user().requestConfluence(route`/wiki/api/v2/spaces/${space}/pages?title=${title}&limit=1`);
   if (!res.ok) {
     console.warn(`[tether] demo data: page lookup "${title}" HTTP ${res.status}`);
     return null;
@@ -87,13 +95,19 @@ async function findPage(title: string): Promise<string | null> {
   return ((await res.json()) as { results?: Array<{ id: string }> }).results?.[0]?.id ?? null;
 }
 
-async function ensureDecision(d: SeedDecision): Promise<string> {
+async function requireSpaceId(): Promise<string> {
+  const id = await spaceId();
+  if (!id) throw new PortError(`Confluence space ${DEMO.spaceKey} not found; run the space step again`, 'SPACE_MISSING', true);
+  return id;
+}
+
+async function ensureDecision(d: SeedDecision, space: string): Promise<string> {
   const title = decisionTitle(d);
-  if (await findPage(title)) return `Page exists: ${title}`;
-  const res = await user().requestConfluence(route`/wiki/rest/api/content`, {
+  if (await findPage(space, title)) return `Page exists: ${title}`;
+  const res = await user().requestConfluence(route`/wiki/api/v2/pages`, {
     method: 'POST',
     headers: JSON_HEADERS,
-    body: JSON.stringify({ type: 'page', title, space: { key: DEMO.spaceKey }, body: { storage: { value: decisionStorage(d), representation: 'storage' } } }),
+    body: JSON.stringify({ spaceId: space, status: 'current', title, body: { representation: 'storage', value: decisionStorage(d) } }),
   });
   await ok(res, `Creating page ${title}`);
   const page = (await res.json()) as { id: string };
@@ -106,7 +120,7 @@ async function ensureDecision(d: SeedDecision): Promise<string> {
   return `Created page: ${title}`;
 }
 
-async function ensureIssue(s: (typeof scenarios)[number], siteUrl: string): Promise<string> {
+async function ensureIssue(s: (typeof scenarios)[number], siteUrl: string, space: string): Promise<string> {
   const label = scenarioLabel(s.id);
   const jql = `project = ${DEMO.projectKey} AND labels = "${label}"`;
   const found = await user().requestJira(route`/rest/api/3/search/jql?jql=${jql}&fields=summary&maxResults=1`);
@@ -132,7 +146,7 @@ async function ensureIssue(s: (typeof scenarios)[number], siteUrl: string): Prom
   const linkTo = DEMO.links[s.id];
   if (linkTo) {
     const d = decisions.find((x) => x.decisionId === linkTo);
-    const pageId = d ? await findPage(decisionTitle(d)) : null;
+    const pageId = d ? await findPage(space, decisionTitle(d)) : null;
     if (pageId) {
       const link = await user().requestJira(route`/rest/api/3/issue/${issue.key}/remotelink`, {
         method: 'POST',
@@ -177,12 +191,16 @@ export async function runSeedStep(step: number, accountId: string, siteUrl: stri
     case 'space':
       lines.push(await ensureSpace());
       break;
-    case 'decisions':
-      for (const d of decisions.slice(task.from, task.to)) lines.push(await ensureDecision(d));
+    case 'decisions': {
+      const space = await requireSpaceId();
+      for (const d of decisions.slice(task.from, task.to)) lines.push(await ensureDecision(d, space));
       break;
-    case 'issues':
-      for (const s of scenarios.slice(task.from, task.to)) lines.push(await ensureIssue(s, siteUrl));
+    }
+    case 'issues': {
+      const space = await requireSpaceId();
+      for (const s of scenarios.slice(task.from, task.to)) lines.push(await ensureIssue(s, siteUrl, space));
       break;
+    }
   }
   const next = step + 1 < PLAN.length ? step + 1 : null;
   return { step, total: PLAN.length, title: describe(task), lines, next };
