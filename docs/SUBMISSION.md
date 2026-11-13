@@ -62,9 +62,13 @@ Same-day findings that matter for judging:
   (no link). The panel showed the pull-based "A decision used in this check has changed"
   banner on both before the re-check.
 
-Still to test on the clean site: MCP (needs "Expose tools via external MCP endpoint" on that
-site and an MCP sign-in for it), and Teamwork Graph (needs the query key in that site's
-settings; whether a persisted query key works across sites is unverified).
+- Teamwork Graph on the clean site: Bảo's query key `66b8902d-a241-4a00-86ad-5c5f8a461be4`
+  saved in Jira settings > Apps > Tether settings. PAY-1 re-check: `Teamwork Graph returned 1
+  linked page(s)`. The persisted query key works across sites. **Judge instructions must tell
+  judges to paste this key** (settings default is empty, which falls back to remote links).
+- MCP on the clean site: enabled at admin.atlassian.com > (site) > Connected apps > Tether
+  (Jira) > Details > Tools > "Expose tools to MCP-compatible apps" > Enable tools. Calling it
+  still needs an MCP client signed in to that site; not done yet.
 
 ## Two registered apps (needed for the Marketplace bonus)
 Forge docs: apps submitted for Marketplace listing **cannot be shared by installation
