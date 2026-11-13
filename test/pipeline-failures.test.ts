@@ -30,6 +30,35 @@ function setup(id: string, failDecision?: string): EngineDeps {
 }
 
 describe('partial pipeline failures never become an unsupported pass', () => {
+  it.each(['log.retention', 'log.retention.duration', 'logs.retention.duration'])(
+    'detects competing decisions when the old cache uses %s for retention duration',
+    async (alias) => {
+      const deps = setup('S08');
+      const cached = goldDecisions();
+      const security = cached.find((d) => d.decisionId === 'ADR-SEC-003')!;
+      security.constraints[0]!.attribute = alias;
+      security.constraints[0]!.scope.conditions = ['logs that contain customer data'];
+      deps.cache = {
+        async get(key) {
+          return cached.find((d) => key === `${d.source.id}:${d.source.version}`)!.constraints;
+        },
+        async set() { throw new Error('Existing cache entries must not need a rewrite.'); },
+      };
+
+      const r = await analyzeIssue('PAY-108', deps);
+
+      expect(r.status).toBe('COMPLETE');
+      expect(r.overallOutcome).toBe('NEEDS_REVIEW');
+      expect(r.findings[0]).toMatchObject({ reason: 'COMPETING_DECISIONS' });
+      expect(r.findings[0]!.decisionIds).toEqual(expect.arrayContaining(['ADR-SEC-003', 'ADR-PAY-008']));
+      const constraint = r.decisions.find((d) => d.decisionId === 'ADR-SEC-003')!.constraints[0]!;
+      expect(constraint.attribute).toBe('logs.retention');
+      expect(constraint.scope.conditions).toEqual(['logs that contain customer data']);
+      expect(constraint.source).toEqual(security.constraints[0]!.source);
+      expect(security.constraints[0]!.attribute).toBe(alias);
+    },
+  );
+
   it('marks coverage incomplete if one decision could not be extracted', async () => {
     const r = await analyzeIssue('PAY-106', setup('S06', 'ADR-PAY-009'));
     expect(r.status).toBe('PARTIAL');

@@ -7,6 +7,7 @@ import { CountingSemantics, Modality, Operator, type Claim, type RawDecision, ty
 import type { LlmPort } from '../ports';
 import { verifyQuote } from '../evidence';
 import { unitInfo } from '../units';
+import { canonicalAttribute } from '../attributes';
 import { callStructured } from './structured';
 
 /** What the model returns per constraint. Ids and source metadata are added by code. */
@@ -120,6 +121,7 @@ Rules:
 - The vocabulary is open, not an allowlist. If a named service is absent, derive its own slug: "Notification Service" -> "notification-service", even if only "payment-service" is known. Never replace an explicitly named service with "*" or the closest known service. If no service is identifiable, keep "*" instead of inventing one.
 - Service identifies the actor performing the requirement. A named recipient or dependency is not automatically the actor: if a billing worker sends a record to a search service, attribute the sending requirement to the billing worker, not the search service. Use ticket context when the actor is clear; otherwise preserve unknown scope.
 - Reuse known attribute keys only for the SAME property. A retry count, its configuration scope and its backoff strategy are different properties. Use retry.count.config_scope with REQUIRED and textValue "merchant" for per-merchant configuration ("tenant" for per-tenant), separately from retry.count. Use refund.auto_approval.max_amount for the configured refund threshold. Other stable keys include webhook.retry.initial_backoff, webhook.retry.backoff_strategy, gateway.timeout, idempotency_key, card.pan_storage and logs.retention.
+- Use logs.retention for the duration logs must be kept, including customer-data log retention. Keep customer-data restrictions in conditions. Do not invent log.retention.duration or a separate attribute for customer-data logs: scope determines applicability.
 - For newly encountered properties without a known equivalent key, use retry.logging for logging retry attempts, audit.retry_event for emitting an audit event per retry, and metrics.emit_interval for the interval between metric emissions. These are naming conventions, not evidence that any decision covers those requirements.
 - Include every technical acceptance criterion, even if no decision covers it. material must not depend on whether a matching decision exists. Ignore process chatter, meeting dates and estimates.
 - Never invent values, units, environments or conditions that are not in the text.
@@ -138,7 +140,7 @@ function toClaim(e: ExtractedConstraint, id: string, source: Omit<SourceRef, 'qu
   return {
     id,
     subject: e.subject,
-    attribute: e.attribute,
+    attribute: canonicalAttribute(e.attribute),
     attributeLabel: e.attributeLabel,
     operator: e.operator,
     value: e.value,

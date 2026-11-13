@@ -11,6 +11,7 @@ import {
 } from '../contracts';
 import { aggregate } from './aggregate';
 import { assessClaims } from './assess';
+import { canonicalAttribute } from './attributes';
 import { verifyQuote } from './evidence';
 import { extractDecisionConstraints, extractTicketClaims, ticketText, type Vocabulary } from './llm/extract';
 import { llmSemanticComparator } from './llm/semantic';
@@ -166,6 +167,9 @@ export async function analyzeIssue(issueKey: string, deps: EngineDeps): Promise<
           constraints = r.constraints;
           await deps.cache?.set(key, constraints);
         }
+        // Cached model output predates naming fixes. Normalize on read as well as
+        // extraction so unchanged page versions cannot retain split attribute keys.
+        constraints = constraints.map((c) => ({ ...c, attribute: canonicalAttribute(c.attribute) }));
         decisions.push({ ...raw, ownerTeam: raw.ownerTeam ?? graph.ownerTeams[raw.decisionId], constraints });
       } catch (e) {
         decisionExtractionFailed = true;

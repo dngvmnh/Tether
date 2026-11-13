@@ -32,6 +32,29 @@ function fake(...answers: unknown[]) {
 const vocab = { services: ['payment-service'], attributes: [{ key: 'retry.count', label: 'retry limit' }] };
 
 describe('extraction boundary validation (fake LLM, not a model-quality evaluation)', () => {
+  it('aligns newly extracted ticket and decision retention keys while keeping their scope', async () => {
+    const s = goldScenarios().find((s) => s.id === 'S08')!;
+    const d = goldDecisions().find((d) => d.decisionId === 'ADR-SEC-003')!;
+    const ticketOutput = { ...extracted(s.claims[0]!), attribute: 'logs.retention.duration' };
+    const decisionOutput = { ...extracted(d.constraints[0]!), attribute: 'log.retention.duration', conditions: ['logs that contain customer data'] };
+    const f = fake({ constraints: [ticketOutput] }, { constraints: [decisionOutput] });
+    const ticket = await extractTicketClaims(f.llm, s.ticket, vocab);
+    const decisionResult = await extractDecisionConstraints(f.llm, d, vocab);
+
+    expect(ticket.claims[0]!.attribute).toBe('logs.retention');
+    expect(decisionResult.constraints[0]!.attribute).toBe('logs.retention');
+    expect(ticket.claims[0]!.scope.conditions).toEqual([]);
+    expect(decisionResult.constraints[0]!.scope.conditions).toEqual(['logs that contain customer data']);
+    expect(decisionResult.constraints[0]!.source.quote).toBe(d.constraints[0]!.source.quote);
+  });
+
+  it('keeps other log properties distinct from retention duration', async () => {
+    const s = goldScenarios().find((s) => s.id === 'S08')!;
+    const f = fake({ constraints: [{ ...extracted(s.claims[0]!), attribute: 'logs.retention.archive_delay' }] });
+    const result = await extractTicketClaims(f.llm, s.ticket, vocab);
+    expect(result.claims[0]!.attribute).toBe('logs.retention.archive_delay');
+  });
+
   it('repairs a request-type scope copied from another decision into a general retry ticket', async () => {
     const s = goldScenarios().find((s) => s.id === 'S13')!;
     const valid = extracted(s.claims[0]!);
