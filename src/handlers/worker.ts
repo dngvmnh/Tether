@@ -37,6 +37,19 @@ async function runAnalysis(body: AnalysisJobBody) {
   const pages = report.decisions.map((d) => ({ pageId: d.source.id, decisionId: d.decisionId }));
   await store.indexDecisions(body.issueKey, pages);
   console.log(`[tether] indexed ${body.issueKey} against ${pages.map((p) => `${p.pageId}(${p.decisionId})`).join(', ') || 'no pages'}`);
+  // Compact diagnosis (no full text): lets the team compare a live run with gold without reading KVS.
+  const c = (x: { attribute?: string; operator?: string; value?: unknown; unit?: string; modality?: string; scope?: unknown; conditions?: unknown }) =>
+    `${x.attribute} ${x.operator} ${JSON.stringify(x.value)}${x.unit ? ' ' + x.unit : ''} [${x.modality ?? ''}] scope=${JSON.stringify(x.scope ?? {})} cond=${JSON.stringify(x.conditions ?? [])}`;
+  console.log(
+    `[tether] diag ${body.issueKey} ${JSON.stringify({
+      outcome: report.overallOutcome,
+      status: report.status,
+      claims: report.claims.map((x) => `${x.id}: ${c(x as never)}`),
+      decisions: report.decisions.map((d) => ({ id: d.decisionId, status: d.status, v: d.source.version, constraints: d.constraints.map((x) => c(x as never)) })),
+      findings: report.findings.map((f) => `${f.outcome}/${f.reason} ${f.decisionIds.join(',')}`),
+      errors: report.errors.map((e) => `${e.stage}:${e.code}`),
+    }).slice(0, 7000)}`,
+  );
   await store.patchJob(body.jobId, {
     status: report.status === 'FAILED' ? 'FAILED' : 'DONE',
     stage: 'DONE',

@@ -1,8 +1,8 @@
 # Submission checklist (Devpost, due 23 Dec 2026 04:00 SGT)
 
 ## Open questions (someone read the official rules page in a browser)
-- [ ] Can one project win a placing prize and bonus prizes? Several bonus prizes?
-- [ ] Repo visibility requirement (public / shared with judges)?
+- [x] Can one project win a placing prize and bonus prizes? **Yes** (Đăng read the rules, 13 Nov).
+- [x] Repo visibility: **public repo required**, plus a public YouTube video link.
 - [ ] Anything on Preview features (rovo:mcp, rovo:skill, Teamwork Graph)?
 
 ## Two registered apps (needed for the Marketplace bonus)

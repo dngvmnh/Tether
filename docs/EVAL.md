@@ -109,3 +109,33 @@ The root cause remains unconfirmed. Before changing engine logic or S08 labels,
 the integration owner should obtain `report:PAY-8` and the
 `dcache:<pageId>:<version>` entries for ADR-PAY-008 and ADR-SEC-003, and compare
 attribute keys, extracted constraints, scope, source versions and report errors.
+
+### PAY-8 follow-up (Đăng, 13 Nov, 18:06 SGT)
+
+Storage is now visible without the developer console: every analysis logs a compact
+`[tether] diag <issueKey> {...}` line (claims, each decision's status, source version and
+extracted constraints, findings, errors). Read it with
+`forge logs -e development --since 30m | grep "diag PAY-8"`.
+
+A fresh live run of PAY-8 (deployed `main`, `claude-sonnet-5`, 10:06:39 UTC) returned
+**NEEDS_REVIEW / COMPETING_DECISIONS (ADR-SEC-003, ADR-PAY-008)**, which matches S08.
+
+- Ticket claim: `logs.retention EQ 60 days [MUST]`, service `payment-service`, no conditions.
+- ADR-SEC-003 (source version 1, cached): `logs.retention LTE 30 days [MUST]`, service `*`, condition `logs containing customer data`.
+- ADR-PAY-008 (version 1): `logs.retention EQ 90 days [MUST]`, service `payment-service`.
+
+ADR-SEC-003 was still at version 1, so the cached decision constraint used in this run is
+the same one that existed during the 12:42 CONFLICT run. That rules out a bad decision
+cache as the cause. Ticket claims are not cached, so the most likely cause of the
+earlier CONFLICT is a different ticket extraction (for example an attribute key other
+than `logs.retention`, or a condition that made ADR-SEC-003 look inapplicable). Not
+proven: the 12:42 claims were not logged.
+
+Suggested next step (Đạt): re-run PAY-8 five times from the panel and compare the
+`diag PAY-8` claim lines. If any run disagrees, stabilise the retention attribute key in the
+extraction naming hints.
+
+Also seen in the same log: ADR-PAY-001 (re-extracted at version 4 after drift tests)
+produced extra constraints `retry.count QUALITATIVE` and
+`webhook.retry.backoff_strategy QUALITATIVE` for the payment-service backoff sentence.
+The webhook key is wrong for a payment-service decision and is worth a naming hint.
