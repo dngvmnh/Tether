@@ -1,5 +1,30 @@
 import { describe, expect, it } from 'vitest';
-import { pageIdsFromGraph } from '../src/adapters/teamworkGraph';
+import { pageIdsFromGraph, withRetry } from '../src/adapters/teamworkGraph';
+
+describe('withRetry', () => {
+  const noSleep = async () => {};
+
+  it('retries a transient failure and returns the later success', async () => {
+    let calls = 0;
+    const result = await withRetry(async () => {
+      if (++calls < 3) throw new Error('User is not permitted to query this organization');
+      return 'ok';
+    }, 3, 0, noSleep);
+    expect(result).toBe('ok');
+    expect(calls).toBe(3);
+  });
+
+  it('throws the last error after exhausting attempts', async () => {
+    let calls = 0;
+    await expect(
+      withRetry(async () => {
+        calls++;
+        throw new Error('still failing');
+      }, 3, 0, noSleep),
+    ).rejects.toThrow('still failing');
+    expect(calls).toBe(3);
+  });
+});
 
 describe('pageIdsFromGraph', () => {
   it('reads the page id from a remote-link viewpage URL', () => {

@@ -36,12 +36,39 @@ const GQL = `query tether_linkedPages($queryKey: String!, $queryParams: CypherRe
   }
 }`;
 
-async function persisted(queryKey: string, queryParams: Record<string, unknown>): Promise<unknown> {
+async function persistedOnce(queryKey: string, queryParams: Record<string, unknown>): Promise<unknown> {
   const res = await api.asUser().requestTeamworkGraph(GQL, { queryKey, queryParams });
   const body = (await res.json()) as { data?: unknown; errors?: Array<{ message: string }> };
   // Missing scopes return EMPTY results, not errors: an empty answer is "unknown", not "none".
   if (body.errors?.length) throw new Error(`Teamwork Graph: ${body.errors.map((e) => e.message).join('; ')}`);
   return body.data;
+}
+
+/**
+ * Teamwork Graph (preview) intermittently fails with "User is not permitted to query this
+ * organization" wrapped in a non-null violation on /graphStore/cypherQueryV2. The same call
+ * succeeds moments later, so retry a few times before reporting it as unavailable.
+ */
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  attempts = 3,
+  delayMs = 500,
+  sleep: (ms: number) => Promise<void> = (ms) => new Promise((r) => setTimeout(r, ms)),
+): Promise<T> {
+  let last: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      last = err;
+      if (i < attempts - 1) await sleep(delayMs * (i + 1));
+    }
+  }
+  throw last;
+}
+
+function persisted(queryKey: string, queryParams: Record<string, unknown>): Promise<unknown> {
+  return withRetry(() => persistedOnce(queryKey, queryParams));
 }
 
 /** Shape-agnostic: pulls every Confluence page ARI out of a GraphQL response. */
