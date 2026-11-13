@@ -53,9 +53,18 @@ Same-day findings that matter for judging:
   returned the stored CONFLICT with the "may be out of date" note and started a re-check;
   asking again ~20 s later returned the fresh CONFLICT.
 
-Still to test on the clean site: Rovo agent and MCP (needs "Expose tools via external MCP
-endpoint" on that site and an MCP sign-in for it), and Teamwork Graph from the panel with the
-query key set in settings.
+- Rovo agent on the clean site (prod 2.5.0): PAY-2, Agents, Tether. The agent session answered
+  INSUFFICIENT_EVIDENCE, 1 of 2 checked, C1 NO_CONFLICT_FOUND vs ADR-PAY-001 (5 is looser than
+  the limit of 3, compatible if kept within it), C2 NO_DECISION_FOUND. Exactly gold S02.
+- Teamwork Graph from the panel on the dev site (development 3.6.0, Bảo's query key in
+  settings, Đăng's account): no permission error this time (Bảo's retry is deployed).
+  PAY-1 `Teamwork Graph returned 1 linked page(s)` (its ADR-PAY-001 web link); PAY-3 returned 0
+  (no link). The panel showed the pull-based "A decision used in this check has changed"
+  banner on both before the re-check.
+
+Still to test on the clean site: MCP (needs "Expose tools via external MCP endpoint" on that
+site and an MCP sign-in for it), and Teamwork Graph (needs the query key in that site's
+settings; whether a persisted query key works across sites is unverified).
 
 ## Two registered apps (needed for the Marketplace bonus)
 Forge docs: apps submitted for Marketplace listing **cannot be shared by installation
