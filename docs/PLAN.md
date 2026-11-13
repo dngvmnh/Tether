@@ -54,7 +54,7 @@ scope chips and decision history.
 | Shared site seeded: project `PAY` (PAY-1..15 = S01..S15), space `ENG` (9 ADRs labelled `tether-decision`) | `npm run seed` |
 | Tether Rovo agent answers PAY-1 in Rovo Chat (check action) | `src/handlers/rovo.ts` |
 | Đạt's engine merged (`2adfdc3`): 30 scenarios, 129 tests, 30/30 offline, 30/30 live on dev-dat; deployed to `development` 3.1.0; shared site seeded PAY-1..30 | `eval/`, `src/engine/` |
-| Bảo's UI + Teamwork Graph persisted query (key in TEAM-SETUP); graph scopes approved on the shared site | `static/report/`, `src/adapters/teamworkGraph.ts` |
+| Bảo's UI + Teamwork Graph persisted query; graph scopes approved; **verified 13 Nov on shared site: PAY-1 footer "1 page(s) linked to PAY-1 in Teamwork Graph"** | `static/report/`, `src/adapters/teamworkGraph.ts` |
 | In-Forge eval runs from Tether settings → Run eval (no web trigger, keeps Runs on Atlassian) | `src/handlers/evalSuite.ts` |
 | Teamwork Graph moved to persisted queries (`customQuery`); falls back to Jira remote links until a query key is set | `src/adapters/teamworkGraph.ts` |
 
@@ -89,7 +89,7 @@ Rules that remove waiting:
 3. Follow-up issue: preview → confirm → created as the user, linked to the issue and decision page.
 4. Drift: edit ADR-PAY-001 → PAY-1 shows the stale banner (trigger end to end).
 5. Read the Devpost official rules (multi-prize, repo visibility) and paste answers into `docs/SUBMISSION.md`.
-6. Production: **deployed 10 Nov** (2.0.0, Runs on Atlassian eligible). Remaining: installation link (dev console → Distribution), clean-site install test, register the second app (needs owner to accept terms), Marketplace partner profile + listing (drafts in `docs/marketplace/`).
+6. Production: **deployed 10 Nov** (2.0.0, Runs on Atlassian eligible). Remaining: installation link (dev console → Distribution), clean-site install test, Marketplace partner profile + listing (drafts in `docs/marketplace/`). **Second app registered 13 Nov**: Tether for Marketplace `9cca0b82-9b9f-42f8-9049-5db82c3a263e` (developer space Tether), production deployed; ids in `scripts/apps.json`.
 
 ### Bảo: product experience (`static/report/`) **and Teamwork Graph**
 1. **Teamwork Graph query** (moved here from Đăng; self-contained, see `docs/TEAM-SETUP.md` → Teamwork Graph):
