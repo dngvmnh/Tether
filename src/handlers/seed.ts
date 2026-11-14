@@ -46,9 +46,9 @@ async function ensureProject(accountId: string): Promise<string> {
   try {
     res = await user().requestJira(route`/rest/api/3/project`, init);
   } catch (e) {
-    // Seen on a fresh site: the user's token lacks manage:jira-project even after the
-    // "Allow access" consent, so the prompt loops. The caller is a verified Jira admin
-    // (seedDemo checks), so create the project as the app, with that admin as lead.
+    // If the user has not granted manage:jira-configuration yet, fall back to the app
+    // (same scope, granted at install). The caller is a verified Jira admin (seedDemo
+    // checks) and stays the project lead.
     if (!(e instanceof NeedsAuthenticationError)) throw e;
     console.warn('[tether] demo data: project create as user needs consent; creating as app');
     res = await actor('app').requestJira(route`/rest/api/3/project`, init);

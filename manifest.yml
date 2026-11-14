@@ -172,7 +172,9 @@ permissions:
     - search:confluence
     # "Load demo data" (Tether settings, Jira admins only) creates the PAY project, ENG space,
     # decision pages and demo issues as the clicking admin.
-    - manage:jira-project
+    # POST /rest/api/3/project needs manage:jira-configuration (manage:jira-project is NOT
+    # enough: asUser loops on the consent prompt, asApp answers 401 "scope does not match").
+    - manage:jira-configuration
     - write:confluence-content
     - write:confluence-space
     # Through Forge, Confluence v1 GETs and v1 page create answer 410 Gone: the demo data
