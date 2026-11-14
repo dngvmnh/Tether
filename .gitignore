@@ -12,3 +12,6 @@ coverage/
 # Forge CLI local state
 .forge/
 !static/report/.env.mock
+
+# raw screen recordings (large, share outside git)
+video/clips/
