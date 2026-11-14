@@ -29,7 +29,6 @@ async function ok(res: { ok: boolean; status: number; text(): Promise<string> },
 async function ensureProject(accountId: string): Promise<string> {
   const got = await user().requestJira(route`/rest/api/3/project/${DEMO.projectKey}`);
   if (got.ok) return `Project ${DEMO.projectKey} already exists.`;
-  console.log(`[tether] demo data: project lookup HTTP ${got.status}`);
   const init = {
     method: 'POST',
     headers: JSON_HEADERS,

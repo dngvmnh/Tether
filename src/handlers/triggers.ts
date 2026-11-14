@@ -19,10 +19,7 @@ const TEXT_FIELDS = new Set(['summary', 'description', 'labels', 'components']);
 
 export async function onDecisionUpdated(event: PageEvent) {
   const pageId = event.content?.id != null ? String(event.content.id) : undefined;
-  if (!pageId) {
-    console.warn('[tether] page event without content.id', JSON.stringify(event).slice(0, 500));
-    return;
-  }
+  if (!pageId) return;
   const affected = await store.issuesCheckedAgainst(pageId);
   const at = new Date().toISOString();
   for (const a of affected) {

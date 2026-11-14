@@ -42,7 +42,33 @@ the official rules** and confirm (a) whether one project can win a placing prize
 bonus prizes, and (b) any requirement on repo visibility. Paste the answers into
 `docs/SUBMISSION.md`.
 
-## 3. Status (Tue 10 Nov)
+## 3. Status
+
+### Sat 14 Nov
+
+Builds: **production 4.0.0** (judging app, clean site `tether-judge-test`), **development
+6.0.0** (shared site `one-atlas-dscw`). Both are majors with new scopes: teammates run
+`forge install --upgrade` (Jira and Confluence) on their own dev sites.
+
+| Done since 10 Nov | Evidence |
+|---|---|
+| Install link created and tested on a clean site (Jira + Confluence) | `docs/SUBMISSION.md` |
+| In-app **Load demo data** (no token, no terminal): 9/9 on the clean site, PAY-1 Conflict | `src/handlers/seed.ts`, SUBMISSION |
+| Pull-based drift (separate Jira/Confluence stores) verified on the clean site | `src/handlers/drift.ts` |
+| Rovo agent on the clean site matches S02; MCP from Claude Code on the dev site; Teamwork Graph on both sites (query key now the default) | SUBMISSION |
+| Follow-up issue end to end (PAY-31, links checked) | `docs/EVAL.md` |
+| In-Forge eval 30/30 on the shared and clean sites | `docs/EVAL.md` |
+| Đạt's PAY-8 fix (canonical retention key) merged and deployed to development | `docs/EVAL.md` |
+| Judge instructions final, Devpost text drafted, README architecture, video plan | `docs/SUBMISSION.md`, `docs/DEVPOST.md`, `README.md`, `docs/VIDEO.md` |
+| Debug-only logs removed (kept: `diag`, Teamwork Graph, demo-data steps, failures) | `src/handlers/` |
+
+Open:
+- Đạt: 5 PAY-8 re-runs on the shared site (development 6.0.0).
+- Video: approve `docs/VIDEO.md`, record, voice, edit, upload (public YouTube).
+- Marketplace: partner profile (Đăng), deploy "Tether for Marketplace", submit listing.
+- Paste `docs/DEVPOST.md` into Devpost, add video and Marketplace links, submit by Sat 19 Dec.
+
+### Tue 10 Nov
 
 Week 1 milestone is already met: on the shared site, PAY-1 (S01) shows **CONFLICT vs
 ADR-PAY-001** end to end (panel → queue worker → Forge LLM → report), with verified quotes,

@@ -17,9 +17,6 @@ export async function decisionStaleness(report: AnalysisReport, as: Actor): Prom
   if (pages.length === 0) return null;
   const current = await currentPageVersions(pages.map((p) => p.pageId), as);
   const changed = changedDecisions(pages, current);
-  console.log(
-    `[tether] drift ${report.issueKey} as=${as} read ${current.size}/${pages.length} pages; changed: ${changed.join(', ') || 'none'}`,
-  );
   if (changed.length === 0) return null;
   return { reason: 'DECISION_UPDATED', at: new Date().toISOString(), decisionIds: changed };
 }

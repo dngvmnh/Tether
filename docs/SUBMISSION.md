@@ -3,7 +3,7 @@
 ## Open questions (someone read the official rules page in a browser)
 - [x] Can one project win a placing prize and bonus prizes? **Yes** (Đăng read the rules, 13 Nov).
 - [x] Repo visibility: **public repo required**, plus a public YouTube video link.
-- [ ] Anything on Preview features (rovo:mcp, rovo:skill, Teamwork Graph)?
+- [x] Anything on Preview features (rovo:mcp, rovo:skill, Teamwork Graph)? **The rules do not mention them** (Đăng, 14 Nov).
 
 ## Judging app installation link (created 13 Nov 2026)
 
@@ -100,10 +100,55 @@ Bugs found and fixed on the way:
 - KVS outlives the project: the panel on the new PAY-1 first showed the old PAY-1 report with
   a "ticket changed" banner. Judges start on a clean site, so they will not see this.
 
-**Judge instructions (draft):** open the install link and install for Jira and Confluence (press
-Install again if the first try says "Installation failed"); Jira settings > Apps > Tether
-settings > Allow access + Accept; Load demo data; open PAY-1 and run the check (expect
-CONFLICT vs ADR-PAY-001). The Teamwork Graph query key is now pre-filled by default.
+## Judge instructions (final; paste into Devpost "Testing instructions")
+
+You need an Atlassian Cloud site with **Jira and Confluence** (a free site works) where you
+are a site admin. Rovo must be available on the site for the agent; everything else works
+without it. All data below is fictional demo data.
+
+1. **Install.** Open the installation link, choose your site, keep **Jira and Confluence**
+   ticked, and click **Install**. If one product reports "Installation failed", click
+   Install again (we saw this once on a fresh site).
+2. **Grant access.** In Jira, open **Settings (gear) → Apps → Tether settings**. If you see
+   "you need to grant it access", click **Allow access**, then **Accept** on the Atlassian
+   page.
+3. **Load demo data.** On the same page, click **Load demo data** and wait about a minute
+   (9 steps). It creates project **PAY** (30 issues), space **ENG** (10 decision records)
+   and points Tether at them. Running it again is safe. If a project with key PAY already
+   exists on your site, the step stops with a message; use a fresh site.
+4. **Run a check.** Open **PAY-1**, click the apps button under the title, choose
+   **Tether decision check**, then **Check implementation context**. The first check takes
+   about a minute (it reads all 10 decisions); later ones are faster.
+
+Expected results (from our golden scenarios; the model extracts requirements, so wording
+can vary, but the outcome should match):
+
+| Issue | Expected | What it shows |
+|---|---|---|
+| PAY-1 | Conflict, 1 of 2 checked | "exactly 5 times" vs ADR-PAY-001 "no more than 3 times" |
+| PAY-2 | Insufficient evidence, 1 of 2 | a looser bound is compatible; one requirement has no decision |
+| PAY-3 | Needs review | "exactly 4 attempts": is the first try an attempt? |
+| PAY-4 | Conflict | ticket cites ADR-PAY-000, which ADR-PAY-001 supersedes |
+| PAY-5 | Insufficient evidence | decisions exist, but for another service |
+| PAY-13 | No conflict found | 4 attempts including the first = 3 retries |
+| PAY-14 | Conflict | 15000 ms vs at most 10 s |
+
+5. **Follow-up.** On PAY-1's conflict, click **Create clarification issue**, edit if you
+   like, and confirm. The new issue links to PAY-1 and to the decision page.
+6. **Drift.** In Confluence, edit and publish **ADR-PAY-001**, then reopen PAY-1: the panel
+   shows "A decision used in this check has changed" with **Re-check**.
+7. **Rovo agent.** Open **Rovo → Agents → Tether** (or the Agents button on an issue) and
+   ask "Does PAY-2 conflict with any engineering decision?".
+8. **MCP (optional).** In admin.atlassian.com → your site → Connected apps → Tether → Details
+   → Tools, enable "Expose tools to MCP-compatible apps". Then add
+   `https://mcp.atlassian.com/forge/07520459-db83-4ab5-b000-09c3c8095691` to an MCP client
+   (for example `claude mcp add --transport http tether <url>`), sign in, and ask about
+   PAY-1.
+9. **Evaluation.** Tether settings → **Run eval** runs our 30 scenarios through the live
+   pipeline on fixture data (1-3 minutes, then **Refresh**). It never reads your site's data.
+
+Teamwork Graph is used automatically (the query key is built in): PAY-1's panel footer says
+"1 page(s) linked to PAY-1 in Teamwork Graph".
 
 ## Two registered apps (needed for the Marketplace bonus)
 Forge docs: apps submitted for Marketplace listing **cannot be shared by installation
@@ -113,12 +158,13 @@ link**. So:
 
 ## Required
 - [x] Installation link (created, see above) tested on a **clean** site (not the dev site) for both Jira and Confluence (13 Nov, panel check; see "Clean-site test")
-- [ ] Judge instructions: install link, create project + space or run our seed, sample issue keys, expected outcomes
-- [ ] Demo video < 5 min, public on YouTube
-- [ ] Category: Apps for Software Teams
-- [ ] Bonus prizes claimed, each with evidence (below)
-- [ ] Explanation of how Forge + Jira + Confluence + Rovo + Teamwork Graph are used
-- [ ] Repo link, README with architecture
+- [x] Judge instructions: see "Judge instructions (final)" above (14 Nov)
+- [ ] Demo video < 5 min, public on YouTube (plan: `docs/VIDEO.md`, awaiting approval and recording)
+- [x] Category: Apps for Software Teams (`docs/DEVPOST.md`)
+- [ ] Bonus prizes claimed, each with evidence: table in `docs/DEVPOST.md`; Marketplace link and video timestamps still to add
+- [x] Explanation of how Forge + Jira + Confluence + Rovo + Teamwork Graph are used (`docs/DEVPOST.md`, "How we built it")
+- [x] Repo link, README with architecture (README "Architecture", 14 Nov)
+- [ ] Paste `docs/DEVPOST.md` into Devpost and submit (internal target Sat 19 Dec)
 
 ## Bonus evidence
 - Best Agents: screenshot/video of the Tether agent in Rovo Chat; list of actions + skill.
@@ -126,7 +172,7 @@ link**. So:
 - Teamwork Graph: show a decision found only through the issue→page link, and the Cypher used.
 - Marketplace: listing link or Marketplace review ticket link.
 
-## Video outline (≤ 4:45)
+## Video outline (≤ 4:45), superseded by `docs/VIDEO.md` (14 Nov)
 1. 0:00 Problem: Jira says 5 retries, the ADR says 3, the developer never knew (20 s).
 2. 0:20 Click Check: Conflict with side-by-side quotes, decision history, coverage (60 s).
 3. 1:20 Subtlety: "up to 5" is not a conflict; "4 attempts" needs review; failures never pass (45 s).

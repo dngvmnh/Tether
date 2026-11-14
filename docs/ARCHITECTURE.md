@@ -38,7 +38,7 @@ flowchart LR
 1. **Resolver `startAnalysis`** (user context, 25 s): reads the issue as the user (permission check), asks Teamwork Graph which Confluence pages are linked to it (TWG is user-context only), stores a `Job`, pushes it to the queue.
 2. **Worker** (900 s): fetches the ticket and decision pages as the app, drops pages the requesting user cannot read, extracts decision constraints (cached per page version), extracts ticket claims with the decision vocabulary, assesses each claim, writes the `AnalysisReport`, indexes which decision pages were used (for drift detection).
 3. **UI** polls `getJob` every 1.5 s and renders the report.
-4. **Triggers**: a decision page update marks every issue checked against it as stale; an issue text update marks its report stale.
+4. **Drift**: when a report is read (panel, Rovo, MCP), Tether compares each decision page's stored version with the current one (one CQL search) and flags the report if any changed. This is pull-based because the Jira and Confluence installations keep separate storage, so a Confluence page trigger cannot see the panel's index. An issue text update still marks its report stale through the Jira trigger.
 
 ## Engine decision rules (per claim)
 

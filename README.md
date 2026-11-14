@@ -24,6 +24,57 @@ What makes it different from an AI ticket reviewer:
 - **Drift detection.** When a decision page changes, every ticket checked against it is flagged.
 - **Everywhere your team works.** Jira issue panel, Rovo agent and skill, and MCP tools for Claude/Cursor, all backed by the same engine. Uses Teamwork Graph to find decisions linked to an issue. No external services: LLM calls run on Forge LLMs.
 
+## Try it
+
+Install link, step-by-step judge instructions and expected outcomes:
+[docs/SUBMISSION.md → Judge instructions](docs/SUBMISSION.md#judge-instructions-final-paste-into-devpost-testing-instructions).
+In short: install for Jira and Confluence, open Jira settings → Apps → Tether settings,
+click **Load demo data**, then open **PAY-1** and run the check.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  subgraph Surfaces
+    P[Jira issue panel<br/>Custom UI]
+    A[Rovo agent + skill]
+    M[MCP clients<br/>Claude Code, Cursor]
+  end
+  subgraph Forge
+    R[Resolvers 25 s]
+    ACT[Rovo actions 55 s]
+    Q[(Queue)]
+    W[Worker 900 s]
+    KVS[(Forge KVS<br/>reports, cache, settings)]
+    LLM[Forge LLMs]
+  end
+  subgraph Engine [Engine: pure TypeScript]
+    X[Extract requirements + constraints]
+    V[Status, supersession, scope]
+    C[Deterministic compare<br/>intervals, units, counting]
+    G[Outcome + coverage]
+  end
+  P --> R --> Q --> W
+  A --> ACT --> Q
+  M --> ACT
+  W --> Engine --> KVS
+  X -.-> LLM
+  R -. asUser .-> TWG[Teamwork Graph<br/>issue → linked pages]
+  W -. asApp, filtered by user permission .-> J[Jira + Confluence APIs]
+```
+
+One check: the resolver reads the issue as the user and asks Teamwork Graph for linked
+pages, then queues a job. The worker reads the ticket and decision pages (dropping pages
+the user cannot read), extracts requirements and decision constraints with Forge LLMs
+(constraints cached per page version), compares them deterministically, and stores the
+report. The panel polls until it is ready. When a report is read, Tether compares the
+decision page versions it used with the current ones and shows a drift banner if any
+changed. Rovo and MCP call the same actions. No external services: no
+`permissions.external`.
+
+Engine rules, outcome logic, storage keys and security notes:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Evaluation: [docs/EVAL.md](docs/EVAL.md).
+
 ## Repo map
 
 ```
@@ -44,7 +95,7 @@ docs/                     PLAN, TEAM-SETUP, ARCHITECTURE, EVAL, SUBMISSION
 
 ```bash
 npm install            # root + static/report
-npm run check          # typecheck, 126 tests, offline eval 30/30, manifest schema, UI build
+npm run check          # typecheck, 143 tests, offline eval 30/30, manifest schema, UI build
 npm run ui:dev         # UI with mock backend at http://localhost:5174 (scenario picker at the top)
 ```
 
