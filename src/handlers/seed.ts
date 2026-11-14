@@ -4,7 +4,7 @@
  * terminal). Idempotent: existing project, space, pages (same title) and issues (same
  * scenario label) are reused. Same content as scripts/seed/seed.mjs.
  */
-import { route } from '@forge/api';
+import { NeedsAuthenticationError, route } from '@forge/api';
 import decisionsJson from '../../eval/decisions.json';
 import scenariosJson from '../../eval/scenarios.json';
 import { actor } from '../adapters/http';
@@ -30,7 +30,7 @@ async function ensureProject(accountId: string): Promise<string> {
   const got = await user().requestJira(route`/rest/api/3/project/${DEMO.projectKey}`);
   if (got.ok) return `Project ${DEMO.projectKey} already exists.`;
   console.log(`[tether] demo data: project lookup HTTP ${got.status}`);
-  const res = await user().requestJira(route`/rest/api/3/project`, {
+  const init = {
     method: 'POST',
     headers: JSON_HEADERS,
     body: JSON.stringify({
@@ -41,7 +41,18 @@ async function ensureProject(accountId: string): Promise<string> {
       leadAccountId: accountId,
       assigneeType: 'UNASSIGNED',
     }),
-  });
+  };
+  let res;
+  try {
+    res = await user().requestJira(route`/rest/api/3/project`, init);
+  } catch (e) {
+    // Seen on a fresh site: the user's token lacks manage:jira-project even after the
+    // "Allow access" consent, so the prompt loops. The caller is a verified Jira admin
+    // (seedDemo checks), so create the project as the app, with that admin as lead.
+    if (!(e instanceof NeedsAuthenticationError)) throw e;
+    console.warn('[tether] demo data: project create as user needs consent; creating as app');
+    res = await actor('app').requestJira(route`/rest/api/3/project`, init);
+  }
   await ok(res, `Creating Jira project ${DEMO.projectKey}`);
   return `Created Jira project ${DEMO.projectKey} (${DEMO.projectName}).`;
 }
