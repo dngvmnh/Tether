@@ -1,5 +1,23 @@
 # Submitting "Tether for Marketplace" (step by step)
 
+## Status (14 Nov 2026)
+- Partner profile created; developer space "Tether" published as the Marketplace vendor.
+- Tether for Marketplace: distribution "Sharing with anyone" (Jira + Confluence), app
+  details set (company, support, privacy, terms, personal data Yes).
+- Marketplace app created **private**: "Tether: Decision Consistency for Jira",
+  key `com.tether.decision-consistency`, id 1533276126
+  (https://marketplace.atlassian.com/manage/apps/1533276126/details), version 3.0.0,
+  Jira Cloud. **Check it says Tether for Marketplace, never the judging app "Tether".**
+- Details saved: tagline, summary, categories (Data and analytics, Software development),
+  keywords (Accessibility, Artificial Intelligence, Audit, Automation; consider swapping
+  Accessibility), support links.
+- Privacy & Security: technical answers filled (no storage/processing outside Atlassian,
+  logs End-User Data inside Forge only (`diag` lines), no remote REST APIs, no log sharing,
+  no certifications, no CAIQ, no PATs). Left for Đăng: data residency, security contact
+  email, GDPR/CCPA roles; then Save and preview.
+- Missing: logo 144×144 and banner 1120×548 (issue #3), highlights/screenshots, then
+  **Make public** (= submit for Atlassian approval).
+
 App: **Tether for Marketplace**, id `9cca0b82-9b9f-42f8-9049-5db82c3a263e`, owner Đăng.
 Production is deployed with the current `main` code (3.0.0, 14 Nov 2026, Runs on Atlassian
 eligible). Distribution status: Not sharing; not listed yet.
