@@ -64,9 +64,8 @@ Same-day findings that matter for judging:
 
 - Teamwork Graph on the clean site: Bảo's query key `66b8902d-a241-4a00-86ad-5c5f8a461be4`
   saved in Jira settings > Apps > Tether settings. PAY-1 re-check: `Teamwork Graph returned 1
-  linked page(s)`. The persisted query key works across sites. **Judge instructions must tell
-  judges to paste this key** (settings default is empty, which falls back to remote links).
-  Update 14 Nov: the key is now the settings default, so judges do not paste anything.
+  linked page(s)`. The persisted query key works across sites. (Superseded 14 Nov: the key is
+  now the settings default, so judges do not paste anything.)
 - MCP on the clean site: enabled at admin.atlassian.com > (site) > Connected apps > Tether
   (Jira) > Details > Tools > "Expose tools to MCP-compatible apps" > Enable tools. Calling it
   from Claude Code was not verified: after clearing the `tether` sign-in and re-authenticating
