@@ -62,11 +62,8 @@ Builds: **production 4.0.0** (judging app, clean site `tether-judge-test`), **de
 | Judge instructions final, Devpost text drafted, README architecture, video plan | `docs/SUBMISSION.md`, `docs/DEVPOST.md`, `README.md`, `docs/VIDEO.md` |
 | Debug-only logs removed (kept: `diag`, Teamwork Graph, demo-data steps, failures) | `src/handlers/` |
 
-Open:
-- Đạt: 5 PAY-8 re-runs on the shared site (development 6.0.0).
-- Video: approve `docs/VIDEO.md`, record, voice, edit, upload (public YouTube).
-- Marketplace: partner profile (Đăng), deploy "Tether for Marketplace", submit listing.
-- Paste `docs/DEVPOST.md` into Devpost, add video and Marketplace links, submit by Sat 19 Dec.
+Open work is tracked as GitHub issues; the full list with dates is
+[#12 Tracking](https://github.com/dngvmnh/Tether/issues/12) (#1–#11).
 
 ### Tue 10 Nov
 
