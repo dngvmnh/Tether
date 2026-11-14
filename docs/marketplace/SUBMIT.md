@@ -9,12 +9,16 @@
   (https://marketplace.atlassian.com/manage/apps/1533276126/details), version 3.0.0,
   Jira Cloud. **Check it says Tether for Marketplace, never the judging app "Tether".**
 - Details saved: tagline, summary, categories (Data and analytics, Software development),
-  keywords (Accessibility, Artificial Intelligence, Audit, Automation; consider swapping
-  Accessibility), support links.
+  keywords (Artificial Intelligence, Audit, Automation, Integrations; "Accessibility" swapped
+  out 14 Nov), support links.
 - Privacy & Security: technical answers filled (no storage/processing outside Atlassian,
   logs End-User Data inside Forge only (`diag` lines), no remote REST APIs, no log sharing,
   no certifications, no CAIQ, no PATs) and security contact email: **saved** (draft
-  09:37 UTC). Not answered yet: data residency, GDPR/CCPA roles.
+  09:37 UTC). 14 Nov: data residency, GDPR and CCPA answered and saved as a draft (residency
+  Yes, all in-scope data inside Atlassian; in-scope = check reports and cached extractions,
+  out-of-scope = account IDs; GDPR controller No, processor Yes; CCPA business No, service
+  provider Yes). **Đăng: open the tab, tick the consent box on the preview and click Submit
+  and publish** (publishes the privacy answers only; the app stays private).
 - Next, when Bảo's assets land (issue #3):
   1. Details tab: upload logo 144×144 and banner 1120×548, Save.
   2. Versions → **3.1.0** (`/manage/apps/1533276126/versions/3001000/details`): release
