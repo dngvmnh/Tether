@@ -150,4 +150,4 @@ zod, vitest
 ## Notes for the description field
 
 - All data in the video and the demo is fictional demo data created by Load demo data.
-- If the narration uses a synthetic voice, say so here.
+- Narration uses a synthetic (AI-generated) voice.

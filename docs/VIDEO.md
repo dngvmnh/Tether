@@ -1,6 +1,6 @@
 # Demo video plan (Codegeist 2026, Tether)
 
-Status: **plan for approval** (14 Nov 2026). Nothing has been recorded, designed or voiced yet.
+Status: **plan, decisions recorded** (14 Nov 2026). Nothing has been recorded, designed or voiced yet.
 Owner: Đăng records; narration and edit after approval. Built with the video-generation
 brief: real recordings carry the story, the narration says only what the screen proves.
 
@@ -12,8 +12,8 @@ brief: real recordings carry the story, the narration says only what the screen 
 | Host | public YouTube link | `docs/SUBMISSION.md` (Đăng read the rules, 13 Nov) |
 | Category | Apps for Software Teams | `docs/PLAN.md` |
 | Bonus prizes shown | Best Agents, Best app with MCP, Best Teamwork Graph integration (Marketplace has no video beat) | `docs/PLAN.md` §2 |
-| Narration, music, AI voice, captions | **Not confirmed**: the rules page (codegeist.devpost.com/rules) is behind a bot check. See open questions. | none |
-| Judging criteria | **Not confirmed** (same reason). Assumed: idea quality, implementation, impact, use of Atlassian platform. | assumption |
+| Narration, music, AI voice, captions | **No rule** on any of these (Đăng read the rules, 14 Nov). Decision: **synthetic voice**, disclosed in the YouTube and Devpost descriptions; no music. | Đăng, 14 Nov |
+| Judging criteria | Not restrictive (Đăng, 14 Nov). Plan still covers idea, implementation, impact and Atlassian platform use. | Đăng, 14 Nov |
 | Language | English (all project docs are English) | assumption |
 
 ## 1. Dossier (short)
@@ -354,11 +354,21 @@ MCP: `claude mcp list` shows `tether` connected and the dev site is the one auth
 - Draft YouTube title: "Tether: check Jira tickets against your engineering decisions
   (Codegeist 2026)". Chapters follow §4.
 
-## 12. Open questions (blockers for the voice and final edit only)
+## 12. Decisions (14 Nov)
 
-1. The rules page needs a browser check I can't pass. Please paste the **video**
-   section (length, narration, music, AI-generated content) and the **judging criteria**.
-2. Voice: your own voice, or a synthetic voice (disclosed)?
-3. Eval wording: the 30/30 set was written and used by the team during development, so the
-   video says "30 of 30 team-written test scenarios ... not a measure of real-world
-   accuracy". OK to keep it, or drop the number entirely?
+1. Rules: nothing on narration, music or AI content; no extra constraints.
+2. Voice: **synthetic**. Disclose in both descriptions: "Narration uses a synthetic
+   (AI-generated) voice."
+3. Eval wording: **keep** "30 of 30 team-written test scenarios ... not a measure of
+   real-world accuracy".
+
+## 13. Voice tools (checked 14 Nov)
+
+No text-to-speech tool works in the current session: Figma Weave is connected but not linked
+to a Weave account; Canva's connector has no voice-over. Options, in order of preference:
+1. Link Weave (app.weavy.ai → profile → link Figma) if it offers a natural TTS model; uses
+   Weave credits.
+2. `edge-tts` (free Microsoft neural voices, e.g. `en-US-AndrewNeural`); sends the script
+   text to Microsoft's speech service. Needs a one-time `pip install edge-tts`.
+3. Any TTS site you prefer, fed with the speech-ready lines, one file per line id.
+Next stage either way: a voice sample of VO-S01-L01 and VO-S04-L02 for you to approve by ear.
