@@ -228,9 +228,39 @@ normalized in memory, without a storage migration or a page edit.
 
 Regression checks cover fresh ticket/decision extraction, all three cached
 aliases, preservation of the customer-data condition and evidence, and keeping
-other log properties separate. Shared-site five-run verification remains pending
-deployment of the fix. This is one diagnosed panel run, not five successful runs.
+other log properties separate. The reproduction above describes one diagnosed
+panel run. Post-deployment verification is recorded below.
 
 Local validation passed 143 tests, 30/30 offline scenarios, backend/UI type checks,
-manifest checks and the production UI build. The shared-site fix has not yet been
-deployed or verified with five new live runs.
+manifest checks and the production UI build.
+
+### PAY-8 five-run verification after deployment (14 November 2026)
+
+All five sequential re-checks through the Jira panel on the shared site returned
+NEEDS_REVIEW / COMPETING_DECISIONS with ADR-SEC-003 and ADR-PAY-008, and displayed
+1/1 coverage. Each was matched to its own `via: panel` diagnostic log by timestamp
+and report ID. Forge deployment history confirms the shared environment's latest
+successful deployment was by Đăng at 07:15:33 UTC on 14 November, major version 6.
+The repository records the merged retention-key fix `9aed5b1`.
+
+| Run | Report time (UTC+8, 14 November) | Report ID | Outcome |
+|---|---|---|---|
+| 1 | 15:21:21.505 | `862656c8-e7bf-4ece-bc1e-1423801981d8` | NEEDS_REVIEW / COMPETING_DECISIONS |
+| 2 | 15:21:42.517 | `7ba2577e-8d5d-45bd-86e7-bf1cd7d5fd41` | NEEDS_REVIEW / COMPETING_DECISIONS |
+| 3 | 15:22:14.023 | `f66ab5b2-ccaf-413d-adee-8b442e66614c` | NEEDS_REVIEW / COMPETING_DECISIONS |
+| 4 | 15:22:44.623 | `524a2c6b-3a44-400f-a8dd-1f03f1ea68e0` | NEEDS_REVIEW / COMPETING_DECISIONS |
+| 5 | 15:23:20.603 | `0c33889b-521e-43c7-a053-0267995db4ec` | NEEDS_REVIEW / COMPETING_DECISIONS |
+
+In every run the ticket claim was `logs.retention EQ 60 days [MUST]` for
+`payment-service`, with empty environments and conditions. Both ADRs were
+ACCEPTED, version 1, and their returned constraints used `logs.retention`.
+ADR-SEC-003 retained its customer-data condition and service `*`; ADR-PAY-008
+retained its 90-day value and payment-service scope. Every diagnostic had status
+COMPLETE, no errors, one Teamwork Graph linked page and no graph error.
+
+Evidence with job IDs, report IDs, claims and the two decision constraints is in
+`eval/pay8-panel-retest-2026-11-14.json`. This completes the requested five-run
+panel verification. The earlier 14/15 shared-site outcome check now has a passing
+retest for its remaining scenario. The other fourteen scenarios were observed on
+13 November and were not rerun against this deployment. Decision constraints were
+reused from their page-version caches; ticket extraction ran anew for each check.

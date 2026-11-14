@@ -1,0 +1,195 @@
+{
+  "site": "one-atlas-dscw.atlassian.net",
+  "environment": "development",
+  "deployedMajorVersion": 6,
+  "fixCommit": "9aed5b1",
+  "method": "Five sequential Jira panel reruns, matched to Forge diagnostic logs by generatedAt and reportId",
+  "coverageObserved": "1/1 in all five panel reports",
+  "runs": [
+    {
+      "via": "panel",
+      "jobId": "beb4c8d5-3cde-4077-aa78-ba347e5c5c74",
+      "reportId": "862656c8-e7bf-4ece-bc1e-1423801981d8",
+      "generatedAt": "2026-11-14T07:21:21.505Z",
+      "outcome": "NEEDS_REVIEW",
+      "status": "COMPLETE",
+      "claims": [
+        "PAY-8-C1: logs.retention EQ 60 days [MUST] scope={\"service\":\"payment-service\",\"environments\":[],\"conditions\":[]} cond=[]"
+      ],
+      "decisions": [
+        {
+          "id": "ADR-SEC-003",
+          "status": "ACCEPTED",
+          "v": 1,
+          "constraints": [
+            "logs.retention LTE 30 days [MUST] scope={\"conditions\":[\"logs that contain customer data\"],\"environments\":[],\"service\":\"*\"} cond=[]"
+          ]
+        },
+        {
+          "id": "ADR-PAY-008",
+          "status": "ACCEPTED",
+          "v": 1,
+          "constraints": [
+            "logs.retention EQ 90 days [MUST] scope={\"conditions\":[],\"environments\":[],\"service\":\"payment-service\"} cond=[]"
+          ]
+        }
+      ],
+      "findings": [
+        "NEEDS_REVIEW/COMPETING_DECISIONS ADR-SEC-003,ADR-PAY-008"
+      ],
+      "graph": {
+        "pages": 1,
+        "error": null
+      },
+      "errors": []
+    },
+    {
+      "via": "panel",
+      "jobId": "63ce571d-d0fa-4a63-9ece-8c3d54c906bd",
+      "reportId": "7ba2577e-8d5d-45bd-86e7-bf1cd7d5fd41",
+      "generatedAt": "2026-11-14T07:21:42.517Z",
+      "outcome": "NEEDS_REVIEW",
+      "status": "COMPLETE",
+      "claims": [
+        "PAY-8-C1: logs.retention EQ 60 days [MUST] scope={\"service\":\"payment-service\",\"environments\":[],\"conditions\":[]} cond=[]"
+      ],
+      "decisions": [
+        {
+          "id": "ADR-SEC-003",
+          "status": "ACCEPTED",
+          "v": 1,
+          "constraints": [
+            "logs.retention LTE 30 days [MUST] scope={\"conditions\":[\"logs that contain customer data\"],\"environments\":[],\"service\":\"*\"} cond=[]"
+          ]
+        },
+        {
+          "id": "ADR-PAY-008",
+          "status": "ACCEPTED",
+          "v": 1,
+          "constraints": [
+            "logs.retention EQ 90 days [MUST] scope={\"conditions\":[],\"environments\":[],\"service\":\"payment-service\"} cond=[]"
+          ]
+        }
+      ],
+      "findings": [
+        "NEEDS_REVIEW/COMPETING_DECISIONS ADR-SEC-003,ADR-PAY-008"
+      ],
+      "graph": {
+        "pages": 1,
+        "error": null
+      },
+      "errors": []
+    },
+    {
+      "via": "panel",
+      "jobId": "f567320b-8bf0-4d63-8c61-434a71831f60",
+      "reportId": "f66ab5b2-ccaf-413d-adee-8b442e66614c",
+      "generatedAt": "2026-11-14T07:22:14.023Z",
+      "outcome": "NEEDS_REVIEW",
+      "status": "COMPLETE",
+      "claims": [
+        "PAY-8-C1: logs.retention EQ 60 days [MUST] scope={\"service\":\"payment-service\",\"environments\":[],\"conditions\":[]} cond=[]"
+      ],
+      "decisions": [
+        {
+          "id": "ADR-SEC-003",
+          "status": "ACCEPTED",
+          "v": 1,
+          "constraints": [
+            "logs.retention LTE 30 days [MUST] scope={\"conditions\":[\"logs that contain customer data\"],\"environments\":[],\"service\":\"*\"} cond=[]"
+          ]
+        },
+        {
+          "id": "ADR-PAY-008",
+          "status": "ACCEPTED",
+          "v": 1,
+          "constraints": [
+            "logs.retention EQ 90 days [MUST] scope={\"conditions\":[],\"environments\":[],\"service\":\"payment-service\"} cond=[]"
+          ]
+        }
+      ],
+      "findings": [
+        "NEEDS_REVIEW/COMPETING_DECISIONS ADR-SEC-003,ADR-PAY-008"
+      ],
+      "graph": {
+        "pages": 1,
+        "error": null
+      },
+      "errors": []
+    },
+    {
+      "via": "panel",
+      "jobId": "63e63f74-5295-4d4a-a658-99dc645bd566",
+      "reportId": "524a2c6b-3a44-400f-a8dd-1f03f1ea68e0",
+      "generatedAt": "2026-11-14T07:22:44.623Z",
+      "outcome": "NEEDS_REVIEW",
+      "status": "COMPLETE",
+      "claims": [
+        "PAY-8-C1: logs.retention EQ 60 days [MUST] scope={\"service\":\"payment-service\",\"environments\":[],\"conditions\":[]} cond=[]"
+      ],
+      "decisions": [
+        {
+          "id": "ADR-SEC-003",
+          "status": "ACCEPTED",
+          "v": 1,
+          "constraints": [
+            "logs.retention LTE 30 days [MUST] scope={\"conditions\":[\"logs that contain customer data\"],\"environments\":[],\"service\":\"*\"} cond=[]"
+          ]
+        },
+        {
+          "id": "ADR-PAY-008",
+          "status": "ACCEPTED",
+          "v": 1,
+          "constraints": [
+            "logs.retention EQ 90 days [MUST] scope={\"conditions\":[],\"environments\":[],\"service\":\"payment-service\"} cond=[]"
+          ]
+        }
+      ],
+      "findings": [
+        "NEEDS_REVIEW/COMPETING_DECISIONS ADR-SEC-003,ADR-PAY-008"
+      ],
+      "graph": {
+        "pages": 1,
+        "error": null
+      },
+      "errors": []
+    },
+    {
+      "via": "panel",
+      "jobId": "4201bd26-ef73-498f-b1cb-842fee5c374d",
+      "reportId": "0c33889b-521e-43c7-a053-0267995db4ec",
+      "generatedAt": "2026-11-14T07:23:20.603Z",
+      "outcome": "NEEDS_REVIEW",
+      "status": "COMPLETE",
+      "claims": [
+        "PAY-8-C1: logs.retention EQ 60 days [MUST] scope={\"service\":\"payment-service\",\"environments\":[],\"conditions\":[]} cond=[]"
+      ],
+      "decisions": [
+        {
+          "id": "ADR-SEC-003",
+          "status": "ACCEPTED",
+          "v": 1,
+          "constraints": [
+            "logs.retention LTE 30 days [MUST] scope={\"conditions\":[\"logs that contain customer data\"],\"environments\":[],\"service\":\"*\"} cond=[]"
+          ]
+        },
+        {
+          "id": "ADR-PAY-008",
+          "status": "ACCEPTED",
+          "v": 1,
+          "constraints": [
+            "logs.retention EQ 90 days [MUST] scope={\"conditions\":[],\"environments\":[],\"service\":\"payment-service\"} cond=[]"
+          ]
+        }
+      ],
+      "findings": [
+        "NEEDS_REVIEW/COMPETING_DECISIONS ADR-SEC-003,ADR-PAY-008"
+      ],
+      "graph": {
+        "pages": 1,
+        "error": null
+      },
+      "errors": []
+    }
+  ]
+}
