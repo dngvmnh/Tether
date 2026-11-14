@@ -1,0 +1,20 @@
+{
+  "_note": "Speech-ready narration from docs/VIDEO.md section 5. Numbers as words, PAY keys spelled for speech. A number inside a line is a pause in seconds. Edit here, then run: python scripts/narrate.py",
+  "lines": {
+    "VO-S01-L01": ["Here's a ticket asking the payment service to retry failed transactions exactly five times. Two clicks away, the team's accepted decision says no more than three.", 0.4, "Nobody notices until it ships."],
+    "VO-S02-L01": ["Tether is a Forge app for Jira and Confluence. It checks a ticket's technical requirements against the decisions your team already recorded, and shows you the exact evidence."],
+    "VO-S03-L01": ["To make this easy to test, an admin grants access once, then clicks Load demo data. In about a minute, Tether creates a demo project, a decision space and thirty sample tickets. We've sped that part up."],
+    "VO-S04-L01": ["On pay one, I click Check implementation context. The check runs in a background queue, so I've trimmed the wait."],
+    "VO-S04-L02": ["Conflict.", 0.4, "On the left, the sentence from the ticket. On the right, the sentence from the decision, with a link to the page. Both quotes are checked word for word against their source."],
+    "VO-S04-L03": ["It also tells you what it didn't check: one of two requirements had no matching decision. And it shows why this decision counts. It's accepted, it applies to the payment service, and it replaced an older one."],
+    "VO-S05-L01": ["Not every different number is a conflict. Four attempts, including the first, is the same as three retries. Tether does that arithmetic in code, not in a prompt."],
+    "VO-S05-L02": ["When the counting is unclear, it says Needs review instead of guessing."],
+    "VO-S05-L03": ["And when part of a ticket has no decision behind it, it says so. Insufficient evidence is never shown as a pass."],
+    "VO-S06-L01": ["Tether never edits the ticket or the decision. If you want to follow up, it drafts a clarification issue. You review it, change what you like, and confirm. It's created as you, linked to both."],
+    "VO-S07-L01": ["Decisions change. When someone edits the retry decision, the next time anyone opens pay one, Tether flags that a decision it relied on has changed, and offers a re-check."],
+    "VO-S08-L01": ["The same check runs inside Rovo. The Tether agent uses our actions and a skill, so you can ask in chat. Here it reaches the same result for pay two: one requirement checked, one with no decision."],
+    "VO-S09-L01": ["Tether also exposes its tools over M C P. Here, Claude Code calls check issue consistency and gets the same conflict, with the quotes and links. This one is recorded on our development site."],
+    "VO-S10-L01": ["To find decisions linked to a ticket, Tether asks Teamwork Graph. Everything runs on Forge, and the language model calls use Forge L L Ms, so nothing leaves Atlassian."],
+    "VO-S11-L01": ["On our thirty team-written test scenarios, all thirty pass. That shows it handles the cases we designed, not real-world accuracy.", 0.5, "Tether: tickets that stay tethered."]
+  }
+}

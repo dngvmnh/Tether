@@ -371,4 +371,6 @@ to a Weave account; Canva's connector has no voice-over. Options, in order of pr
 2. `edge-tts` (free Microsoft neural voices, e.g. `en-US-AndrewNeural`); sends the script
    text to Microsoft's speech service. Needs a one-time `pip install edge-tts`.
 3. Any TTS site you prefer, fed with the speech-ready lines, one file per line id.
-Next stage either way: a voice sample of VO-S01-L01 and VO-S04-L02 for you to approve by ear.
+Done (14 Nov): option 2. `scripts/narrate.py` renders `video/narration/lines.json` to
+`video/narration/audio/` (en-US-AndrewNeural); samples in four voices are in
+`video/narration/samples/`. See `video/narration/README.md` for the fit against this plan.

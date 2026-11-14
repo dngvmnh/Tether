@@ -1,0 +1,3 @@
+voice en-US-AvaNeural rate +0%
+VO-S01-L01	13.1s
+VO-S04-L02	12.9s
