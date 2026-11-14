@@ -49,11 +49,12 @@ The same engine is available in **Rovo** (the Tether agent, with three actions a
 
 What makes it different from asking a chatbot to review a ticket:
 
-- **Deterministic where it matters.** "Up to 5" against "at most 3" is not a conflict;
-  "4 attempts including the first" equals "3 retries"; "15000 ms" against "at most
-  10 s" is a conflict. Interval maths, units, attempts-versus-retries and supersession are
-  code, not prompts. The language model only extracts requirements and constraints, and
-  handles qualitative cases.
+- **Deterministic where it matters.** "Up to 5" against "at most 3" is compatible if the
+  implementation stays within 3 retries; "at most 4 attempts including the first" equals
+  "at most 3 retries"; "15000 ms" against "at most 10 s" is a conflict. Interval maths,
+  units, attempts-versus-retries and supersession are code, not prompts. The language model
+  extracts requirements and constraints, with a semantic fallback when the deterministic
+  rules cannot decide.
 - **Honest uncertainty.** Needs review instead of guessing; Insufficient evidence instead
   of a silent pass. A failed retrieval or model call is never shown as "no conflict".
 - **Verified evidence.** A quote that cannot be found in its source downgrades the finding
@@ -88,7 +89,8 @@ the demo data and the in-Forge evaluation.
 30 team-written scenarios (`eval/scenarios.json`) cover conflicts, compatible bounds,
 unit conversion, attempts versus retries, superseded and proposed decisions, competing
 decisions, scope mismatches and non-technical tickets. In Tether settings → Run eval, the
-live pipeline with Forge LLM extraction passed **30 of 30** (0 missed conflicts, 0 false
+analysis pipeline using real Forge LLM extraction on fixture tickets and decision statements
+passed **30 of 30** (0 missed conflicts, 0 false
 conflicts, 0 false "no conflict"), on the shared development site and on a clean judge
 site. The scenarios were written and used by the team during development. These numbers
 show the prototype handles its intended cases; they are not a claim of real-world
