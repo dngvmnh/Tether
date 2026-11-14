@@ -66,12 +66,44 @@ Same-day findings that matter for judging:
   saved in Jira settings > Apps > Tether settings. PAY-1 re-check: `Teamwork Graph returned 1
   linked page(s)`. The persisted query key works across sites. **Judge instructions must tell
   judges to paste this key** (settings default is empty, which falls back to remote links).
+  Update 14 Nov: the key is now the settings default, so judges do not paste anything.
 - MCP on the clean site: enabled at admin.atlassian.com > (site) > Connected apps > Tether
   (Jira) > Details > Tools > "Expose tools to MCP-compatible apps" > Enable tools. Calling it
   from Claude Code was not verified: after clearing the `tether` sign-in and re-authenticating
   with tether-judge-test picked, a brand-new session still got only the `_development` tools
   and dev-site (one-atlas-dscw) URLs. Record the MCP prize video on the dev site, where MCP is
   verified end to end.
+
+### In-app "Load demo data" on the clean site (14 Nov 2026, production 4.0.0)
+PAY and ENG were deleted first (and PAY purged from the Jira trash: a trashed project keeps
+its key and name, so creation answers HTTP 400 "already exists"). Then, as a judge would:
+1. Jira settings > Apps > Tether settings. After an upgrade that adds scopes, the page shows
+   "For Tether settings to display, you need to grant it access": click **Allow access**, then
+   **Accept** on the Atlassian consent page.
+2. **Load demo data**: 9/9 steps in about a minute. Created project PAY (Payments), space ENG
+   (Engineering Decisions), 10 labelled decision pages, issues PAY-1..PAY-30, and the web links
+   PAY-1 to ADR-PAY-001, PAY-4 to ADR-PAY-000, PAY-8 to ADR-SEC-003 (checked over REST).
+   Tether settings were pointed at ENG / `tether-decision` automatically.
+3. PAY-1 > apps button > Tether decision check > Check: **CONFLICT, 1 requirement contradicts
+   ADR-PAY-001** ("exactly 5 times" vs "no more than 3 times"), 1 of 2 checked. Log: Teamwork
+   Graph returned 1 linked page, 10 decisions retrieved.
+
+Bugs found and fixed on the way:
+- Project creation needs `manage:jira-configuration` (the API docs' scope for
+  POST /rest/api/3/project), not `manage:jira-project`. With the wrong scope, asUser kept
+  re-showing the consent prompt after Accept, and asApp answered 401 "scope does not match".
+  The dev site never hit this because PAY already existed there. Fixed in production 4.0.0 /
+  development 6.0.0; project creation also falls back to the app identity if the user has not
+  granted the scope.
+- Major version: teammates must `forge install --upgrade` their dev environments (Jira and
+  Confluence) and approve the new scope.
+- KVS outlives the project: the panel on the new PAY-1 first showed the old PAY-1 report with
+  a "ticket changed" banner. Judges start on a clean site, so they will not see this.
+
+**Judge instructions (draft):** open the install link and install for Jira and Confluence (press
+Install again if the first try says "Installation failed"); Jira settings > Apps > Tether
+settings > Allow access + Accept; Load demo data; open PAY-1 and run the check (expect
+CONFLICT vs ADR-PAY-001). The Teamwork Graph query key is now pre-filled by default.
 
 ## Two registered apps (needed for the Marketplace bonus)
 Forge docs: apps submitted for Marketplace listing **cannot be shared by installation
