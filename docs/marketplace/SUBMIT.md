@@ -13,10 +13,15 @@
   Accessibility), support links.
 - Privacy & Security: technical answers filled (no storage/processing outside Atlassian,
   logs End-User Data inside Forge only (`diag` lines), no remote REST APIs, no log sharing,
-  no certifications, no CAIQ, no PATs). Left for Đăng: data residency, security contact
-  email, GDPR/CCPA roles; then Save and preview.
-- Missing: logo 144×144 and banner 1120×548 (issue #3), highlights/screenshots, then
-  **Make public** (= submit for Atlassian approval).
+  no certifications, no CAIQ, no PATs) and security contact email: **saved** (draft
+  09:37 UTC). Not answered yet: data residency, GDPR/CCPA roles.
+- Next, when Bảo's assets land (issue #3):
+  1. Details tab: upload logo 144×144 and banner 1120×548, Save.
+  2. Versions → **3.1.0** (`/manage/apps/1533276126/versions/3001000/details`): release
+     notes, description, 3 highlights with screenshots (text in `LISTING.md`). Version
+     3.1.0 was added automatically by Marketplace Hub; 3.0.0 is the first deploy.
+  3. Details tab → Visibility → **Public** = submit for Atlassian approval (Đăng).
+  4. Put the listing / review link in `docs/DEVPOST.md` (Marketplace row).
 
 App: **Tether for Marketplace**, id `9cca0b82-9b9f-42f8-9049-5db82c3a263e`, owner Đăng.
 Production is deployed with the current `main` code (3.0.0, 14 Nov 2026, Runs on Atlassian
