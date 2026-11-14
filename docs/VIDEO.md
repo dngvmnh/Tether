@@ -372,5 +372,5 @@ to a Weave account; Canva's connector has no voice-over. Options, in order of pr
    text to Microsoft's speech service. Needs a one-time `pip install edge-tts`.
 3. Any TTS site you prefer, fed with the speech-ready lines, one file per line id.
 Done (14 Nov): option 2. `scripts/narrate.py` renders `video/narration/lines.json` to
-`video/narration/audio/` (en-US-AndrewNeural); samples in four voices are in
+`video/narration/audio/` (en-US-BrianNeural, chosen by ear); samples in four voices are in
 `video/narration/samples/`. See `video/narration/README.md` for the fit against this plan.

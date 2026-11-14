@@ -71,7 +71,7 @@ async def render(line_id: str, parts: list, voice: str, rate: str, out_dir: path
 
 async def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--voice", default="en-US-AndrewNeural")
+    parser.add_argument("--voice", default="en-US-BrianNeural")
     parser.add_argument("--rate", default="+0%")
     parser.add_argument("--only", nargs="*")
     parser.add_argument("--out", default="video/narration/audio")
