@@ -234,3 +234,24 @@ deployment of the fix. This is one diagnosed panel run, not five successful runs
 Local validation passed 143 tests, 30/30 offline scenarios, backend/UI type checks,
 manifest checks and the production UI build. The shared-site fix has not yet been
 deployed or verified with five new live runs.
+
+## Follow-up creation on the clean judge site (Đăng, 14 November 2026)
+
+Issue #7. Site `tether-judge-test`, production build, after Load demo data.
+
+1. **From a Needs review finding (issue panel).** PAY-3 was checked: NEEDS_REVIEW,
+   ambiguous counting against ADR-PAY-001. *Create clarification issue* showed the
+   draft; the summary was edited (" (does the first try count?)" appended) before
+   *Create issue*. Result: **PAY-31**, Task, reporter = the clicking user, summary
+   with the edit kept, issue link "Relates" to PAY-3, remote link
+   "ADR-PAY-001: Payment retry policy" (page 720898). Pass.
+2. **From the Rovo agent action.** In Rovo chat on PAY-1, the Tether agent was asked to
+   check PAY-1 and create the clarification issue if there was a conflict. It returned
+   CONFLICT (1 of 2 requirements checked, ADR-PAY-001, verbatim quotes) and asked before
+   creating anything. Asking it to create showed Rovo's *Please review* card for
+   `create-follow-up-issue` (findingId `F-PAY-1-C1`, issueKey `PAY-1`); after
+   *Confirm selected* it answered with **PAY-32** "Clarify Payment Service retry limit
+   in PAY-1 against ADR-PAY-001". REST check: Task, reporter = the confirming user,
+   issue link "Relates" to PAY-1, remote link to ADR-PAY-001 (page 720898). Pass.
+
+Neither the checked issue nor the decision page was edited in either path.
