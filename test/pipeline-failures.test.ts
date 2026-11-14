@@ -126,3 +126,19 @@ describe('partial pipeline failures never become an unsupported pass', () => {
     expect(r.findings).toHaveLength(3);
   });
 });
+
+describe('Teamwork Graph fallback', () => {
+  it('keeps pages from the remote-link fallback and reports the graph error', async () => {
+    const deps = setup('S01');
+    let searchedLinked: string[] | undefined;
+    const search = deps.decisions.search;
+    deps.decisions.search = async (q) => { searchedLinked = q.linkedPageIds; return search(q); };
+    deps.graph = { contextFor: async () => ({ linkedPageIds: ['720898'], ownerTeams: {}, note: 'Teamwork Graph unavailable; used Jira remote links.', error: 'User is not permitted to query this organization' }) };
+
+    const r = await analyzeIssue('PAY-101', deps);
+
+    expect(searchedLinked).toEqual(['720898']);
+    expect(r.errors).toEqual(expect.arrayContaining([expect.objectContaining({ stage: 'TEAMWORK_GRAPH' })]));
+    expect(r.overallOutcome).toBe('CONFLICT');
+  });
+});

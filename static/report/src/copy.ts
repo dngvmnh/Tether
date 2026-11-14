@@ -41,7 +41,7 @@ export const STAGE_ORDER: JobProgressStage[] = [
 export const ERROR_STAGE_COPY: Record<AnalysisStage, string> = {
   FETCH_TICKET: 'The ticket could not be read.',
   EXTRACT_CLAIMS: 'Requirements could not be extracted from the ticket.',
-  TEAMWORK_GRAPH: 'Linked pages could not be looked up in Teamwork Graph, so Tether searched by label instead.',
+  TEAMWORK_GRAPH: "Teamwork Graph could not be queried, so linked pages came from the ticket's Jira web links, alongside the label search.",
   RETRIEVE_DECISIONS: 'Decisions could not be retrieved from Confluence.',
   EXTRACT_DECISION_CONSTRAINTS: 'A decision could not be read, so it was left out of the comparison.',
   COMPARE: 'Some requirements could not be compared.',

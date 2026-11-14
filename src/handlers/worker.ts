@@ -20,8 +20,9 @@ async function runAnalysis(body: AnalysisJobBody) {
     decisions: new ConfluenceDecisionAdapter(body.siteUrl, config.spaceKeys, config.decisionLabel, 'app', body.accountId),
     graph: body.graph
       ? {
+          // A graph error means Teamwork Graph failed and jobs.ts already fell back to Jira
+          // remote links; the pipeline keeps those pages and reports the error.
           async contextFor() {
-            if (body.graph!.error) throw new Error(body.graph!.error);
             return body.graph!;
           },
         }

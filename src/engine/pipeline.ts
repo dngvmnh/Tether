@@ -134,10 +134,12 @@ export async function analyzeIssue(issueKey: string, deps: EngineDeps): Promise<
   if (deps.graph) {
     try {
       graph = await deps.graph.contextFor(ticket);
-      graphInfo = { used: true, linkedPages: graph.linkedPageIds.length, note: graph.note };
+      graphInfo = { used: !graph.error, linkedPages: graph.linkedPageIds.length, note: graph.note };
+      // Teamwork Graph failed but a fallback supplied linked pages: keep them, report the failure.
+      if (graph.error) errors.push(toError('TEAMWORK_GRAPH', new Error(graph.error)));
     } catch (e) {
       errors.push(toError('TEAMWORK_GRAPH', e));
-      graphInfo = { used: false, linkedPages: 0, note: 'Teamwork Graph unavailable; fell back to label search.' };
+      graphInfo = { used: false, linkedPages: 0, note: 'Linked pages could not be looked up; used label search only.' };
     }
   }
 

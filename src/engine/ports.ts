@@ -45,6 +45,8 @@ export interface GraphContext {
   /** decisionId -> team name of the decision owner. */
   ownerTeams: Record<string, string>;
   note?: string;
+  /** Set when Teamwork Graph failed and linkedPageIds came from a fallback (Jira remote links). */
+  error?: string;
 }
 
 export interface GraphPort {
